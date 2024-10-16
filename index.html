@@ -10,6 +10,7 @@
         <a class="headMain" href="#vendor">Vendor</a>
         <a class="headSub" href="#vendorPassword">Create Password</a>
         <a class="headSub" href="#getToken">Get Token</a>
+        <a class="headSub" href="#getVendor">Get Vendor</a>
     </header>
 
     <article>
@@ -98,6 +99,20 @@
                 <p class="name">token</p>
                 <p class="type">string</p>
                 <p class="propDesc">Vendor JWT for authentication</p>
+            </div>
+        </div>
+
+        <div id="getVendor" class="route">
+            <h1>Get Vendor</h1>
+            <p class="url">GET /vendor/:vendorId</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Get the details of the specific vendor</p>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">N/A</p>
+                <p class="type"<a href="#vendor">Vendor</a></p>
+                <p class="propDesc">Vendor with all data</p>
             </div>
         </div>
     </article>
