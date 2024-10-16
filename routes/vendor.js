@@ -1,6 +1,7 @@
 import Vendor from "../models/vendor.js";
 
 import {httpError} from "../error.js";
+import {vendorAuth} from "../auth.js";
 import {
     confirmToken,
     passwordLength,
@@ -8,7 +9,8 @@ import {
     createPasswordHash,
     newToken,
     validPassword,
-    createToken
+    createToken,
+    responseVendor
 } from "../controllers/vendor.js";
 
 const vendorRoutes = (app)=>{
@@ -64,6 +66,14 @@ const vendorRoutes = (app)=>{
 
         const token = createToken(vendor);
         res.json({token: token});
+    });
+
+    app.get("/vendor/:vendorId", vendorAuth, (req, res)=>{
+        if(res.locals.vendor._id.toString() !== req.params.vendorId){
+            return httpError(res, 401, "Unauthorized");
+        }
+
+        res.json(responseVendor(res.locals.vendor));
     });
 }
 

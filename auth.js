@@ -1,7 +1,7 @@
-const Vendor = require("./models/vendor.js");
+import Vendor from "./models/vendor.js";
 
-const jwt = require("jsonwebtoken");
-const {httpError} = require("./error.js");
+import jwt from "jsonwebtoken";
+import {httpError} from "./error.js";
 
 const vendorAuth = async (req, res, next)=>{
     let vendorData;

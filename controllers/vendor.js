@@ -33,6 +33,15 @@ const createToken = (vendor)=>{
     }, process.env.JWT_SECRET);
 }
 
+const responseVendor = (vendor)=>{
+    return {
+        email: vendor.email,
+        owner: vendor.owner,
+        store: vendor.store,
+        image: vendor.image
+    };
+}
+
 export {
     confirmToken,
     passwordLength,
@@ -40,5 +49,6 @@ export {
     createPasswordHash,
     newToken,
     validPassword,
-    createToken
+    createToken,
+    responseVendor
 };
