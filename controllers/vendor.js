@@ -35,6 +35,7 @@ const createToken = (vendor)=>{
 
 const responseVendor = (vendor)=>{
     return {
+        id: vendor._id,
         email: vendor.email,
         owner: vendor.owner,
         store: vendor.store,

@@ -75,6 +75,21 @@ const vendorRoutes = (app)=>{
 
         res.json(responseVendor(res.locals.vendor));
     });
+
+    app.get("/vendor", async (req, res)=>{
+        let vendors;
+        try{
+            vendors = await Vendor.find({}, {
+                store: 1,
+                image: 1
+            });
+        }catch(e){
+            console.error(e);
+            return httpError(res, 500, "Internal server error (err-004)");
+        }
+
+        res.json(vendors);
+    });
 }
 
 export default vendorRoutes;
