@@ -1,0 +1,24 @@
+{
+  "name": "api-inlet-shop",
+  "version": "1.0.0",
+  "description": "Back-end for inlet-shop website",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inlet-sites/api-inlet-shop.git"
+  },
+  "author": "Lee Morgan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/inlet-sites/api-inlet-shop/issues"
+  },
+  "homepage": "https://github.com/inlet-sites/api-inlet-shop#readme",
+  "dependencies": {
+    "compression": "^1.7.4",
+    "express": "^4.21.1",
+    "mongoose": "^8.7.1"
+  }
+}
