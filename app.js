@@ -15,8 +15,13 @@ app.use(compression());
 app.use(express.json());
 app.use(cors());
 
-if(process.env.NODE_ENV === "production"){
-    export default app;
-}else{
+import vendorRoutes from "./routes/vendor.js";
+vendorRoutes(app);
+
+app.get("/", (req, res)=>{res.sendFile(`${process.cwd()}/index.html`)});
+app.get("/style.css", (req, res)=>{res.sendFile(`${process.cwd()}/index.css`)});
+
+if(process.env.NODE_ENV !== "production"){
     app.listen(8000);
 }
+export default app;

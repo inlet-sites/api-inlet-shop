@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>API docs | inlet.shop</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <header>
+        <a class="headMain" href="#vendor">Vendor</a>
+        <a class="headSub" href="#vendorPassword">Create Password</a>
+    </header>
+
+    <article>
+        <div id="vendor" class="route">
+            <h1>Vendor</h1>
+            <p class="description">Vendor object</p>
+
+            <h3>Properties</h3>
+            <div class="prop">
+                <p class="name">id</p>
+                <p class="type">string</p>
+                <p class="propDesc">Unique identifier of the the vendor</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">owner</p>
+                <p class="type">string</p>
+                <p class="propDesc">Name of the owner of the store</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">store</p>
+                <p class="type">string</p>
+                <p class="propDesc">The name of the store</p>
+            </div>
+            
+            <div class="prop">
+                <p class="name">image</p>
+                <p class="type">string URL</p>
+                <p class="propDesc">Image used for the store</p>
+            </div>
+        </div>
+
+        <div id="vendorPassword" class="route">
+            <h1>Create vendor password</h1>
+            <p class="url">PUT /vendor/:vendorId/password/:token</p>
+            <p class="description">Vendor create initial password</p>
+
+            <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">password</p>
+                <p class="type">string</p>
+                <p class="propDesc">New user password. Must contain at least 10 characters.</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">confirmPassword</p>
+                <p class="type">string</p>
+                <p class="propDesc">Confirmation password to ensure match</p>
+            </div>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">success</p>
+                <p class="type">boolean</p>
+                <p class="propDesc">Will always be `{success: true}` if there is no error</p>
+            </div>
+        </div>
+    </article>
+</body>
+</html>

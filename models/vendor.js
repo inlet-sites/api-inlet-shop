@@ -20,6 +20,10 @@ const VendorSchema = new mongoose.Schema({
     stripeToken: {
         type: String,
         required: false
+    },
+    image: {
+        type: String,
+        required: true
     }
 });
 
