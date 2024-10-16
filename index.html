@@ -9,6 +9,7 @@
     <header>
         <a class="headMain" href="#vendor">Vendor</a>
         <a class="headSub" href="#vendorPassword">Create Password</a>
+        <a class="headSub" href="#getToken">Get Token</a>
     </header>
 
     <article>
@@ -21,6 +22,12 @@
                 <p class="name">id</p>
                 <p class="type">string</p>
                 <p class="propDesc">Unique identifier of the the vendor</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">email</p>
+                <p class="type">string</p>
+                <p class="propDesc">Email address for the store vendor owner</p>
             </div>
 
             <div class="prop">
@@ -65,6 +72,32 @@
                 <p class="name">success</p>
                 <p class="type">boolean</p>
                 <p class="propDesc">Will always be `{success: true}` if there is no error</p>
+            </div>
+        </div>
+
+        <div id="getToken" class="route">
+            <h1>Get Token</h1>
+            <p class="url">POST /vendor/token</p>
+            <p class="description">Get JWT for user authorization</p>
+
+            <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">email</p>
+                <p class="type">string</p>
+                <p class="propDesc">Vendor email</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">password</p>
+                <p class="type">string</p>
+                <p class="propDesc">Account password</p>
+            </div>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">token</p>
+                <p class="type">string</p>
+                <p class="propDesc">Vendor JWT for authentication</p>
             </div>
         </div>
     </article>

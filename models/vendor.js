@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const VendorSchema = new mongoose.Schema({
+    email: {
+        type: String,
+        required: true
+    },
     owner: {
         type: String,
         required: true

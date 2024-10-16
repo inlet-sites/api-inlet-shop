@@ -6,7 +6,9 @@ import {
     passwordLength,
     passwordMatch,
     createPasswordHash,
-    newToken
+    newToken,
+    validPassword,
+    createToken
 } from "../controllers/vendor.js";
 
 const vendorRoutes = (app)=>{
@@ -36,7 +38,6 @@ const vendorRoutes = (app)=>{
 
         vendor.password = await createPasswordHash(req.body.password);
         vendor.token = newToken();
-        console.log(vendor.token);
         try{
             await vendor.save();
         }catch(e){
@@ -45,6 +46,24 @@ const vendorRoutes = (app)=>{
         }
 
         res.json({sucess: true});
+    });
+
+    app.post("/vendor/token", async (req, res)=>{
+        const email = req.body.email.toLowerCase();
+        let vendor;
+        try{
+            vendor = await Vendor.findOne({email: email});
+        }catch(e){
+            console.error(e);
+            return httpError(res, 500, "Internal server error (err-003)");
+        }
+        if(!vendor) return httpError(res, 400, "Invalid credentials");
+
+        const valid = await validPassword(req.body.password, vendor.password);
+        if(!valid) return httpError(res, 400, "Invalid credentials");
+
+        const token = createToken(vendor);
+        res.json({token: token});
     });
 }
 
