@@ -68,12 +68,10 @@ const vendorRoutes = (app)=>{
         res.json({token: token});
     });
 
-    app.get("/vendor/:vendorId", vendorAuth, (req, res)=>{
-        if(res.locals.vendor._id.toString() !== req.params.vendorId){
-            return httpError(res, 401, "Unauthorized");
-        }
-
-        res.json(responseVendor(res.locals.vendor));
+    app.get("/vendor/self", vendorAuth, (req, res)=>{
+        res.locals.vendor.password = undefined;
+        res.locals.vendor.token = undefined;
+        res.json(res.locals.vendor);
     });
 
     app.get("/vendor", async (req, res)=>{
