@@ -10,8 +10,10 @@
         <a class="headMain" href="#vendor">Vendor</a>
         <a class="headSub" href="#vendorPassword">Create Password</a>
         <a class="headSub" href="#getToken">Get Token</a>
+        <a class="headSub" href="#getVendorSelf">Get Vendor (self)</a>
         <a class="headSub" href="#getVendor">Get Vendor</a>
         <a class="headSub" href="#getVendors">Get All Vendors</a>
+        <a class="headSub" href="#uploadVendorImg">Upload Store Image</a>
     </header>
 
     <article>
@@ -103,17 +105,30 @@
             </div>
         </div>
 
-        <div id="getVendor" class="route">
-            <h1>Get Vendor</h1>
-            <p class="url">GET /vendor/:vendorId</p>
+        <div id="getVendorSelf" class="route">
+            <h1>Get Vendor (self)</h1>
+            <p class="url">GET /vendor/self</p>
             <p>Vendor Auth Required</p>
-            <p class="description">Get the details of the specific vendor</p>
+            <p class="description">Get the details of the specific vendor. Includes non-public data for the Vendor.</p>
 
             <h3>Response Body</h3>
             <div class="prop">
                 <p class="name">N/A</p>
-                <p class="type"<a href="#vendor">Vendor</a></p>
+                <p class="type"><a href="#vendor">Vendor</a></p>
                 <p class="propDesc">Vendor with all data</p>
+            </div>
+        </div>
+
+        <div id="getVendor" class="route">
+            <h1>Get Vendor</h1>
+            <p class="url">GET /vendor/:vendorId</p>
+            <p class="description">Public route to get basic vendor information for a single vendor</p>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">N/A</p>
+                <p class="type"><a href="#vendor">Vendor</a></p>
+                <p class="propDesc">Vendor with all public data</p>
             </div>
         </div>
 
@@ -127,6 +142,27 @@
                 <p class="name">N/A</p>
                 <p class="type">[<a href="#vendor">Vendor</a>]</p>
                 <p class="propDesc">A list containing all vendors</p>
+            </div>
+        </div>
+
+        <div id="uploadVendorImg" class="route">
+            <h1>Upload Store Image</h1>
+            <p class="url">PUT /vendor/image</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Upload new image for the vendor. Requires multipart/form.</p>
+
+            <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">file</p>
+                <p class="type">File</p>
+                <p class="propDesc">The file to upload. Will replace any existing image</p>
+            </div>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">N/A</p>
+                <p class="type"<a href="#vendor">Vendor</a></p>
+                <p class="propDesc">Vendor with all data</p>
             </div>
         </div>
     </article>

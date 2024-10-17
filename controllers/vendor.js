@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import sharp from "sharp";
+import fs from "fs";
 
 const confirmToken = (vendor, token)=>{
     return vendor.token === token;
@@ -33,11 +35,28 @@ const createToken = (vendor)=>{
     }, process.env.JWT_SECRET);
 }
 
+const createImage = async (file)=>{
+    let fileType = file.name.split(".");
+    let fileName = fileType[0];
+    fileType = fileType[fileType.length-1];
+    let uuid = crypto.randomUUID();
+    let fileString = `${uuid}.webp`;
+
+    let image = await sharp(file.data)
+        .resize({width: 1000})
+        .webp({quality: 75})
+        .toFile(`${process.cwd()}/documents/${fileString}`);
+
+    return fileString;
+}
+
+const removeImage = (file)=>{
+    fs.unlink(`${process.cwd()}/documents/${file}`, (err)=>{console.error(err)});
+}
+
 const responseVendor = (vendor)=>{
     return {
         id: vendor._id,
-        email: vendor.email,
-        owner: vendor.owner,
         store: vendor.store,
         image: vendor.image
     };
@@ -51,5 +70,7 @@ export {
     newToken,
     validPassword,
     createToken,
+    createImage,
+    removeImage,
     responseVendor
 };

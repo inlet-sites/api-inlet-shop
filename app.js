@@ -1,6 +1,7 @@
 import express from "express";
 import compression from "compression";
 import mongoose from "mongoose";
+import fileUpload from "express-fileupload";
 import cors from "cors";
 
 const app = express();
@@ -13,6 +14,7 @@ mongoose.connect(mongoString);
 
 app.use(compression());
 app.use(express.json());
+app.use(fileUpload({limits: {fileSize: 15 * 1024 * 1024}}));
 app.use(cors());
 
 import vendorRoutes from "./routes/vendor.js";

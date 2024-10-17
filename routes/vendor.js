@@ -10,6 +10,8 @@ import {
     newToken,
     validPassword,
     createToken,
+    createImage,
+    removeImage,
     responseVendor
 } from "../controllers/vendor.js";
 
@@ -74,6 +76,13 @@ const vendorRoutes = (app)=>{
         res.json(res.locals.vendor);
     });
 
+    app.get("/vendor/:vendorId", async (req, res)=>{
+        const vendor = await getVendor(res, req.params.vendorId);
+        if(!vendor) return;
+
+        res.json(responseVendor(vendor));
+    })
+
     app.get("/vendor", async (req, res)=>{
         let vendors;
         try{
@@ -87,6 +96,30 @@ const vendorRoutes = (app)=>{
         }
 
         res.json(vendors);
+    });
+
+    app.put("/vendor/image", vendorAuth, async (req, res)=>{
+        let file;
+        try{
+            file = await createImage(req.files.file);
+        }catch(e){
+            console.error(e);
+            return httpError(res, 500, "Internal server error (err-004)");
+        }
+
+        if(res.locals.vendor.image) removeImage(res.locals.vendor.image);
+
+        res.locals.vendor.image = file;
+        try{
+            await res.locals.vendor.save();
+        }catch(e){
+            console.error(e);
+            return httpError(res, 500, "Unable to save image");
+        }
+
+        res.locals.vendor.password = undefined;
+        res.locals.vendor.token = undefined;
+        res.json(res.locals.vendor);
     });
 }
 
