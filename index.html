@@ -14,6 +14,7 @@
         <a class="headSub" href="#getVendor">Get Vendor</a>
         <a class="headSub" href="#getVendors">Get All Vendors</a>
         <a class="headSub" href="#uploadVendorImg">Upload Store Image</a>
+        <a class="headMain" href="#product">Product</a>
     </header>
 
     <article>
@@ -163,6 +164,60 @@
                 <p class="name">N/A</p>
                 <p class="type"<a href="#vendor">Vendor</a></p>
                 <p class="propDesc">Vendor with all data</p>
+            </div>
+        </div>
+
+        <div id="product" class="route">
+            <h1>Product</h1>
+            <p class="description">Product Object</p>
+
+            <h3>Properties</h3>
+            <div class="prop">
+                <p class="name">id</p>
+                <p class="type">string ID</p>
+                <p class="propDesc">Unique identifier of the product</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">vendor</p>
+                <p class="type">string ID</p>
+                <p class="propDesc">Unique identifier of the vendor that owns the product</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">name</p>
+                <p class="type">string</p>
+                <p class="propDesc">Name of the product</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">tags</p>
+                <p class="type">list of string</p>
+                <p class="propDesc">A list of 0 or more tags to be applied to the item</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">images</p>
+                <p class="type">list of string</p>
+                <p class="propDesc">List containing all of the images for the product.</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">description</p>
+                <p class="type">string</p>
+                <p class="propDesc">A detailed description of the product</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">price</p>
+                <p class="type">number</p>
+                <p class="propDesc">Price of the product. In cents</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">quantity</p>
+                <p class="type">number</p>
+                <p class="propDesc">Quantity of the product in stock</p>
             </div>
         </div>
     </article>
