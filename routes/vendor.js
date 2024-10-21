@@ -26,7 +26,7 @@ const vendorRoutes = (app)=>{
             return null;
         }
         if(!vendor){
-            return httpError(res, 400, "Vendor with this ID doesn't exist");
+            httpError(res, 400, "Vendor with this ID doesn't exist");
             return null;
         }
         return vendor

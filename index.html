@@ -16,6 +16,7 @@
         <a class="headSub" href="#uploadVendorImg">Upload Store Image</a>
         <a class="headMain" href="#product">Product</a>
         <a class="headSub" href="#createProduct">Create Product</a>
+        <a class="headSub" href="#deleteProduct">Delete Product</a>
     </header>
 
     <article>
@@ -276,6 +277,21 @@
                 <p class="name">N/A</p>
                 <p class="type"><a href="#product">Product</a></p>
                 <p class="propDesc">Product object with all data</p>
+            </div>
+        </div>
+
+        <div id="deleteProduct" class="route">
+            <h1>Delete Product</h1>
+
+            <p class="url">DELETE /product/:productId</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Delete a product</p>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">success</p>
+                <p class="type">boolean</p>
+                <p class="propDesc">Always `{success: true}` if no error</p>
             </div>
         </div>
     </article>

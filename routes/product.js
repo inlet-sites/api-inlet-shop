@@ -7,6 +7,22 @@ import {
 } from "../controllers/product.js";
 
 const productRoutes = (app)=>{
+    const getProduct = async (res, id)=>{
+        let product;
+        try{
+            product = await Product.findOne({_id: id});
+        }catch(e){
+            console.error(e);
+            httpError(res, 500, "Internal server error (err-007)");
+            return null;
+        }
+        if(!product){
+            httpError(res, 400, "Product with this ID doesn't exist");
+            return null;
+        }
+        return product;
+    }
+
     app.post("/product", vendorAuth, async (req, res)=>{
         const product = new Product({
             vendor: res.locals.vendor._id,
@@ -29,6 +45,24 @@ const productRoutes = (app)=>{
         }
 
         res.json(product);
+    });
+
+    app.delete("/product/:productId", vendorAuth, async (req, res)=>{
+        let product = await getProduct(res, req.params.productId);
+        if(!product) return;
+
+        if(!res.locals.vendor._id.toString() === product.vendor.toString()){
+            return httpError(res, 403, "Forbidden");
+        }
+
+        try{
+            await Product.deleteOne({_id: product._id});
+        }catch(e){
+            console.error(e);
+            return httpError(res, 500, "Internal server error (err-008)");
+        }
+
+        res.json({success: true});
     });
 }
 
