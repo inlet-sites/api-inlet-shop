@@ -15,6 +15,7 @@
         <a class="headSub" href="#getVendors">Get All Vendors</a>
         <a class="headSub" href="#uploadVendorImg">Upload Store Image</a>
         <a class="headMain" href="#product">Product</a>
+        <a class="headSub" href="#createProduct">Create Product</a>
     </header>
 
     <article>
@@ -218,6 +219,63 @@
                 <p class="name">quantity</p>
                 <p class="type">number</p>
                 <p class="propDesc">Quantity of the product in stock</p>
+            </div>
+        </div>
+
+        <div id="createProduct" class="route">
+            <h1>Create Product</h1>
+            <p class="url">POST /product</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Create a new product for a vendor. Must use multipart/form.</p>
+
+            <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">name</p>
+                <p class="type">string</p>
+                <p class="propDesc">The name of the product</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">tags</p>
+                <p class="type">list of string</p>
+                <p class="propDesc">List of string tags for the product</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">images</p>
+                <p class="type">File or list of File</p>
+                <p class="propDesc">Images of the product. Either a single or multiple images.</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">description</p>
+                <p class="type">string</p>
+                <p class="propDesc">A detailed description of the product.</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">price</p>
+                <p class="type">number</p>
+                <p class="propDesc">Price of the product. In cents. Must be integer</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">quantity</p>
+                <p class="type">number</p>
+                <p class="propDesc">Quantity of the item in stock. -1 if no quantity to be displayed.</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">hide</p>
+                <p class="type">boolean</p>
+                <p class="propDesc">If true, item not shown to customers</p>
+            </div>
+
+            <h3>Response</h3>
+            <div class="prop">
+                <p class="name">N/A</p>
+                <p class="type"><a href="#product">Product</a></p>
+                <p class="propDesc">Product object with all data</p>
             </div>
         </div>
     </article>

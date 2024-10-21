@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const ProductSchema = new mongoose.Schema({
     vendor: {
@@ -20,6 +20,10 @@ const ProductSchema = new mongoose.Schema({
     quantity: {
         type: Number,
         required: false
+    },
+    hide: {
+        type: Boolean,
+        required: true
     }
 });
 

@@ -19,6 +19,8 @@ app.use(cors());
 
 import vendorRoutes from "./routes/vendor.js";
 vendorRoutes(app);
+import productRoutes from "./routes/product.js";
+productRoutes(app);
 
 app.get("/", (req, res)=>{res.sendFile(`${process.cwd()}/index.html`)});
 app.get("/style.css", (req, res)=>{res.sendFile(`${process.cwd()}/index.css`)});

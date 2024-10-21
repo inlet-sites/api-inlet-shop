@@ -104,7 +104,7 @@ const vendorRoutes = (app)=>{
             file = await createImage(req.files.file);
         }catch(e){
             console.error(e);
-            return httpError(res, 500, "Internal server error (err-004)");
+            return httpError(res, 500, "Internal server error (err-005)");
         }
 
         if(res.locals.vendor.image) removeImage(res.locals.vendor.image);
