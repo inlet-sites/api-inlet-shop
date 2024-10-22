@@ -18,6 +18,7 @@
         <a class="headSub" href="#createProduct">Create Product</a>
         <a class="headSub" href="#deleteProduct">Delete Product</a>
         <a class="headSub" href="#getProducts">Get Products</a>
+        <a class="headSub" href="#vendorGetProducts">Get Products (Vendor)</a>
     </header>
 
     <article>
@@ -304,7 +305,21 @@
             <div class="prop">
                 <p class="name">N/A</p>
                 <p class="type">list of <a href="#product">Product</a></p>
-                <p class="propDesc">List containing the relavent products</p>
+                <p class="propDesc">List containing the relevant products</p>
+            </div>
+        </div>
+
+        <div id="vendorGetProducts" class="route">
+            <h1>Get Products (Vendor)</h1>
+            <p class="url">GET /product/vendor</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Retrieve all vendor products, including hidden products</p>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">N/A</p>
+                <p class="type">list of <a href="product">Product</a></p>
+                <p class="propDesc">List containing the relevant products</p>
             </div>
         </div>
     </article>

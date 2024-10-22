@@ -103,6 +103,30 @@ const productRoutes = (app)=>{
 
         res.json(products);
     });
+
+    app.get("/product/vendor", vendorAuth, async (req, res)=>{
+        let products;
+        try{
+            products = await Product.aggregate([
+                {$match: {
+                    vendor: res.locals.vendor._id,
+                    archived: false
+                }},
+                {$project: {
+                    name: 1,
+                    images: 1,
+                    price: 1,
+                    quantity: 1,
+                    active: 1
+                }}
+            ]);
+        }catch(e){
+            console.error(e);
+            return httpError(res, 500, "Internal server error (err-010)");
+        }
+
+        res.json(products);
+    });
 }
 
 export default productRoutes;
