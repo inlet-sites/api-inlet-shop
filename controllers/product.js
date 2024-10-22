@@ -38,7 +38,7 @@ const removeImages = (images, product)=>{
     return product;
 }
 
-const createStripeProduct = async (token, name, active, description, price)=>{
+const createStripeProduct = async (token, name, active, price)=>{
     const stripe = stripePack(token);
 
     let product;
@@ -46,7 +46,6 @@ const createStripeProduct = async (token, name, active, description, price)=>{
         product = await stripe.products.create({
             name: name,
             active: active,
-            description: description,
             default_price_data: {
                 currency: "USD",
                 unit_amount: price
@@ -75,16 +74,18 @@ const updateProduct = async (data, product, token)=>{
         product.name = data.name;
         stripeData.name = data.name;
     }
+
     if(data.tags) product.tags = data.tags;
-    if(data.description){
-        product.description = data.description;
-        stripeData.description = data.description;
-    }
+
+    if(data.description) product.description = data.description;
+
     if(data.price){
         product.price = data.price;
         stripeData.default_price = await newStripePrice(stripe, product.stripeId, data.price);
     }
+
     if(data.quantity) product.quantity = data.quantity;
+
     if(data.active !== undefined) product.active = data.active;
 
     if(Object.keys(stripeData).length > 0){

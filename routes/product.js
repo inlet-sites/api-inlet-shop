@@ -46,7 +46,6 @@ const productRoutes = (app)=>{
             res.locals.vendor.stripeToken,
             product.name,
             product.active,
-            product.description,
             product.price
         );
 
