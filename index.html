@@ -22,6 +22,7 @@
         <a class="headSub" href="#getProduct">Get Product</a>
         <a class="headSub" href="#addImages">Add Images</a>
         <a class="headSub" href="#removeImages">Remove Images</a>
+        <a class="headSub" href="#updateProduct">Update Product</a>
     </header>
 
     <article>
@@ -373,7 +374,58 @@
                 <p class="propDesc">List of strings. Strings are the filenames to be deleted. JSON string</p>
             </div>
 
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">N/A</p>
+                <p class="type"><a href="#product">Product</a></p>
+                <p class="propDesc">Updated Product</p>
+            </div>
+        </div>
+
+        <div id="updateProduct" class="route">
+            <h1>Update Product</h1>
+            <p class="url">PUT /product/:productId</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Update some of the basic data for a product</p>
+
             <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">name</p>
+                <p class="type">string (optional)</p>
+                <p class="propDesc">New name for the product</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">tags</p>
+                <p class="type">list of string (optional)</p>
+                <p class="propDesc">List of strings to be used as tags. Will completely replace old list</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">description</p>
+                <p class="type">string (optional)</p>
+                <p class="propDesc">New description of the product</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">price</p>
+                <p class="type">number (optional)</p>
+                <p class="propDesc">Number representing new price. Must be integer representing cents.</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">quantity</p>
+                <p class="type">number (optional)</p>
+                <p class="propDesc">Quantity in stock of the item</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">active</p>
+                <p class="type">boolean (optional)</p>
+                <p class="propDesc">If true, will be shown to customers. False, and will only be available to the vendor.</p>
+            </div>
+
+            <h3>Response Body</h3>
             <div class="prop">
                 <p class="name">N/A</p>
                 <p class="type"><a href="#product">Product</a></p>
