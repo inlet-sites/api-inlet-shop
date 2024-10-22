@@ -127,6 +127,13 @@ const productRoutes = (app)=>{
 
         res.json(products);
     });
+
+    app.get("/product/:productId", async (req, res)=>{
+        const product = await getProduct(res, req.params.productId);
+        if(!product) return;
+
+        res.json(responseProduct(product));
+    });
 }
 
 export default productRoutes;
