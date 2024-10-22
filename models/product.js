@@ -25,6 +25,10 @@ const ProductSchema = new mongoose.Schema({
         type: Boolean,
         required: true
     },
+    archived: {
+        type: Boolean,
+        required: true
+    },
     stripeId: {
         type: String,
         required: true

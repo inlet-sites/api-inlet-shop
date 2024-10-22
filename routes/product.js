@@ -33,7 +33,8 @@ const productRoutes = (app)=>{
             description: req.body.description,
             price: req.body.price,
             quantity: req.body.quantity,
-            active: req.body.active
+            active: req.body.active,
+            archived: false
         });
         product.stripeId = await createStripeProduct(
             res.locals.vendor.stripeToken,
@@ -52,7 +53,7 @@ const productRoutes = (app)=>{
             return httpError(res, 500, "Unable to create new product (err-006)");
         }
 
-        res.json(product);
+        res.json(responseProduct(product));
     });
 
     app.delete("/product/:productId", vendorAuth, async (req, res)=>{
@@ -63,11 +64,12 @@ const productRoutes = (app)=>{
             return httpError(res, 403, "Forbidden");
         }
 
+        product.archived = true;
         try{
-            await Product.deleteOne({_id: product._id});
+            await product.save();
         }catch(e){
             console.error(e);
-            return httpError(res, 500, "Internal server error (err-008)");
+            return httpError(res, 500, "Internal server error (err-008)")
         }
 
         res.json({success: true});

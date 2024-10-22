@@ -44,7 +44,21 @@ const createStripeProduct = async (token, name, active, description, price)=>{
     return product.id;
 }
 
+const responseProduct = (product)=>{
+    return {
+        id: product._id,
+        vendor: product.vendor,
+        name: product.name,
+        tags: product.tags,
+        images: product.images,
+        description: product.description,
+        price: product.price,
+        quantity: product.quantity
+    };
+}
+
 export {
     addImages,
-    createStripeProduct
+    createStripeProduct,
+    responseProduct
 };
