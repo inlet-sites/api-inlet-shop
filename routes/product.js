@@ -134,6 +134,22 @@ const productRoutes = (app)=>{
 
         res.json(responseProduct(product));
     });
+
+    app.put("/product/:productId/images/add", vendorAuth, async (req, res)=>{
+        const product = await getProduct(res, req.params.productId);
+        if(!product) return;
+
+        product.images = product.images.concat(await addImages(req.files.images));
+
+        try{
+            await product.save();
+        }catch(e){
+            console.error(e);
+            return httpError(res, 500, "Internal server error (err-011)");
+        }
+
+        res.json(responseProduct(product));
+    });
 }
 
 export default productRoutes;

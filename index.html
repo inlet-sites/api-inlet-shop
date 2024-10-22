@@ -20,6 +20,7 @@
         <a class="headSub" href="#getProducts">Get Products</a>
         <a class="headSub" href="#vendorGetProducts">Get Products (Vendor)</a>
         <a class="headSub" href="#getProduct">Get Product</a>
+        <a class="headSub" href="#addImages">Add Images</a>
     </header>
 
     <article>
@@ -326,7 +327,7 @@
 
         <div id="getProduct" class="route">
             <h1>Get Product</h1>
-            <p class="ur">GET /product/:productId</p>
+            <p class="url">GET /product/:productId</p>
             <p class="description">Retrieve full data for a single product</p>
 
             <h3>Response Body</h3>
@@ -334,6 +335,27 @@
                 <p class="name">N/A</p>
                 <p class="type"><a href="#product">Product</a></p>
                 <p class="propDesc">Full data on a single product</p>
+            </div>
+        </div>
+
+        <div id="addImages" class="route">
+            <h1>Add Images</h1>
+            <p class="url">PUT /product/:productId/images/add</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Add more images to the product. Requires Multipart/Form</p>
+
+            <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">images</p>
+                <p class="type">File or [File]</p>
+                <p class="propDesc">New images to be added to the product</p>
+            </div>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">N/A</p>
+                <p class="type"><a href="#product">Product</a></p>
+                <p class="propDesc">Updated Product</p>
             </div>
         </div>
     </article>
