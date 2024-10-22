@@ -1,6 +1,7 @@
 import sharp from "sharp";
 import crypto from "crypto";
 import stripePack from "stripe";
+import fs from "fs";
 
 const addImages = async (files)=>{
     if(!files.length) files = [files];
@@ -21,6 +22,20 @@ const addImages = async (files)=>{
 
     await Promise.all(promises);
     return newFiles;
+}
+
+const removeImages = (images, product)=>{
+    for(let i = 0; i < images.length; i++){
+        const idx = product.images.indexOf(images[i]);
+        if(idx !== -1){
+            product.images.splice(idx, 1);
+            fs.unlink(`${process.cwd()}/documents/${images[i]}`, (err)=>{
+                if(err) console.error(err);
+            });
+        }
+    }
+
+    return product;
 }
 
 const createStripeProduct = async (token, name, active, description, price)=>{
@@ -59,6 +74,7 @@ const responseProduct = (product)=>{
 
 export {
     addImages,
+    removeImages,
     createStripeProduct,
     responseProduct
 };

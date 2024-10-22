@@ -4,6 +4,7 @@ import {httpError} from "../error.js";
 import {vendorAuth} from "../auth.js";
 import {
     addImages,
+    removeImages,
     createStripeProduct,
     responseProduct
 } from "../controllers/product.js";
@@ -138,6 +139,9 @@ const productRoutes = (app)=>{
     app.put("/product/:productId/images/add", vendorAuth, async (req, res)=>{
         const product = await getProduct(res, req.params.productId);
         if(!product) return;
+        if(product.vendor.toString() !== res.locals.vendor._id.toString()){
+            return httpError(res, 403, "Forbidden");
+        }
 
         product.images = product.images.concat(await addImages(req.files.images));
 
@@ -146,6 +150,25 @@ const productRoutes = (app)=>{
         }catch(e){
             console.error(e);
             return httpError(res, 500, "Internal server error (err-011)");
+        }
+
+        res.json(responseProduct(product));
+    });
+
+    app.put("/product/:productId/images/remove", vendorAuth, async (req, res)=>{
+        let product = await getProduct(res, req.params.productId);
+        if(!product) return;
+        if(product.vendor.toString() !== res.locals.vendor._id.toString()){
+            return httpError(res, 403, "Forbidden");
+        }
+
+        product = removeImages(req.body.images, product);
+
+        try{
+            await product.save();
+        }catch(e){
+            console.error(e);
+            return httpError(res, 500, "Internal server error (err-012)");
         }
 
         res.json(responseProduct(product));

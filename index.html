@@ -21,6 +21,7 @@
         <a class="headSub" href="#vendorGetProducts">Get Products (Vendor)</a>
         <a class="headSub" href="#getProduct">Get Product</a>
         <a class="headSub" href="#addImages">Add Images</a>
+        <a class="headSub" href="#removeImages">Remove Images</a>
     </header>
 
     <article>
@@ -352,6 +353,27 @@
             </div>
 
             <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">N/A</p>
+                <p class="type"><a href="#product">Product</a></p>
+                <p class="propDesc">Updated Product</p>
+            </div>
+        </div>
+
+        <div id="removeImages" class="route">
+            <h1>Remove Images</h1>
+            <p class="url">PUT /product/:productId/images/remove</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Remove images from the product</p>
+
+            <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">images</p>
+                <p class="type">list of string</p>
+                <p class="propDesc">List of strings. Strings are the filenames to be deleted. JSON string</p>
+            </div>
+
+            <h3>Request Body</h3>
             <div class="prop">
                 <p class="name">N/A</p>
                 <p class="type"><a href="#product">Product</a></p>
