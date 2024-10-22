@@ -21,8 +21,12 @@ const ProductSchema = new mongoose.Schema({
         type: Number,
         required: false
     },
-    hide: {
+    active: {
         type: Boolean,
+        required: true
+    },
+    stripeId: {
+        type: String,
         required: true
     }
 });

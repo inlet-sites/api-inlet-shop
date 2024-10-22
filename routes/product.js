@@ -3,7 +3,8 @@ import Product from "../models/product.js";
 import {httpError} from "../error.js";
 import {vendorAuth} from "../auth.js";
 import {
-    addImages
+    addImages,
+    createStripeProduct
 } from "../controllers/product.js";
 
 const productRoutes = (app)=>{
@@ -32,8 +33,15 @@ const productRoutes = (app)=>{
             description: req.body.description,
             price: req.body.price,
             quantity: req.body.quantity,
-            hide: req.body.hide
+            active: req.body.active
         });
+        product.stripeId = await createStripeProduct(
+            res.locals.vendor.stripeToken,
+            product.name,
+            product.active,
+            product.description,
+            product.price
+        );
 
         product.images = await addImages(req.files.images);
 
