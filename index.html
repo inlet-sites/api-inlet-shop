@@ -17,6 +17,7 @@
         <a class="headMain" href="#product">Product</a>
         <a class="headSub" href="#createProduct">Create Product</a>
         <a class="headSub" href="#deleteProduct">Delete Product</a>
+        <a class="headSub" href="#getProducts">Get Products</a>
     </header>
 
     <article>
@@ -282,7 +283,6 @@
 
         <div id="deleteProduct" class="route">
             <h1>Delete Product</h1>
-
             <p class="url">DELETE /product/:productId</p>
             <p>Vendor Auth Required</p>
             <p class="description">Delete a product</p>
@@ -292,6 +292,19 @@
                 <p class="name">success</p>
                 <p class="type">boolean</p>
                 <p class="propDesc">Always `{success: true}` if no error</p>
+            </div>
+        </div>
+
+        <div id="getProducts" class="route">
+            <h1>Get Products</h1>
+            <p class="url">GET /product/vendor/:vendorId</p>
+            <p class="description">Retrieve all products from a vendor that are available to the customer</p>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">N/A</p>
+                <p class="type">list of <a href="#product">Product</a></p>
+                <p class="propDesc">List containing the relavent products</p>
             </div>
         </div>
     </article>

@@ -4,8 +4,12 @@ import {httpError} from "../error.js";
 import {vendorAuth} from "../auth.js";
 import {
     addImages,
-    createStripeProduct
+    createStripeProduct,
+    responseProduct
 } from "../controllers/product.js";
+import mongoose from "mongoose";
+
+const ObjectId = mongoose.Types.ObjectId;
 
 const productRoutes = (app)=>{
     const getProduct = async (res, id)=>{
@@ -73,6 +77,31 @@ const productRoutes = (app)=>{
         }
 
         res.json({success: true});
+    });
+
+    app.get("/product/vendor/:vendorId", async (req, res)=>{
+        let products;
+        try{
+            products = await Product.aggregate([
+                {$match: {
+                    vendor: new ObjectId(req.params.vendorId),
+                    active: true,
+                    archived: false
+                }},
+                {$project: {
+                    vendor: 1,
+                    name: 1,
+                    images: 1,
+                    price: 1,
+                    quantity: 1
+                }}
+            ]);
+        }catch(e){
+            console.error(e);
+            return httpError(res, 500, "Internal server error (err-009)");
+        }
+
+        res.json(products);
     });
 }
 
