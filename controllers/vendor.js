@@ -20,7 +20,7 @@ const createPasswordHash = async (password)=>{
     return await bcrypt.hash(password, 10);
 }
 
-const newToken = (newToken)=>{
+const newToken = ()=>{
     return crypto.randomUUID();
 }
 

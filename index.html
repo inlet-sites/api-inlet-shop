@@ -9,6 +9,7 @@
     <header>
         <a class="headMain" href="#vendor">Vendor</a>
         <a class="headSub" href="#vendorPassword">Create Password</a>
+        <a class="headSub" href="#changePassword">Change Password</a>
         <a class="headSub" href="#getToken">Get Token</a>
         <a class="headSub" href="#getVendorSelf">Get Vendor (self)</a>
         <a class="headSub" href="#getVendor">Get Vendor</a>
@@ -85,6 +86,33 @@
                 <p class="name">success</p>
                 <p class="type">boolean</p>
                 <p class="propDesc">Will always be `{success: true}` if there is no error</p>
+            </div>
+        </div>
+
+        <div id="changePassword" class="route">
+            <h1>Change Password</h1>
+            <p class="url">PUT /vendor/:vendorId/password</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Change password. Also changes token, logging user out of all current instances. Should be logged out and forced to get a new token.</p>
+
+            <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">password</p>
+                <p class="type">string</p>
+                <p class="propDesc">New vendor password</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">confirmPassword</p>
+                <p class="type">string</p>
+                <p class="propDesc">Confirmation password</p>
+            </div>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">success</p>
+                <p class="type">boolean</p>
+                <p class="propDesc">Will always return `{success: true}` unless there is an error</p>
             </div>
         </div>
 

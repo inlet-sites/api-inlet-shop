@@ -52,6 +52,28 @@ const vendorRoutes = (app)=>{
         res.json({sucess: true});
     });
 
+    app.put("/vendor/:vendorId/password", vendorAuth, async (req, res)=>{
+        if(!passwordLength(req.body.password)){
+            return httpError(res, 400, "Password must contain at least 10 characters");
+        }
+
+        if(!passwordMatch(req.body.password, req.body.confirmPassword)){
+            return httpError(res, 400, "Passwords do not match");
+        }
+
+        res.locals.vendor.password = await createPasswordHash(req.body.password);
+        res.locals.vendor.token = newToken();
+
+        try{
+            await res.locals.vendor.save();
+        }catch(e){
+            console.error(e);
+            return httpError(res, 500, "Internal server error (err-014)");
+        }
+
+        res.json({success: true});
+    });
+
     app.post("/vendor/token", async (req, res)=>{
         const email = req.body.email.toLowerCase();
         let vendor;
