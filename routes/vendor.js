@@ -2,6 +2,7 @@ import Vendor from "../models/vendor.js";
 
 import {httpError} from "../error.js";
 import {vendorAuth} from "../auth.js";
+import sendEmail from "../sendEmail.js";
 import {
     confirmToken,
     passwordLength,
@@ -14,6 +15,7 @@ import {
     removeImage,
     responseVendor
 } from "../controllers/vendor.js";
+import resetPasswordEmail from "../email/resetPassword.js";
 
 const vendorRoutes = (app)=>{
     const getVendor = async (res, id)=>{
@@ -142,6 +144,30 @@ const vendorRoutes = (app)=>{
         res.locals.vendor.password = undefined;
         res.locals.vendor.token = undefined;
         res.json(res.locals.vendor);
+    });
+
+
+    app.post("/vendor/password/email", async (req, res)=>{
+        const email = req.body.email.toLowerCase();
+        let vendor;
+        try{
+            vendor = await Vendor.findOne({email: email});
+        }catch(e){
+            console.error(e);
+            return httpError(res, 500, "Internal server error, (err-015)");
+        }
+        if(!vendor){
+            return httpError(res, 401, "User with this email doesn't exist");
+        }
+
+        sendEmail(
+            vendor.email,
+            vendor.name,
+            "Password reset request",
+            resetPasswordEmail(vendor.name, vendor._id, vendor.token)
+        );
+
+        res.json({success: true});
     });
 }
 

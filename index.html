@@ -15,6 +15,7 @@
         <a class="headSub" href="#getVendor">Get Vendor</a>
         <a class="headSub" href="#getVendors">Get All Vendors</a>
         <a class="headSub" href="#uploadVendorImg">Upload Store Image</a>
+        <a class="headSub" href="#passwordResetEmail">Send Password Reset Email</p>
         <a class="headMain" href="#product">Product</a>
         <a class="headSub" href="#createProduct">Create Product</a>
         <a class="headSub" href="#deleteProduct">Delete Product</a>
@@ -200,6 +201,26 @@
                 <p class="name">N/A</p>
                 <p class="type"<a href="#vendor">Vendor</a></p>
                 <p class="propDesc">Vendor with all data</p>
+            </div>
+        </div>
+
+        <div id="passwordResetEmail" class="route">
+            <h1>Send Password Reset Email</h1>
+            <p class="url">POST /vendor/password/email</p>
+            <p class="description">Send email with link to reset user password</p>
+
+            <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">email</p>
+                <p class="type">string</p>
+                <p class="propDesc">User email to send link to</p>
+            </div>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">success</p>
+                <p class="type">boolean</p>
+                <p class="propDesc">Always '{success: true}' if no error.</p>
             </div>
         </div>
 

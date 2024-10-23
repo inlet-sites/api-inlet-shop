@@ -27,6 +27,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.7.1",
     "sharp": "^0.33.5",
-    "stripe": "^17.2.1"
+    "stripe": "^17.2.1",
+    "zeptomail": "^6.0.0"
   }
 }
