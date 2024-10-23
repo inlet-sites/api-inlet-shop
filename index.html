@@ -15,7 +15,8 @@
         <a class="headSub" href="#getVendor">Get Vendor</a>
         <a class="headSub" href="#getVendors">Get All Vendors</a>
         <a class="headSub" href="#uploadVendorImg">Upload Store Image</a>
-        <a class="headSub" href="#passwordResetEmail">Send Password Reset Email</p>
+        <a class="headSub" href="#passwordResetEmail">Send Password Reset Email</a>
+        <a class="headSub" href="#resetPassword">Reset Password</a>
         <a class="headMain" href="#product">Product</a>
         <a class="headSub" href="#createProduct">Create Product</a>
         <a class="headSub" href="#deleteProduct">Delete Product</a>
@@ -214,6 +215,44 @@
                 <p class="name">email</p>
                 <p class="type">string</p>
                 <p class="propDesc">User email to send link to</p>
+            </div>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">success</p>
+                <p class="type">boolean</p>
+                <p class="propDesc">Always '{success: true}' if no error.</p>
+            </div>
+        </div>
+
+        <div id="resetPassword" class="route">
+            <h1>Reset Password</h1>
+            <p class="url">POST /vendor/password/reset</p>
+            <p class="description">Reset the user password</p>
+
+            <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">vendor</p>
+                <p class="type">string</p>
+                <p class="propDesc">ID of the vendor</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">token</p>
+                <p class="type">string</p>
+                <p class="propDesc">Vendor secret token</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">password</p>
+                <p class="type">string</p>
+                <p class="propDesc">New vendor password</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">confirmPassword</p>
+                <p class="type">string</p>
+                <p class="propDesc">Confirmation password</p>
             </div>
 
             <h3>Response Body</h3>
