@@ -38,6 +38,7 @@ const vendorRoutes = (app)=>{
         let vendor = await getVendor(res, req.params.vendorId);
         if(!vendor) return;
 
+        if(vendor.password) return httpError(res, 400, "Password already created");
         if(!confirmToken(vendor, req.params.token)) return httpError(res, 400, "Invalid Authorization");
         if(!passwordLength(req.body.password)) return httpError(res, 400, "Password must contain at least 10 characters");
         if(!passwordMatch(req.body.password, req.body.confirmPassword)) return httpError(res, 400, "Passwords do not match");
