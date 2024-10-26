@@ -114,6 +114,7 @@ const productRoutes = (app)=>{
                     archived: false
                 }},
                 {$project: {
+                    id: "$_id",
                     name: 1,
                     images: 1,
                     price: 1,
