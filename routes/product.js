@@ -37,7 +37,7 @@ const productRoutes = (app)=>{
             tags: JSON.parse(req.body.tags),
             images: [],
             description: req.body.description,
-            price: req.body.price,
+            price: Math.round(req.body.price),
             quantity: req.body.quantity,
             active: req.body.active,
             archived: false

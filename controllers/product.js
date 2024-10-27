@@ -52,7 +52,7 @@ const createStripeProduct = async (token, name, active, price)=>{
             }
         });
     }catch(e){
-        console.log(e);
+        console.error(e);
     }
 
     return product.id;
@@ -80,7 +80,7 @@ const updateProduct = async (data, product, token)=>{
     if(data.description) product.description = data.description;
 
     if(data.price){
-        product.price = data.price;
+        product.price = Math.round(data.price);
         stripeData.default_price = await newStripePrice(stripe, product.stripeId, data.price);
     }
 
