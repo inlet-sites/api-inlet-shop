@@ -81,7 +81,7 @@ const updateProduct = async (data, product, token)=>{
 
     if(data.price){
         product.price = Math.round(data.price);
-        stripeData.default_price = await newStripePrice(stripe, product.stripeId, data.price);
+        stripeData.default_price = await newStripePrice(stripe, product.stripeId, Math.round(data.price));
     }
 
     if(data.quantity) product.quantity = data.quantity;
