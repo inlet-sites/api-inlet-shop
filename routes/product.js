@@ -94,7 +94,8 @@ const productRoutes = (app)=>{
                     name: 1,
                     images: 1,
                     price: 1,
-                    quantity: 1
+                    quantity: 1,
+                    tags: 1
                 }}
             ]);
         }catch(e){
