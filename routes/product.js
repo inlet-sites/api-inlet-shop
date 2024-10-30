@@ -90,6 +90,7 @@ const productRoutes = (app)=>{
                     archived: false
                 }},
                 {$project: {
+                    id: "$_id",
                     vendor: 1,
                     name: 1,
                     images: 1,
@@ -120,7 +121,8 @@ const productRoutes = (app)=>{
                     images: 1,
                     price: 1,
                     quantity: 1,
-                    active: 1
+                    active: 1,
+                    tags: 1
                 }}
             ]);
         }catch(e){

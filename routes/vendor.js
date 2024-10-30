@@ -101,9 +101,16 @@ const vendorRoutes = (app)=>{
         res.json(res.locals.vendor);
     });
 
-    app.get("/vendor/:vendorId", async (req, res)=>{
-        const vendor = await getVendor(res, req.params.vendorId);
-        if(!vendor) return;
+    app.get("/vendor/:vendorUrl", async (req, res)=>{
+        let vendor;
+        try{
+            vendor = await Vendor.findOne({url: req.params.vendorUrl})
+            console.log(vendor);
+        }catch(e){
+            console.error(e);
+            return httpError(res, 500, "Internal server error (err-020)");
+        }
+        if(!vendor) return httpError(res, 400, "no vendor");
 
         res.json(responseVendor(vendor));
     })
@@ -113,7 +120,8 @@ const vendorRoutes = (app)=>{
         try{
             vendors = await Vendor.find({}, {
                 store: 1,
-                image: 1
+                image: 1,
+                url: 1
             });
         }catch(e){
             console.error(e);
