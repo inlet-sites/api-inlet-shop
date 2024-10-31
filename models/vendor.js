@@ -28,6 +28,32 @@ const VendorSchema = new mongoose.Schema({
     image: {
         type: String,
         required: false
+    },
+    slogan: {
+        type: String,
+        required: false
+    },
+    description: {
+        type: String,
+        required: false
+    },
+    contact: {
+        phone: {
+            type: String,
+            required: false
+        },
+        email: {
+            type: String,
+            required: false
+        },
+        address: {
+            type: String,
+            required: false
+        }
+    },
+    html: {
+        type: String,
+        required: false
     }
 });
 
