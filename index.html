@@ -14,7 +14,7 @@
         <a class="headSub" href="#getVendorSelf">Get Vendor (self)</a>
         <a class="headSub" href="#getVendor">Get Vendor</a>
         <a class="headSub" href="#getVendors">Get All Vendors</a>
-        <a class="headSub" href="updateVendor">Update Vendor</a>
+        <a class="headSub" href="#updateVendor">Update Vendor</a>
         <a class="headSub" href="#uploadVendorImg">Upload Store Image</a>
         <a class="headSub" href="#passwordResetEmail">Send Password Reset Email</a>
         <a class="headSub" href="#resetPassword">Reset Password</a>
@@ -87,6 +87,12 @@
                 <p class="name">contact.email</p>
                 <p class="type">string</p>
                 <p class="propDesc">Email for display to customers. Must have this or phone number.</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">contact.address</p>
+                <p class="type">string</p>
+                <p class="propDesc">Address for display to customers</p>
             </div>
 
             <div class="prop">
@@ -215,15 +221,42 @@
             </div>
         </div>
 
-        <div class="updateVendor" class="route">
+        <div id="updateVendor" class="route">
             <h1>Update Vendor</h1>
             <p class="url">PUT /vendor/:vendorId</p>
             <p>Vendor Auth Required</p>
-            <p class="description">Update some of the vendor information</p>
+            <p class="description">Update vendor information</p>
 
             <h3>Request Body</h3>
             <div class="prop">
-                <p class="name">
+                <p class="name">slogan</p>
+                <p class="type">string (optional)</p>
+                <p class="propDesc">Short vendor description/slogan</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">description</p>
+                <p class="type">string (optional)</p>
+                <p class="propDesc">Long, detailed description of the business</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">phone</p>
+                <p class="type">string (optional)</p>
+                <p class="propDesc">Public phone number of vendor</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">email</p>
+                <p class="type">string (optional)</p>
+                <p class="propDesc">Public email of the vendor</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">address</p>
+                <p class="type">string (optional)</p>
+                <p class="propDesc">Public address of the vendor</p>
+            </div>
         </div>
 
         <div id="uploadVendorImg" class="route">

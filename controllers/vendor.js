@@ -54,11 +54,25 @@ const removeImage = (file)=>{
     fs.unlink(`${process.cwd()}/documents/${file}`, (err)=>{console.error(err)});
 }
 
+const updateVendor = (vendor, data)=>{
+    if(data.slogan) vendor.slogan = data.slogan;
+    if(data.description) vendor.description = data.description;
+    if(data.phone) vendor.contact.phone = data.phone;
+    if(data.email) vendor.contact.email = data.email;
+    if(data.address) vendor.contact.address = data.address;
+
+    return vendor;
+}
+
 const responseVendor = (vendor)=>{
     return {
         id: vendor._id,
         store: vendor.store,
-        image: vendor.image
+        image: vendor.image,
+        slogan: vendor.slogan,
+        description: vendor.description,
+        contact: vendor.contact,
+        html: vendor.html
     };
 }
 
@@ -72,5 +86,6 @@ export {
     createToken,
     createImage,
     removeImage,
+    updateVendor,
     responseVendor
 };

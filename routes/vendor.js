@@ -13,6 +13,7 @@ import {
     createToken,
     createImage,
     removeImage,
+    updateVendor,
     responseVendor
 } from "../controllers/vendor.js";
 import resetPasswordEmail from "../email/resetPassword.js";
@@ -121,6 +122,7 @@ const vendorRoutes = (app)=>{
             vendors = await Vendor.find({}, {
                 store: 1,
                 image: 1,
+                slogan: 1,
                 url: 1
             });
         }catch(e){
@@ -129,6 +131,21 @@ const vendorRoutes = (app)=>{
         }
 
         res.json(vendors);
+    });
+
+    app.put("/vendor", vendorAuth, async (req, res)=>{
+        const vendor = updateVendor(res.locals.vendor, req.body);
+
+        try{
+            await vendor.save();
+        }catch(e){
+            console.error(e);
+            return httpError(res, 500, "Internal server error (err-021)");
+        }
+
+        vendor.password = undefined;
+        vendor.token = undefined;
+        res.json(vendor);
     });
 
     app.put("/vendor/image", vendorAuth, async (req, res)=>{
