@@ -5,6 +5,7 @@ import fileUpload from "express-fileupload";
 import cors from "cors";
 
 const app = express();
+global.cwd = `${__dirname}`;
 
 let mongoString = "mongodb://127.0.0.1/inletshop";
 if(process.env.NODE_ENV === "production"){
@@ -24,8 +25,8 @@ productRoutes(app);
 import otherRoutes from "./routes/other.js";
 otherRoutes(app);
 
-app.get("/", (req, res)=>{res.sendFile(`${process.cwd()}/index.html`)});
-app.get("/style.css", (req, res)=>{res.sendFile(`${process.cwd()}/index.css`)});
+app.get("/", (req, res)=>{res.sendFile(`${global.cwd}/index.html`)});
+app.get("/style.css", (req, res)=>{res.sendFile(`${global.cwd}/index.css`)});
 
 if(process.env.NODE_ENV !== "production"){
     app.listen(8000);

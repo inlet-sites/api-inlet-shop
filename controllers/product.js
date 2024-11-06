@@ -15,7 +15,7 @@ const addImages = async (files)=>{
             sharp(files[i].data)
                 .resize({width: 1000})
                 .webp({quality: 75})
-                .toFile(`${process.cwd()}/documents/${fileName}`)
+                .toFile(`${global.cwd}/documents/${fileName}`)
         );
         newFiles.push(fileName);
     }
@@ -29,7 +29,7 @@ const removeImages = (images, product)=>{
         const idx = product.images.indexOf(images[i]);
         if(idx !== -1){
             product.images.splice(idx, 1);
-            fs.unlink(`${process.cwd()}/documents/${images[i]}`, (err)=>{
+            fs.unlink(`${global.cwd}/documents/${images[i]}`, (err)=>{
                 if(err) console.error(err);
             });
         }

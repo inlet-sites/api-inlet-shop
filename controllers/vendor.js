@@ -45,13 +45,13 @@ const createImage = async (file)=>{
     let image = await sharp(file.data)
         .resize({width: 1000})
         .webp({quality: 75})
-        .toFile(`${process.cwd()}/documents/${fileString}`);
+        .toFile(`${global.cwd}/documents/${fileString}`);
 
     return fileString;
 }
 
 const removeImage = (file)=>{
-    fs.unlink(`${process.cwd()}/documents/${file}`, (err)=>{console.error(err)});
+    fs.unlink(`${global.cwd}/documents/${file}`, (err)=>{console.error(err)});
 }
 
 const updateVendor = (vendor, data)=>{
