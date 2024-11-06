@@ -5,7 +5,7 @@ import fileUpload from "express-fileupload";
 import cors from "cors";
 
 const app = express();
-global.cwd = `${__dirname}`;
+global.cwd = `${import.meta.dirname}`;
 
 let mongoString = "mongodb://127.0.0.1/inletshop";
 if(process.env.NODE_ENV === "production"){
