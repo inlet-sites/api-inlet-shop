@@ -13,14 +13,6 @@ const ProductSchema = new mongoose.Schema({
     tags: [String],
     images: [String],
     description: String,
-    price: {
-        type: Number,
-        required: false
-    },
-    quantity: {
-        type: Number,
-        required: false
-    },
     active: {
         type: Boolean,
         required: true
@@ -32,6 +24,17 @@ const ProductSchema = new mongoose.Schema({
     stripeId: {
         type: String,
         required: false
+    },
+    variations: [{
+        descriptor: String,
+        price: Number,
+        quantity: Number,
+        shipping: Number
+    }],
+    //enum: ship, buy, list
+    purchaseOption: {
+        type: String,
+        required: true
     }
 });
 
