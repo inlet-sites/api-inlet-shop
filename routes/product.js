@@ -42,14 +42,17 @@ const productRoutes = (app)=>{
             active: req.body.active,
             archived: false
         });
-        product.stripeId = await createStripeProduct(
-            res.locals.vendor.stripeToken,
-            product.name,
-            product.active,
-            product.price
-        );
 
-        product.images = await addImages(req.files.images);
+        if(res.locals.vendor.stripeToken){
+            product.stripeId = await createStripeProduct(
+                res.locals.vendor.stripeToken,
+                product.name,
+                product.active,
+                product.price
+            );
+        }
+
+        if(req.files) product.images = await addImages(req.files.images);
 
         try{
             await product.save();

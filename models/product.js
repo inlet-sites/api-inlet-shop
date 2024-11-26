@@ -31,7 +31,7 @@ const ProductSchema = new mongoose.Schema({
     },
     stripeId: {
         type: String,
-        required: true
+        required: false
     }
 });
 
