@@ -29,7 +29,8 @@ const ProductSchema = new mongoose.Schema({
         descriptor: String,
         price: Number,
         quantity: Number,
-        shipping: Number
+        shipping: Number,
+        images: [String]
     }],
     //enum: ship, buy, list
     purchaseOption: {
