@@ -3,6 +3,44 @@ import crypto from "crypto";
 import stripePack from "stripe";
 import fs from "fs";
 
+const createVariations = async (variations, productId, vendorToken)=>{
+    for(let i = 0; i < variations.length; i++){
+        if(variations.length > 1 && !variations[i].descriptor){
+            throw new Error("Missing a descriptor");
+        }
+
+        if(variations[i].images > 0){
+            variations[i].images = await addImages(variations[i].images);
+        }
+        if(productId) variations[i].priceId = await createStripePrice(variations[i], productId, vendorToken);
+    }
+
+    return variations;
+}
+
+const createStripePrice = async (data, productId, vendorToken)=>{
+    const stripe = stripePack(vendorToken);
+
+    const price = await stripe.prices.create({
+        currency: "usd",
+        product: productId,
+        tax_behavior: "inclusive",
+        unit_amount: data.price
+    });
+
+    return price.id;
+}
+
+const validatePurchaseOption = (option)=>{
+    switch(option){
+        case "ship": return option;
+        case "buy": return option;
+        case "list": return option;
+        default:
+            throw new Error("Invalid purchase option");
+    }
+}
+
 const addImages = async (files)=>{
     if(!files.length) files = [files];
     const promises = [];
@@ -45,11 +83,7 @@ const createStripeProduct = async (token, name, active, price)=>{
     try{
         product = await stripe.products.create({
             name: name,
-            active: active,
-            default_price_data: {
-                currency: "USD",
-                unit_amount: price
-            }
+            active: active
         });
     }catch(e){
         console.error(e);
@@ -109,6 +143,8 @@ const responseProduct = (product)=>{
 }
 
 export {
+    createVariations,
+    validatePurchaseOption,
     addImages,
     removeImages,
     createStripeProduct,

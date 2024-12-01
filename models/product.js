@@ -30,7 +30,8 @@ const ProductSchema = new mongoose.Schema({
         price: Number,
         quantity: Number,
         shipping: Number,
-        images: [String]
+        images: [String],
+        priceId: String
     }],
     //enum: ship, buy, list
     purchaseOption: {

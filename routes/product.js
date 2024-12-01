@@ -3,6 +3,8 @@ import Product from "../models/product.js";
 import {httpError} from "../error.js";
 import {vendorAuth} from "../auth.js";
 import {
+    createVariations,
+    validatePurchaseOption,
     addImages,
     removeImages,
     createStripeProduct,
@@ -31,25 +33,37 @@ const productRoutes = (app)=>{
     }
 
     app.post("/product", vendorAuth, async (req, res)=>{
+        console.time("test");
         const product = new Product({
             vendor: res.locals.vendor._id,
             name: req.body.name,
             tags: JSON.parse(req.body.tags),
             images: [],
             description: req.body.description,
-            price: Math.round(req.body.price),
-            quantity: req.body.quantity,
+            variations: [],
             active: req.body.active,
-            archived: false
+            archived: false,
+            purchaseOption: req.body.purchaseOption
         });
 
         if(res.locals.vendor.stripeToken){
             product.stripeId = await createStripeProduct(
                 res.locals.vendor.stripeToken,
                 product.name,
-                product.active,
-                product.price
+                product.active
             );
+        }
+
+        try{
+            product.productOptions = validatePurchaseOption(req.body.purchaseOption, product.stripeId);
+            product.variations = await createVariations(
+                JSON.parse(req.body.variations),
+                product.stripeId,
+                res.locals.vendor.stripeToken
+            );
+        }catch(e){
+            console.error(e);
+            return httpError(res, 400, e.message);
         }
 
         if(req.files) product.images = await addImages(req.files.images);
@@ -62,6 +76,7 @@ const productRoutes = (app)=>{
         }
 
         res.json(responseProduct(product));
+        console.timeEnd("test");
     });
 
     app.delete("/product/:productId", vendorAuth, async (req, res)=>{

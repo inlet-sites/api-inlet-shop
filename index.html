@@ -448,21 +448,51 @@
             </div>
 
             <div class="prop">
-                <p class="name">price</p>
-                <p class="type">number</p>
-                <p class="propDesc">Price of the product. In cents. Must be integer</p>
+                <p class="name">variations</p>
+                <p class="type">[object]</p>
+                <p class="propDesc">List of properties for the different variations for the product</p>
             </div>
 
             <div class="prop">
-                <p class="name">quantity</p>
+                <p class="name">variations.descriptor</p>
+                <p class="type">string</p>
+                <p class="propDesc">Short descriptor/title for the variation</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">variations.price</p>
                 <p class="type">number</p>
-                <p class="propDesc">Quantity of the item in stock. -1 if no quantity to be displayed.</p>
+                <p class="propDesc">Price of the variation. Integer</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">variations.quantity</p>
+                <p class="type">number</p>
+                <p class="propDesc">Quantity available for the variation</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">variations.shipping</p>
+                <p class="type">number</p>
+                <p class="propDesc">Price of shipping for the variation</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">variations.images</p>
+                <p class="type">[File] || File</p>
+                <p class="propDesc">One or more images that are specifically for the variation</p>
             </div>
 
             <div class="prop">
                 <p class="name">active</p>
                 <p class="type">boolean</p>
                 <p class="propDesc">True if available to customers, false if hidden</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">purchaseOption</p>
+                <p class="type">string (enum)</p>
+                <p class="propDesc">One of ship/buy/list. Ship means online purchasing and shipping. Buy means online purchase, but pick up in store. List means no online purchasing.</p>
             </div>
 
             <h3>Response</h3>
