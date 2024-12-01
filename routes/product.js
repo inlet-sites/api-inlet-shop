@@ -8,6 +8,7 @@ import {
     addImages,
     removeImages,
     createStripeProduct,
+    archiveStripeProduct,
     updateProduct,
     responseProduct
 } from "../controllers/product.js";
@@ -33,7 +34,6 @@ const productRoutes = (app)=>{
     }
 
     app.post("/product", vendorAuth, async (req, res)=>{
-        console.time("test");
         const product = new Product({
             vendor: res.locals.vendor._id,
             name: req.body.name,
@@ -76,7 +76,6 @@ const productRoutes = (app)=>{
         }
 
         res.json(responseProduct(product));
-        console.timeEnd("test");
     });
 
     app.delete("/product/:productId", vendorAuth, async (req, res)=>{
@@ -86,6 +85,15 @@ const productRoutes = (app)=>{
         if(!res.locals.vendor._id.toString() === product.vendor.toString()){
             return httpError(res, 403, "Forbidden");
         }
+        
+        //Add all product images to an array to later remove from server
+        let images = [];
+        images = images.concat(product.images);
+        product.images = [];
+        for(let i = 0; i < product.variations.length; i++){
+            images = images.concat(product.variations[i].images);
+            product.variations[i].images = [];
+        }
 
         product.archived = true;
         try{
@@ -94,6 +102,9 @@ const productRoutes = (app)=>{
             console.error(e);
             return httpError(res, 500, "Internal server error (err-008)")
         }
+
+        removeImages(images);
+        archiveStripeProduct(res.locals.vendor.stripeToken, product.stripeId);
 
         res.json({success: true});
     });

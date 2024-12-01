@@ -92,6 +92,15 @@ const createStripeProduct = async (token, name, active, price)=>{
     return product.id;
 }
 
+const archiveStripeProduct = async (vendorId, productId)=>{
+    const stripe = stripePack(vendorId);
+
+    await stripe.products.update(
+        productId,
+        {active: false}
+    );
+}
+
 const newStripePrice = async (stripe, productId, newPrice)=>{
     const price = await stripe.prices.create({
         product: productId,
@@ -148,6 +157,7 @@ export {
     addImages,
     removeImages,
     createStripeProduct,
+    archiveStripeProduct,
     updateProduct,
     responseProduct
 };
