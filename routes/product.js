@@ -219,6 +219,7 @@ const productRoutes = (app)=>{
     });
 
     app.put("/product/:productId", vendorAuth, async (req, res)=>{
+        //Retrieve the product 
         let product = await getProduct(res, req.params.productId);
         if(!product) return;
         if(product.vendor.toString() !== res.locals.vendor._id.toString()){

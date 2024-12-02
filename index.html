@@ -615,7 +615,7 @@
             <h1>Update Product</h1>
             <p class="url">PUT /product/:productId</p>
             <p>Vendor Auth Required</p>
-            <p class="description">Update some of the basic data for a product</p>
+            <p class="description">Update some of the basic data for a product. If updating any variation, you must proved the id of the variation to update. May only update one variation per request.</p>
 
             <h3>Request Body</h3>
             <div class="prop">
@@ -637,15 +637,33 @@
             </div>
 
             <div class="prop">
-                <p class="name">price</p>
-                <p class="type">number (optional)</p>
-                <p class="propDesc">Number representing new price. Must be integer representing cents.</p>
+                <p class="name">variation.id</p>
+                <p class="type">string</p>
+                <p class="propDesc">Unique ID of the variation to update. Required if any variation data is to be updated</p>
             </div>
 
             <div class="prop">
-                <p class="name">quantity</p>
-                <p class="type">number (optional)</p>
-                <p class="propDesc">Quantity in stock of the item</p>
+                <p class="name">variation.descriptor</p>
+                <p class="type">string</p>
+                <p class="propDesc">Short descriptor for the variation</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">variation.price</p>
+                <p class="type">number</p>
+                <p class="propDesc">Price of the variation as an integer</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">variation.quantity</p>
+                <p class="type">number</p>
+                <p class="propDesc">Quantity available for the item</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">variation.shipping</p>
+                <p class="type">number</p>
+                <p class="propDesc">Shipping cost of the item as an integer</p>
             </div>
 
             <div class="prop">

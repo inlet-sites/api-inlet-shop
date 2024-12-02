@@ -149,6 +149,14 @@ const updateProduct = async (data, product, token)=>{
 
     if(data.active !== undefined) product.active = data.active;
 
+    if(data.variation && data.variation.id){
+        const variation = product.variations.find(v => v._id.toString() === data.variation.id);
+        const d = updateVariation(product, variation);
+        await stripe.prices.update(
+            
+        );
+    }
+
     if(Object.keys(stripeData).length > 0){
         await stripe.products.update(product.stripeId, stripeData);
     }
