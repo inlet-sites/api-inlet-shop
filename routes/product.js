@@ -206,7 +206,7 @@ const productRoutes = (app)=>{
             return httpError(res, 403, "Forbidden");
         }
 
-        product = removeImages(req.body.images, product);
+        product = removeImages(req.body.images, product, req.body.variation);
 
         try{
             await product.save();
