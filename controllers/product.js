@@ -150,49 +150,6 @@ const updateVariation = async (product, data, stripe)=>{
 }
 
 /*
- Throws error if any data is invalid
-
- @param {Object} data - An object containing the request body data for an update
- */
-const validUpdate = (data)=>{
-    if(data.name){
-        if(typeof(data.name) !== "string") throw new Error("Invalid name");
-    }
-
-    if(data.tags){
-        if(!Array.isArray(data.tags)) throw new Error("Invalid tags");
-        if(data.tags.some(t => typeof(t) !== "string")) throw new Error("Invalid tags");
-    }
-
-    if(data.description){
-        if(typeof(data.description) !== "string") throw new Error("Invalid description");
-    }
-
-    if(data.active){
-        if(typeof(data.active) !== "boolean") throw new Error("Invalid active status");
-    }
-
-    if(data.variation){
-        if(typeof(data.variation.id) !== "string") throw new Error("Variation object must include the ID");
-        if(data.variation.descriptor){
-            if(typeof(data.variation.descriptor) !== "string") throw new Error("Invalid descriptor");
-            if(data.variation.descriptor.length > 100) throw new Error("Descriptor too long");
-        }
-        if(data.variation.quantity){
-            if(typeof(data.variation.quantity) !== "number") throw new Error("Invalid quantity");
-        }
-        if(data.variation.shipping){
-            if(typeof(data.variation.shipping) !== "number") throw new Error("Invalid shipping");
-            if(data.variation.shipping < 0) throw new Error("Invalid shipping");
-        }
-        if(data.variation.price){
-            if(typeof(data.variation.price) !== "number") throw new Error("Invalid price");
-            if(data.variation.price < 0) throw new Error("Invalid price");
-        }
-    }
-}
-
-/*
  Checks validity of input data
  Updates the information on the product
  Updates Stripe product/price data as necessary
