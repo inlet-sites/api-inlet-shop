@@ -11,6 +11,7 @@
     stripeId
  */
 export default (data)=>{
+    console.log(data);
     if(data.name){
         if(typeof(data.name) !== "string") throw new Error("Invalid name");
     }

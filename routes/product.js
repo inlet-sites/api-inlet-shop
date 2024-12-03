@@ -2,6 +2,7 @@ import Product from "../models/product.js";
 
 import {httpError} from "../error.js";
 import {vendorAuth} from "../auth.js";
+import validate from "../validation/product.js";
 import {
     createVariations,
     validatePurchaseOption,
@@ -34,16 +35,28 @@ const productRoutes = (app)=>{
     }
 
     app.post("/product", vendorAuth, async (req, res)=>{
+        let data;
+        try{
+            data = {
+                ...req.body,
+                tags: JSON.parse(req.body.tags),
+                active: req.body.active === "true" ? true : false
+            };
+
+            validate(data);
+        }catch(e){
+            return httpError(res, 400, e.message);
+        }
+
         const product = new Product({
             vendor: res.locals.vendor._id,
-            name: req.body.name,
-            tags: JSON.parse(req.body.tags),
+            name: data.name,
+            tags: data.tags,
             images: [],
-            description: req.body.description,
+            description: data.description,
             variations: [],
-            active: req.body.active,
+            active: data.active,
             archived: false,
-            purchaseOption: req.body.purchaseOption
         });
 
         if(res.locals.vendor.stripeToken){
@@ -52,18 +65,6 @@ const productRoutes = (app)=>{
                 product.name,
                 product.active
             );
-        }
-
-        try{
-            product.productOptions = validatePurchaseOption(req.body.purchaseOption, product.stripeId);
-            product.variations = await createVariations(
-                JSON.parse(req.body.variations),
-                product.stripeId,
-                res.locals.vendor.stripeToken
-            );
-        }catch(e){
-            console.error(e);
-            return httpError(res, 400, e.message);
         }
 
         if(req.files) product.images = await addImages(req.files.images);
