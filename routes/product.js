@@ -226,7 +226,11 @@ const productRoutes = (app)=>{
             return httpError(res, 403, "Forbidden");
         }
 
-        product = await updateProduct(req.body, product, res.locals.vendor.stripeToken);
+        try{
+            product = await updateProduct(req.body, product, res.locals.vendor.stripeToken);
+        }catch(e){
+            return httpError(res, 400, e.message);
+        }
 
         try{
             await product.save();

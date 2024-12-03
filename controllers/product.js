@@ -119,16 +119,92 @@ const archiveStripeProduct = async (vendorId, productId)=>{
     );
 }
 
-const newStripePrice = async (stripe, productId, newPrice)=>{
-    const price = await stripe.prices.create({
-        product: productId,
-        currency: "USD",
-        unit_amount: newPrice
-    });
-    return price.id;
+/*
+ Update a single variation on a product.
+ 'data' object must at least contain an 'id'
+ Update the Stripe price if the actual price changes
+
+ @param {Product} product - A single Product object
+ @param {Object} data - Data to update. Must contain 'id' to find the variation.
+    May also include one or more of: 'descriptor', 'price', 'quantity', 'shipping'
+ */
+const updateVariation = async (product, data, stripe)=>{
+    const variation = product.variations.find(v => v._id.toString() === data.id);
+
+    if(data.descriptor) variation.descriptor = data.descriptor;
+
+    if(data.quantity) variation.quantity = data.quantity;
+
+    if(data.shipping) variation.shipping = data.shipping;
+
+    if(data.price){
+        variation.price = data.price
+        stripe.prices.update(variation.priceId, {active: false});
+        const newPrice = await stripe.prices.create({
+            product: product.stripeId,
+            currency: "USD",
+            unit_amount: data.price
+        });
+        variation.priceId = newPrice.id;
+    }
 }
 
+/*
+ Throws error if any data is invalid
+
+ @param {Object} data - An object containing the request body data for an update
+ */
+const validUpdate = (data)=>{
+    if(data.name){
+        if(typeof(data.name) !== "string") throw new Error("Invalid name");
+    }
+
+    if(data.tags){
+        if(!Array.isArray(data.tags)) throw new Error("Invalid tags");
+        if(data.tags.some(t => typeof(t) !== "string")) throw new Error("Invalid tags");
+    }
+
+    if(data.description){
+        if(typeof(data.description) !== "string") throw new Error("Invalid description");
+    }
+
+    if(data.active){
+        if(typeof(data.active) !== "boolean") throw new Error("Invalid active status");
+    }
+
+    if(data.variation){
+        if(typeof(data.variation.id) !== "string") throw new Error("Variation object must include the ID");
+        if(data.variation.descriptor){
+            if(typeof(data.variation.descriptor) !== "string") throw new Error("Invalid descriptor");
+            if(data.variation.descriptor.length > 100) throw new Error("Descriptor too long");
+        }
+        if(data.variation.quantity){
+            if(typeof(data.variation.quantity) !== "number") throw new Error("Invalid quantity");
+        }
+        if(data.variation.shipping){
+            if(typeof(data.variation.shipping) !== "number") throw new Error("Invalid shipping");
+            if(data.variation.shipping < 0) throw new Error("Invalid shipping");
+        }
+        if(data.variation.price){
+            if(typeof(data.variation.price) !== "number") throw new Error("Invalid price");
+            if(data.variation.price < 0) throw new Error("Invalid price");
+        }
+    }
+}
+
+/*
+ Checks validity of input data
+ Updates the information on the product
+ Updates Stripe product/price data as necessary
+
+ @param {Object} data - Data from the request body
+ @param {Product} product - The product to be updated
+ @param {String} token - Stripe token for the vendor
+ @return {Product} The updated product
+ */
 const updateProduct = async (data, product, token)=>{
+    validUpdate(data);
+
     const stripe = stripePack(token);
     const stripeData = {};
     if(data.name){
@@ -140,21 +216,10 @@ const updateProduct = async (data, product, token)=>{
 
     if(data.description) product.description = data.description;
 
-    if(data.price){
-        product.price = Math.round(data.price);
-        stripeData.default_price = await newStripePrice(stripe, product.stripeId, Math.round(data.price));
-    }
-
-    if(data.quantity) product.quantity = data.quantity;
-
     if(data.active !== undefined) product.active = data.active;
 
-    if(data.variation && data.variation.id){
-        const variation = product.variations.find(v => v._id.toString() === data.variation.id);
-        const d = updateVariation(product, variation);
-        await stripe.prices.update(
-            
-        );
+    if(data.variation){
+        updateVariation(product, data.variation, stripe);
     }
 
     if(Object.keys(stripeData).length > 0){
