@@ -25,18 +25,9 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-    variations: [{
-        descriptor: String,
-        price: Number,
-        quantity: Number,
-        shipping: Number,
-        images: [String],
-        priceId: String
-    }],
-    //enum: ship, buy, list
-    purchaseOption: {
-        type: String,
-        required: true
+    variations: {
+        type: [mongoose.Schema.Types.ObjectId],
+        required: false
     }
 });
 
