@@ -198,22 +198,13 @@ const productRoutes = (app)=>{
     app.put("/product/:productId/images/add", vendorAuth, async (req, res)=>{
         //Get product and verify it is owned by authorized vendor
         const product = await getProduct(res, req.params.productId);
-        if(!product) return httpError(res, 400, "No product with this ID");
+        if(!product) return;
         if(product.vendor.toString() !== res.locals.vendor._id.toString()){
             return httpError(res, 403, "Forbidden");
         }
 
         //Find correct images list to add the images
-        const newImages = await addImages(req.files.images);
-        if(req.body.variation === "none"){
-            product.images = product.images.concat(newImages);
-        }else{
-            for(let i = 0; i < product.variations.length; i++){
-                if(product.variations[i]._id.toString() === req.body.variation){
-                    product.variations[i].images = product.variations[i].images.concat(newImages);
-                }
-            }
-        }
+        product.images = product.images.concat(await addImages(req.files.images));
 
         try{
             await product.save();
