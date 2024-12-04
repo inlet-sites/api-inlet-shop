@@ -4,6 +4,11 @@ import mongoose from "mongoose";
 import fileUpload from "express-fileupload";
 import cors from "cors";
 
+import vendorRoutes from "./routes/vendor.js";
+import productRoutes from "./routes/product.js";
+import variationRoutes from "./routes/variation.js";
+import otherRoutes from "./routes/other.js";
+
 const app = express();
 global.cwd = `${import.meta.dirname}`;
 
@@ -18,11 +23,9 @@ app.use(express.json());
 app.use(fileUpload({limits: {fileSize: 15 * 1024 * 1024}}));
 app.use(cors());
 
-import vendorRoutes from "./routes/vendor.js";
 vendorRoutes(app);
-import productRoutes from "./routes/product.js";
 productRoutes(app);
-import otherRoutes from "./routes/other.js";
+variationRoutes(app);
 otherRoutes(app);
 
 app.get("/", (req, res)=>{res.sendFile(`${global.cwd}/index.html`)});
