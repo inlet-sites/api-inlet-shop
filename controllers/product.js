@@ -70,21 +70,13 @@ const addImages = async (files)=>{
 
  @param {[string]} images - Image file names to be removed
  @param {Product} product - full product object
- @param {string} variation - "none" or the ID of a variation on the product
  @return {Product} Full Product object with the images removed
  */
-const removeImages = (images, product, variation)=>{
-    let imagesArray;
-    if(variation === "none"){
-        imagesArray = product.images;
-    }else{
-        imagesArray = product.variations.find(v => v._id.toString() === variation).images;
-    }
-
+const removeImages = (images, product)=>{
     for(let i = 0; i < images.length; i++){
-        const idx = imagesArray.indexOf(images[i]);
+        const idx = product.images.indexOf(images[i]);
         if(idx !== -1){
-            imagesArray.splice(idx, 1);
+            product.images.splice(idx, 1);
             fs.unlink(`${global.cwd}/documents/${images[i]}`, (err)=>{
                 if(err) console.error(err);
             });
