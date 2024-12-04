@@ -28,6 +28,7 @@
         <a class="headSub" href="#removeImages">Remove Images</a>
         <a class="headSub" href="#updateProduct">Update Product</a>
         <a class="headMain" href="#variation">Variation</a>
+        <a class="headSub" href="#createVariation">Create Variation</a>
     </header>
 
     <article>
@@ -636,6 +637,63 @@
                 <p class="name">purchaseOption</p>
                 <p class="type">string</p>
                 <p class="propDesc">How this variation is available. "ship" is purchase/shipping, "buy" is onlinebuying, but no shipping, "list" is no online purchase option.</p>
+            </div>
+        </div>
+
+        <div id="createVariation" class="route">
+            <h1>Create Variation</h1>
+            <p class="url">POST /variation</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Create a new product variation</p>
+
+            <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">product</p>
+                <p class="type">string</p>
+                <p class="propDesc">Product ID that the variation will belong to</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">descriptor</p>
+                <p class="type">string</p>
+                <p class="propDesc">Short description of the variation, such as small/medium/large</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">price</p>
+                <p class="type">number</p>
+                <p class="propDesc">Price of the item in cents.</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">quantity</p>
+                <p class="type">number</p>
+                <p class="propDesc">Quantity available for purchase. -1 means disregard quantity</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">shipping</p>
+                <p class="type">number</p>
+                <p class="propDesc">Shipping cost of the variation in cents</p>
+            </div>
+            
+            <div class="prop">
+                <p class="name">images</p>
+                <p class="type">File | [File]</p>
+                <p class="propDesc">One or more images associated with the variation</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">purchaseOption</p>
+                <p class="type">string</p>
+                <p class="propDesc">One of: "ship", "buy" or "list"</p>
+            </div>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">N/A</p>
+                <p class="type"><a href="#variation">Variation</a></p>
+                <p class="propDesc">Newly created variation</p>
             </div>
         </div>
     </article>
