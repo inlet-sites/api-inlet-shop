@@ -4,8 +4,6 @@ import {httpError} from "../error.js";
 import {vendorAuth} from "../auth.js";
 import validate from "../validation/product.js";
 import {
-    createVariations,
-    validatePurchaseOption,
     addImages,
     removeImages,
     createStripeProduct,
@@ -236,6 +234,12 @@ const productRoutes = (app)=>{
     });
 
     app.put("/product/:productId", vendorAuth, async (req, res)=>{
+        try{
+            validate(req.body);
+        }catch(e){
+            return httpError(res, 400, e.message);
+        }
+
         //Retrieve the product 
         let product = await getProduct(res, req.params.productId);
         if(!product) return;

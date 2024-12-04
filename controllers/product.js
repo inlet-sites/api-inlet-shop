@@ -3,21 +3,6 @@ import crypto from "crypto";
 import stripePack from "stripe";
 import fs from "fs";
 
-const createVariations = async (variations, productId, vendorToken)=>{
-    for(let i = 0; i < variations.length; i++){
-        if(variations.length > 1 && !variations[i].descriptor){
-            throw new Error("Missing a descriptor");
-        }
-
-        if(variations[i].images > 0){
-            variations[i].images = await addImages(variations[i].images);
-        }
-        if(productId) variations[i].priceId = await createStripePrice(variations[i], productId, vendorToken);
-    }
-
-    return variations;
-}
-
 const createStripePrice = async (data, productId, vendorToken)=>{
     const stripe = stripePack(vendorToken);
 
@@ -29,16 +14,6 @@ const createStripePrice = async (data, productId, vendorToken)=>{
     });
 
     return price.id;
-}
-
-const validatePurchaseOption = (option)=>{
-    switch(option){
-        case "ship": return option;
-        case "buy": return option;
-        case "list": return option;
-        default:
-            throw new Error("Invalid purchase option");
-    }
 }
 
 const addImages = async (files)=>{
@@ -64,8 +39,6 @@ const addImages = async (files)=>{
 
 /*
  Removes images from a product and deletes them from the server.
- If 'variation' is "none" then images removed from general image list.
- If 'variation' is an ID then images are removed from the variation.
  Returns a Product with the images removed.
 
  @param {[string]} images - Image file names to be removed
@@ -112,36 +85,6 @@ const archiveStripeProduct = async (vendorId, productId)=>{
 }
 
 /*
- Update a single variation on a product.
- 'data' object must at least contain an 'id'
- Update the Stripe price if the actual price changes
-
- @param {Product} product - A single Product object
- @param {Object} data - Data to update. Must contain 'id' to find the variation.
-    May also include one or more of: 'descriptor', 'price', 'quantity', 'shipping'
- */
-const updateVariation = async (product, data, stripe)=>{
-    const variation = product.variations.find(v => v._id.toString() === data.id);
-
-    if(data.descriptor) variation.descriptor = data.descriptor;
-
-    if(data.quantity) variation.quantity = data.quantity;
-
-    if(data.shipping) variation.shipping = data.shipping;
-
-    if(data.price){
-        variation.price = data.price
-        stripe.prices.update(variation.priceId, {active: false});
-        const newPrice = await stripe.prices.create({
-            product: product.stripeId,
-            currency: "USD",
-            unit_amount: data.price
-        });
-        variation.priceId = newPrice.id;
-    }
-}
-
-/*
  Checks validity of input data
  Updates the information on the product
  Updates Stripe product/price data as necessary
@@ -152,8 +95,6 @@ const updateVariation = async (product, data, stripe)=>{
  @return {Product} The updated product
  */
 const updateProduct = async (data, product, token)=>{
-    validUpdate(data);
-
     const stripe = stripePack(token);
     const stripeData = {};
     if(data.name){
@@ -166,10 +107,6 @@ const updateProduct = async (data, product, token)=>{
     if(data.description) product.description = data.description;
 
     if(data.active !== undefined) product.active = data.active;
-
-    if(data.variation){
-        updateVariation(product, data.variation, stripe);
-    }
 
     if(Object.keys(stripeData).length > 0){
         await stripe.products.update(product.stripeId, stripeData);
@@ -190,8 +127,6 @@ const responseProduct = (product, variations)=>{
 }
 
 export {
-    createVariations,
-    validatePurchaseOption,
     addImages,
     removeImages,
     createStripeProduct,
