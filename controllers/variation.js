@@ -1,9 +1,9 @@
 import Variation from "../models/variation.js";
 import Product from "../models/product.js";
 
-import {httpError} from "../error.js";
 import {CustomError} from "../CustomError.js";
 import validate from "../validation/variation.js";
+import stripePack from "stripe";
 
 const createVariation = async (req, res)=>{
     try{
@@ -64,14 +64,27 @@ const newVariation = async (data, productId, stripeToken)=>{
     });
 
     if(stripeToken){
-        variation.priceId = await createPrice();
+        variation.priceId = await createPrice(stripeToken, data.price, productId);
     }
 
     return variation;
 }
 
-const createPrice = async ()=>{
-    
+const createPrice = async (token, amount, product)=>{
+    const stripe = stripePack(token);
+
+    let price;
+    try{
+        price = await stripe.prices.create({
+            currency: "usd",
+            unit_amount: price,
+            product: product
+        });
+    }catch(e){
+        throw e;
+    }
+
+    return price.id;
 }
 
 const addImages = (files)=>{
