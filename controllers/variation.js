@@ -4,6 +4,8 @@ import Product from "../models/product.js";
 import {CustomError} from "../CustomError.js";
 import validate from "../validation/variation.js";
 import stripePack from "stripe";
+import sharp from "sharp";
+import crypto from "crypto";
 
 const createVariation = async (req, res)=>{
     try{
@@ -14,7 +16,7 @@ const createVariation = async (req, res)=>{
             product._id.toString(),
             Boolean(res.locals.vendor.stripeToken)
         );
-        variation.images = addImages(req.files);
+        if(req.files) variation.images = addImages(req.files);
         await variation.save();
         res.json(responseVariation(variation));
     }catch(e){
@@ -70,6 +72,14 @@ const newVariation = async (data, productId, stripeToken)=>{
     return variation;
 }
 
+/*
+ Create a Stripe price on the product
+
+ @param {String} token - Vendor's stripe token
+ @param {Number} amount - Price of the variation
+ @param {String} product - Product ID to add this price to
+ @return {String} ID of the newly create Stripe price
+ */
 const createPrice = async (token, amount, product)=>{
     const stripe = stripePack(token);
 
@@ -87,8 +97,32 @@ const createPrice = async (token, amount, product)=>{
     return price.id;
 }
 
+/*
+ Resize all files and change to webp
+ Create and return a list of files
+
+ @param {File | [File]} files - A single file or a list of files
+ @return {[String]} List of file names
+ */
 const addImages = (files)=>{
-    return null;
+    if(!files.length) files = [files];
+    const promises = [];
+    const newFiles = [];
+
+    for(let i = 0; i < files.length; i++){
+        const uuid = crypto.randomUUID();
+        const filename = `${uuid}.webp`;
+        promises.push(
+            sharp(files[i].data)
+                .resize({width: 1000})
+                .webp({quality: 75})
+                .toFile(`${global.cwd}/documents/${filename}`)
+        );
+        newFiles.push(filename);
+    }
+
+    Promise.all(promises);
+    return newFiles;
 }
 
 const responseVariation = (variation)=>{
