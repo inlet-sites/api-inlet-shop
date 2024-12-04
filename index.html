@@ -27,6 +27,7 @@
         <a class="headSub" href="#addImages">Add Images</a>
         <a class="headSub" href="#removeImages">Remove Images</a>
         <a class="headSub" href="#updateProduct">Update Product</a>
+        <a class="headMain" href="#variation">Variation</a>
     </header>
 
     <article>
@@ -593,6 +594,48 @@
                 <p class="name">N/A</p>
                 <p class="type"><a href="#product">Product</a></p>
                 <p class="propDesc">Updated Product</p>
+            </div>
+        </div>
+
+        <div id="variation" class="route">
+            <h1>Variation</h1>
+            <p class="description">A variation holds the pricing and other data for a product. A product will have one or more variations. Due to record keeping, variations cannot be edited. In order to change a variation on a product, a new variation should be added and the old variation archived. A single variation would be a standard product with a single price. While a product with multiple variations would be something like an item of clothing that comes in different sizes.</p>
+
+            <h3>Properties</h3>
+            <div class="prop">
+                <p class="name">descriptor</p>
+                <p class="type">string</p>
+                <p class="propDesc">A short description of the product variation. Max 100 characters</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">price</p>
+                <p class="type">number</p>
+                <p class="propDesc">Price of the item in cents. Must be an integer.</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">quantity</p>
+                <p class="type">number</p>
+                <p class="propDesc">Quantity of the item available. -1 if no quantity</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">shipping</p>
+                <p class="type">number</p>
+                <p class="propDesc">Cost of shipping the item in cents. Must be an integer</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">images</p>
+                <p class="type">[string]</p>
+                <p class="propDesc">List of file names of the images associated with the particular variation</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">purchaseOption</p>
+                <p class="type">string</p>
+                <p class="propDesc">How this variation is available. "ship" is purchase/shipping, "buy" is onlinebuying, but no shipping, "list" is no online purchase option.</p>
             </div>
         </div>
     </article>

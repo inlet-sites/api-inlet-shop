@@ -41,6 +41,7 @@ article{
 .route{
     border-bottom: 2px solid black;
     margin-bottom: 35px;
+    max-width: 1200px;
 }
 
 .prop{
