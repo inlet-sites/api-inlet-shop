@@ -165,15 +165,34 @@ const productRoutes = (app)=>{
         let product;
         try{
             product = await Product.aggregate([
-                {$match: {_id: new ObjectId(req.params.productId)}},
-            ])
+                {$match: {
+                    _id: new ObjectId(req.params.productId),
+                    archived: false
+                }},
+                {$lookup: {
+                    from: "variations",
+                    localField: "variations",
+                    foreignField: "_id",
+                    as: "variations"
+                }},
+                {$project: {
+                    archived: 0,
+                    stripeId: 0,
+                    "variations.product": 0,
+                    "variations.priceId": 0
+                }}
+            ]);
         }catch(e){
             console.error(e);
+            return httpError(res, 500, "Internal server error");
         }
-        //const product = await getProduct(res, req.params.productId);
-        if(!product) return;
+        if(!product) return httpError(res, 400, "No product with that ID");
 
-        res.json(responseProduct(product));
+        product = product[0];
+        product.id = product._id;
+        product._id = undefined;
+
+        res.json(product);
     });
 
     app.put("/product/:productId/images/add", vendorAuth, async (req, res)=>{
