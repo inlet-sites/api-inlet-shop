@@ -119,25 +119,13 @@ const productRoutes = (app)=>{
                     active: true,
                     archived: false
                 }},
-                {$lookup: {
-                    from: "variations",
-                    localField: "variations",
-                    foreignField: "_id",
-                    as: "variations"
-                }},
                 {$project: {
                     _id: 0,
                     id: "$_id",
                     name: 1,
                     tags: 1,
                     images: 1,
-                    description: 1,
-                    "variations.descriptor": 1,
-                    "variations.price": 1,
-                    "variations.quantity": 1,
-                    "variations.shipping": 1,
-                    "variations.images": 1,
-                    "variations.purchaseOption": 1
+                    description: 1
                 }}
             ]);
         }catch(e){
@@ -156,25 +144,13 @@ const productRoutes = (app)=>{
                     vendor: res.locals.vendor._id,
                     archived: false
                 }},
-                {$lookup: {
-                    from: "variations",
-                    localField: "variations",
-                    foreignField: "_id",
-                    as: "variations"
-                }},
                 {$project: {
                     _id: 0,
                     id: "$_id",
                     name: 1,
                     tags: 1,
                     images: 1,
-                    active: 1,
-                    "variations.descriptor": 1,
-                    "variations.price": 1,
-                    "variations.quantity": 1,
-                    "variations.shipping": 1,
-                    "variations.images": 1,
-                    "variations.purchaseOption": 1
+                    active: 1
                 }}
             ]);
         }catch(e){
@@ -186,7 +162,15 @@ const productRoutes = (app)=>{
     });
 
     app.get("/product/:productId", async (req, res)=>{
-        const product = await getProduct(res, req.params.productId);
+        let product;
+        try{
+            product = await Product.aggregate([
+                {$match: {_id: new ObjectId(req.params.productId)}},
+            ])
+        }catch(e){
+            console.error(e);
+        }
+        //const product = await getProduct(res, req.params.productId);
         if(!product) return;
 
         res.json(responseProduct(product));
