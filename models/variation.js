@@ -33,6 +33,10 @@ const VariationSchema = new mongoose.Schema({
     purchaseOption: {
         type: String,
         required: true
+    },
+    archived: {
+        type: Boolean,
+        required: true
     }
 });
 
