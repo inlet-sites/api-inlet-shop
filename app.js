@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 import fileUpload from "express-fileupload";
 import cors from "cors";
 
+import {catchError} from "./CustomError.js";
+
 import vendorRoutes from "./routes/vendor.js";
 import productRoutes from "./routes/product.js";
 import variationRoutes from "./routes/variation.js";
@@ -22,6 +24,7 @@ app.use(compression());
 app.use(express.json());
 app.use(fileUpload({limits: {fileSize: 15 * 1024 * 1024}}));
 app.use(cors());
+app.use(catchError);
 
 vendorRoutes(app);
 productRoutes(app);

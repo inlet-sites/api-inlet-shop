@@ -27,7 +27,7 @@ const VariationSchema = new mongoose.Schema({
     },
     priceId: {
         type: String,
-        required: true
+        required: false
     },
     //enum: ship, buy, list
     purchaseOption: {
