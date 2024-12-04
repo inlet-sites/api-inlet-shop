@@ -27,7 +27,8 @@ const ProductSchema = new mongoose.Schema({
     },
     variations: {
         type: [mongoose.Schema.Types.ObjectId],
-        required: false
+        required: false,
+        ref: "variation"
     }
 });
 

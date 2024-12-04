@@ -119,14 +119,19 @@ const productRoutes = (app)=>{
                     active: true,
                     archived: false
                 }},
+                {$lookup: {
+                    from: "variations",
+                    localField: "variations",
+                    foreignField: "_id",
+                    as: "variations"
+                }},
                 {$project: {
-                    id: "$_id",
-                    vendor: 1,
-                    name: 1,
-                    images: 1,
-                    price: 1,
-                    quantity: 1,
-                    tags: 1
+                    vendor: 0,
+                    active: 0,
+                    archived: 0,
+                    stripeId: 0,
+                    "variations.product": 0,
+                    "variations.priceId": 0
                 }}
             ]);
         }catch(e){

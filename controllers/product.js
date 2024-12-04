@@ -186,16 +186,14 @@ const updateProduct = async (data, product, token)=>{
     return product;
 }
 
-const responseProduct = (product)=>{
+const responseProduct = (product, variations)=>{
     return {
         id: product._id,
-        vendor: product.vendor,
         name: product.name,
         tags: product.tags,
         images: product.images,
         description: product.description,
-        price: product.price,
-        quantity: product.quantity
+        variations: variations
     };
 }
 
