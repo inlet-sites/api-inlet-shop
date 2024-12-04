@@ -126,12 +126,18 @@ const productRoutes = (app)=>{
                     as: "variations"
                 }},
                 {$project: {
-                    vendor: 0,
-                    active: 0,
-                    archived: 0,
-                    stripeId: 0,
-                    "variations.product": 0,
-                    "variations.priceId": 0
+                    _id: 0,
+                    id: "$_id",
+                    name: 1,
+                    tags: 1,
+                    images: 1,
+                    description: 1,
+                    "variations.descriptor": 1,
+                    "variations.price": 1,
+                    "variations.quantity": 1,
+                    "variations.shipping": 1,
+                    "variations.images": 1,
+                    "variations.purchaseOption": 1
                 }}
             ]);
         }catch(e){
@@ -150,14 +156,25 @@ const productRoutes = (app)=>{
                     vendor: res.locals.vendor._id,
                     archived: false
                 }},
+                {$lookup: {
+                    from: "variations",
+                    localField: "variations",
+                    foreignField: "_id",
+                    as: "variations"
+                }},
                 {$project: {
+                    _id: 0,
                     id: "$_id",
                     name: 1,
+                    tags: 1,
                     images: 1,
-                    price: 1,
-                    quantity: 1,
                     active: 1,
-                    tags: 1
+                    "variations.descriptor": 1,
+                    "variations.price": 1,
+                    "variations.quantity": 1,
+                    "variations.shipping": 1,
+                    "variations.images": 1,
+                    "variations.purchaseOption": 1
                 }}
             ]);
         }catch(e){
