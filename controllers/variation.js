@@ -125,8 +125,22 @@ const addImages = (files)=>{
     return newFiles;
 }
 
+/*
+ Create the data to be returned to user/vendor from the full Variation
+
+ @param {Variation} variation - Full Variation object
+ @return {Object} Object containing data to use in the response
+ */
 const responseVariation = (variation)=>{
-    return null;
+    return {
+        product: variation.product,
+        descriptor: variation.descriptor,
+        price: variation.price,
+        quantity: variation.quantity,
+        shipping: variation.shipping,
+        images: variation.images,
+        purchaseOption: variation.purchaseOption
+    };
 }
 
 export {
