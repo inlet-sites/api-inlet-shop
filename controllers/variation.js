@@ -1,5 +1,4 @@
-import Variation from "../models/variation.js";
-import Product from "../models/product.js";
+import {Product, Variation} from "../models/product.js";
 
 import {CustomError} from "../CustomError.js";
 import validate from "../validation/variation.js";
@@ -17,12 +16,11 @@ const createVariation = async (req, res, next)=>{
             product.stripeId,
             res.locals.vendor.stripeToken
         );
-        if(req.files) variation.images = addImages(req.files);
-        await variation.save();
+        if(req.files) variation.images = addImages(req.files.images);
+        product.variations.push(variation);
+        await product.save();
         res.json(responseVariation(variation));
-    }catch(e){
-        next(e)
-    }
+    }catch(e){next(e)}
 }
 
 /*

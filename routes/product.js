@@ -1,4 +1,4 @@
-import Product from "../models/product.js";
+import {Product} from "../models/product.js";
 
 import {httpError} from "../error.js";
 import {vendorAuth} from "../auth.js";
