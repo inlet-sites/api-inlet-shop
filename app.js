@@ -24,12 +24,13 @@ app.use(compression());
 app.use(express.json());
 app.use(fileUpload({limits: {fileSize: 15 * 1024 * 1024}}));
 app.use(cors());
-app.use(catchError);
 
 vendorRoutes(app);
 productRoutes(app);
 variationRoutes(app);
 otherRoutes(app);
+
+app.use(catchError);
 
 app.get("/", (req, res)=>{res.sendFile(`${global.cwd}/index.html`)});
 app.get("/style.css", (req, res)=>{res.sendFile(`${global.cwd}/index.css`)});

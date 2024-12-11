@@ -1,3 +1,4 @@
+import {CustomError} from "../CustomError.js";
 /*
  Validate data for a product variation
  Returns error if there is any invalid data
@@ -12,22 +13,31 @@
 
 export default (data)=>{
     if(data.descriptor){
-        if(typeof(data.descriptor) !== "string") throw new Error("Invalid descriptor");
-        if(data.descriptor.length > 100) throw new Error("Invalid descriptor");
+        if(typeof(data.descriptor) !== "string") throw new CustomError(400, "Invalid descriptor");
+        if(data.descriptor.length > 100) throw new CustomError(400, "Invalid descriptor");
     }
 
     if(data.price){
-        if(typeof(data.price) !== "number") throw new Error("Invalid price");
-        if(!Number.isInteger(data.price)) throw new Error("Invalid price");
+        try{
+            if(typeof(data.price === "string")) data.price = Number(data.price);
+        }catch(e){throw new CustomError(400, "Invalid price")}
+        if(typeof(data.price) !== "number") throw new CustomError(400, "Invalid price");
+        if(!Number.isInteger(data.price)) throw new CustomError(400, "Invalid price");
     }
 
     if(data.quantity){
-        if(typeof(data.quantity) !== "number") throw new Error("Invalid quantity");
+        try{
+            if(typeof(data.quantity) === "string") data.quantity = Number(data.quantity);
+        }catch(e){throw new CustomError(400, "Invalid quantity")}
+        if(typeof(data.quantity) !== "number") throw new CustomError(400, "Invalid quantity");
     }
 
     if(data.shipping){
-        if(typeof(data.shipping) !== "number") throw new Error("Invalid shipping");
-        if(!Number.isInteger(data.shipping)) throw new Error("Invalid shipping");
+        try{
+            if(typeof(data.shipping) === "string") data.shipping = Number(data.shipping);
+        }catch(e){throw new CustomError(400, "Invalid shipping")}
+        if(typeof(data.shipping) !== "number") throw new CustomError(400, "Invalid shipping");
+        if(!Number.isInteger(data.shipping)) throw new CustomError(400, "Invalid shipping");
     }
 
     if(data.purchaseOption){
@@ -35,6 +45,6 @@ export default (data)=>{
             data.purchaseOption !== "ship" &&
             data.purchaseOption !== "buy" &&
             data.purchaseOption !== "list"
-        ) throw new Error("Invalid purchase option");
+        ) throw new CustomError(400, "Invalid purchase option");
     }
 }

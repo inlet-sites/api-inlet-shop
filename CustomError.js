@@ -8,7 +8,7 @@ class CustomError extends Error {
 }
 
 const catchError = (err, req, res, next)=>{
-    if(err instanceof CustomErr){
+    if(err instanceof CustomError){
         return res.status(err.code).json({
             error: {
                 code: err.code,

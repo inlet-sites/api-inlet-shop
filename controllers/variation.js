@@ -7,20 +7,21 @@ import stripePack from "stripe";
 import sharp from "sharp";
 import crypto from "crypto";
 
-const createVariation = async (req, res)=>{
+const createVariation = async (req, res, next)=>{
     try{
         validate(req.body);
         const product = await getProduct(req.body.product, res.locals.vendor._id.toString());
         const variation = await newVariation(
             req.body,
             product._id.toString(),
-            Boolean(res.locals.vendor.stripeToken)
+            product.stripeId,
+            res.locals.vendor.stripeToken
         );
         if(req.files) variation.images = addImages(req.files);
         await variation.save();
         res.json(responseVariation(variation));
     }catch(e){
-        throw e;
+        next(e)
     }
 }
 
@@ -33,16 +34,12 @@ const createVariation = async (req, res)=>{
  @return {Product} The retrieved product
  */
 const getProduct = async (productId, vendorId)=>{
-    let product;
-    try{
-        product = await Product.findOne({_id: productId});
-    }catch(e){
-        throw e;
-    }
+    const product = await Product.findOne({_id: productId});
     if(!product) throw new CustomError(400, "No product with that ID");
     if(product.vendor.toString() !== vendorId){
         throw new CustomError(403, "Forbidden");
     }
+    return product;
 }
 
 /*
@@ -53,7 +50,7 @@ const getProduct = async (productId, vendorId)=>{
  @param {String} stripeToken - Stripe token of user, if any
  @return {Variation} Newly created variation
  */
-const newVariation = async (data, productId, stripeToken)=>{
+const newVariation = async (data, productId, stripeProductId, stripeToken)=>{
     const variation = new Variation({
         product: productId,
         descriptor: data.descriptor,
@@ -66,7 +63,7 @@ const newVariation = async (data, productId, stripeToken)=>{
     });
 
     if(stripeToken){
-        variation.priceId = await createPrice(stripeToken, data.price, productId);
+        variation.priceId = await createPrice(stripeToken, data.price, stripeProductId);
     }
 
     return variation;
@@ -83,16 +80,11 @@ const newVariation = async (data, productId, stripeToken)=>{
 const createPrice = async (token, amount, product)=>{
     const stripe = stripePack(token);
 
-    let price;
-    try{
-        price = await stripe.prices.create({
-            currency: "usd",
-            unit_amount: price,
-            product: product
-        });
-    }catch(e){
-        throw e;
-    }
+    const price = await stripe.prices.create({
+        currency: "usd",
+        unit_amount: amount,
+        product: product
+    });
 
     return price.id;
 }
