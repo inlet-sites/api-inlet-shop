@@ -29,6 +29,7 @@
         <a class="headSub" href="#updateProduct">Update Product</a>
         <a class="headMain" href="#variation">Variation</a>
         <a class="headSub" href="#createVariation">Create Variation</a>
+        <a class="headSub" href="#removeVariation">Remove Variation</a>
     </header>
 
     <article>
@@ -694,6 +695,20 @@
                 <p class="name">N/A</p>
                 <p class="type"><a href="#variation">Variation</a></p>
                 <p class="propDesc">Newly created variation</p>
+            </div>
+        </div>
+
+        <div id="removeVariation" class="route">
+            <h1>Remove Variation</h1>
+            <p class="url">DELETE /product/:productId/variation/:variationId</p>
+            <p>User Auth Required</p>
+            <p class="description">Remove a variation from a product. Archives the variation, does not delete it due to record purposes</p>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">success</p>
+                <p class="type">true</p>
+                <p class="propDesc">Always '{success: true}' is no error</p>
             </div>
         </div>
     </article>
