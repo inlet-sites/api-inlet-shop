@@ -28,6 +28,68 @@ const createRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const deleteRoute = async (req, res, next)=>{
+    try{
+        let product = await getProduct(req.params.productId);
+        validateOwnership(product, res.locals.vendor._id.toString());
+        product = deleteAllImages(product);
+        product.archived = true;
+        await product.save();
+        archiveStripeProduct(res.locals.vendor.stripeToken, product.stripeId);
+        res.json({success: true});
+    }catch(e){next(e)}
+}
+
+/*
+ Get product from ID
+ Throws error if product doesn't exist
+
+ @param {String} productId - unique ID of the product
+ @return {Product} Product object
+ */
+const getProduct = async (productId)=>{
+    const product = await Product.findOne({_id: productId});
+    if(!product) throw new CustomError(400, "Product with this ID doesn't exist");
+    return product;
+}
+
+/*
+ Throw an error if vendor does not owne the project
+
+ @param {Product} product - Product object
+ @param {String} vendorId - ID of the vendor
+ */
+const validateOwnership = (product, vendorId)=>{
+    console.log(product);
+    if(product.vendor.toString() !== vendorId) throw new CustomError(403, "Forbidden");
+}
+
+/*
+ Delete all image files from the server for a single product
+
+ @param {Product} product - Product object
+ @return {Product} - Product with image arrays emptied
+ */
+const deleteAllImages = (product)=>{
+    for(let i = 0; i < product.images.length; i++){
+        fs.unlink(`${global.cwd}/documents/${product.images[i]}`, (err)=>{
+            console.error(err);
+        });
+    }
+    product.images = [];
+
+    for(let i = 0; i < product.variations.length; i++){
+        for(let j = 0; j < product.variations[i].images.length; j++){
+            fs.unlink(`${global.cwd}/documents/${product.variations[i].images[j]}`, (err)=>{
+                console.error(err);
+            });
+        }
+        product.variations[i].images = [];
+    }
+
+    return product;
+}
+
 /*
  Create and return a new Product object
 
@@ -185,6 +247,7 @@ const responseProduct = (product, variations)=>{
 
 export {
     createRoute,
+    deleteRoute,
 
     addImages,
     removeImages,

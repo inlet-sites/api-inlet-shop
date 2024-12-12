@@ -5,6 +5,7 @@ import {vendorAuth} from "../auth.js";
 import validate from "../validation/product.js";
 import {
     createRoute,
+    deleteRoute,
 
     addImages,
     removeImages,
@@ -35,6 +36,7 @@ const productRoutes = (app)=>{
     }
 
     app.post("/product", vendorAuth, createRoute);
+    app.delete("/product/:productId", vendorAuth, deleteRoute);
 
     app.delete("/product/:productId", vendorAuth, async (req, res)=>{
         let product = await getProduct(res, req.params.productId);
