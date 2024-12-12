@@ -6,6 +6,7 @@ import validate from "../validation/product.js";
 import {
     createRoute,
     deleteRoute,
+    getRoute,
 
     addImages,
     removeImages,
@@ -37,63 +38,7 @@ const productRoutes = (app)=>{
 
     app.post("/product", vendorAuth, createRoute);
     app.delete("/product/:productId", vendorAuth, deleteRoute);
-
-    app.delete("/product/:productId", vendorAuth, async (req, res)=>{
-        let product = await getProduct(res, req.params.productId);
-        if(!product) return;
-
-        if(!res.locals.vendor._id.toString() === product.vendor.toString()){
-            return httpError(res, 403, "Forbidden");
-        }
-        
-        //Add all product images to an array to later remove from server
-        let images = [];
-        images = images.concat(product.images);
-        product.images = [];
-        for(let i = 0; i < product.variations.length; i++){
-            images = images.concat(product.variations[i].images);
-            product.variations[i].images = [];
-        }
-
-        product.archived = true;
-        try{
-            await product.save();
-        }catch(e){
-            console.error(e);
-            return httpError(res, 500, "Internal server error (err-008)")
-        }
-
-        removeImages(images);
-        archiveStripeProduct(res.locals.vendor.stripeToken, product.stripeId);
-
-        res.json({success: true});
-    });
-
-    app.get("/product/vendor/:vendorId", async (req, res)=>{
-        let products;
-        try{
-            products = await Product.aggregate([
-                {$match: {
-                    vendor: new ObjectId(req.params.vendorId),
-                    active: true,
-                    archived: false
-                }},
-                {$project: {
-                    _id: 0,
-                    id: "$_id",
-                    name: 1,
-                    tags: 1,
-                    images: 1,
-                    description: 1
-                }}
-            ]);
-        }catch(e){
-            console.error(e);
-            return httpError(res, 500, "Internal server error (err-009)");
-        }
-
-        res.json(products);
-    });
+    app.get("/product/vendor/:vendorId", getRoute);
 
     app.get("/product/vendor", vendorAuth, async (req, res)=>{
         let products;

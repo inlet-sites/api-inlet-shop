@@ -5,6 +5,7 @@ import sharp from "sharp";
 import crypto from "crypto";
 import stripePack from "stripe";
 import fs from "fs";
+import mongoose from "mongoose";
 
 const createRoute = async (req, res, next)=>{
     try{
@@ -40,6 +41,13 @@ const deleteRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const getRoute = async (req, res, next)=>{
+    try{
+        const products = await getAllVendorProducts(req.params.vendorId);
+        res.json(products);
+    }catch(e){next(e)}
+}
+
 /*
  Get product from ID
  Throws error if product doesn't exist
@@ -54,13 +62,37 @@ const getProduct = async (productId)=>{
 }
 
 /*
+ Get all products from a specific vendor, including variations
+
+ @param {String} vendorId - ID of the vendor
+ @return {[Product]} List of Product objects
+ */
+const getAllVendorProducts = async (vendorId)=>{
+    return await Product.aggregate([
+        {$match: {
+            vendor: new mongoose.Types.ObjectId(vendorId),
+            active: true,
+            archived: false
+        }},
+        {$addFields: {id: "$_id"}},
+        {$project: {
+            vendor: 0,
+            active: 0,
+            archived: 0,
+            stripeId: 0,
+            "variations.priceId": 0,
+            "variations.archived": 0
+        }}
+    ]);
+}
+
+/*
  Throw an error if vendor does not owne the project
 
  @param {Product} product - Product object
  @param {String} vendorId - ID of the vendor
  */
 const validateOwnership = (product, vendorId)=>{
-    console.log(product);
     if(product.vendor.toString() !== vendorId) throw new CustomError(403, "Forbidden");
 }
 
@@ -248,6 +280,7 @@ const responseProduct = (product, variations)=>{
 export {
     createRoute,
     deleteRoute,
+    getRoute,
 
     addImages,
     removeImages,
