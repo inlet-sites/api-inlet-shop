@@ -1,8 +1,4 @@
-import {Product} from "../models/product.js";
-
-import {httpError} from "../error.js";
 import {vendorAuth} from "../auth.js";
-import validate from "../validation/product.js";
 import {
     createRoute,
     deleteRoute,
@@ -12,35 +8,9 @@ import {
     addImagesRoute,
     removeImagesRoute,
     updateRoute,
-
-    addImages,
-    removeImages,
-    createStripeProduct,
-    archiveStripeProduct,
-    updateProduct,
-    responseProduct
 } from "../controllers/product.js";
-import mongoose from "mongoose";
-
-const ObjectId = mongoose.Types.ObjectId;
 
 const productRoutes = (app)=>{
-    const getProduct = async (res, id)=>{
-        let product;
-        try{
-            product = await Product.findOne({_id: id});
-        }catch(e){
-            console.error(e);
-            httpError(res, 500, "Internal server error (err-007)");
-            return null;
-        }
-        if(!product){
-            httpError(res, 400, "Product with this ID doesn't exist");
-            return null;
-        }
-        return product;
-    }
-
     app.post("/product", vendorAuth, createRoute);
     app.delete("/product/:productId", vendorAuth, deleteRoute);
     app.get("/product/vendor/:vendorId", getRoute);
