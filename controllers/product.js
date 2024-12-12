@@ -72,6 +72,16 @@ const addImagesRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const removeImagesRoute = async (req, res, next)=>{
+    try{
+        let product = await getProduct(req.params.productId);
+        validateOwnership(product, res.locals.vendor._id.toString());
+        product = removeImages(req.body.images, product);
+        await product.save();
+        res.json(responseProduct(product));
+    }catch(e){next(e)}
+}
+
 /*
  Get product from ID
  Throws error if product doesn't exist
@@ -334,6 +344,7 @@ export {
     vendorGetRoute,
     getOneRoute,
     addImagesRoute,
+    removeImagesRoute,
 
     addImages,
     removeImages,
