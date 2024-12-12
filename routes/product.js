@@ -7,6 +7,7 @@ import {
     createRoute,
     deleteRoute,
     getRoute,
+    vendorGetRoute,
 
     addImages,
     removeImages,
@@ -39,31 +40,7 @@ const productRoutes = (app)=>{
     app.post("/product", vendorAuth, createRoute);
     app.delete("/product/:productId", vendorAuth, deleteRoute);
     app.get("/product/vendor/:vendorId", getRoute);
-
-    app.get("/product/vendor", vendorAuth, async (req, res)=>{
-        let products;
-        try{
-            products = await Product.aggregate([
-                {$match: {
-                    vendor: res.locals.vendor._id,
-                    archived: false
-                }},
-                {$project: {
-                    _id: 0,
-                    id: "$_id",
-                    name: 1,
-                    tags: 1,
-                    images: 1,
-                    active: 1
-                }}
-            ]);
-        }catch(e){
-            console.error(e);
-            return httpError(res, 500, "Internal server error (err-010)");
-        }
-
-        res.json(products);
-    });
+    app.get("/product/vendor", vendorAuth, vendorGetRoute);
 
     app.get("/product/:productId", async (req, res)=>{
         let product;

@@ -43,7 +43,14 @@ const deleteRoute = async (req, res, next)=>{
 
 const getRoute = async (req, res, next)=>{
     try{
-        const products = await getAllVendorProducts(req.params.vendorId);
+        const products = await getAllVendorProducts(req.params.vendorId, false);
+        res.json(products);
+    }catch(e){next(e)}
+}
+
+const vendorGetRoute = async (req, res, next)=>{
+    try{
+        const products = await getAllVendorProducts(res.locals.vendor._id, true);
         res.json(products);
     }catch(e){next(e)}
 }
@@ -67,22 +74,28 @@ const getProduct = async (productId)=>{
  @param {String} vendorId - ID of the vendor
  @return {[Product]} List of Product objects
  */
-const getAllVendorProducts = async (vendorId)=>{
+const getAllVendorProducts = async (vendorId, forVendor)=>{
+    let match = {$match: {
+        vendor: new mongoose.Types.ObjectId(vendorId),
+        archived: false
+    }};
+    let project = {$project: {
+        _id: 0,
+        vendor: 0,
+        archived: 0,
+        stripeId: 0,
+        "variations.priceId": 0,
+        "variations.archived": 0
+    }};
+    if(!forVendor){
+        match["$match"].active = true;
+        project["$project"].active = 0;
+    }
+
     return await Product.aggregate([
-        {$match: {
-            vendor: new mongoose.Types.ObjectId(vendorId),
-            active: true,
-            archived: false
-        }},
+        match,
         {$addFields: {id: "$_id"}},
-        {$project: {
-            vendor: 0,
-            active: 0,
-            archived: 0,
-            stripeId: 0,
-            "variations.priceId": 0,
-            "variations.archived": 0
-        }}
+        project
     ]);
 }
 
@@ -281,6 +294,7 @@ export {
     createRoute,
     deleteRoute,
     getRoute,
+    vendorGetRoute,
 
     addImages,
     removeImages,
