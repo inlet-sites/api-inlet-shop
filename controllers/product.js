@@ -55,6 +55,13 @@ const vendorGetRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const getOneRoute = async (req, res, next)=>{
+    try{
+        const product = await getProduct(req.params.productId);
+        res.json(responseProduct(product));
+    }catch(e){next(e)}
+}
+
 /*
  Get product from ID
  Throws error if product doesn't exist
@@ -279,15 +286,35 @@ const updateProduct = async (data, product, token)=>{
     return product;
 }
 
-const responseProduct = (product, variations)=>{
-    return {
+/*
+ Transform a product into the proper response format
+
+ @param {Product} product - Product object
+ @return {Object} Formatted product object
+ */
+const responseProduct = (product)=>{
+    const productObj = {
         id: product._id,
         name: product.name,
         tags: product.tags,
         images: product.images,
         description: product.description,
-        variations: variations
+        variations: []
     };
+
+    for(let i = 0; i < product.variations.length; i++){
+        productObj.variations.push({
+            id: product.variations[i]._id,
+            descriptor: product.variations[i].descriptor,
+            price: product.variations[i].price,
+            quantity: product.variations[i].quantity,
+            shipping: product.variations[i].shipping,
+            images: product.variations[i].images,
+            purchaseOption: product.variations[i].purchaseOption
+        })
+    }
+
+    return productObj;
 }
 
 export {
@@ -295,6 +322,7 @@ export {
     deleteRoute,
     getRoute,
     vendorGetRoute,
+    getOneRoute,
 
     addImages,
     removeImages,

@@ -8,6 +8,7 @@ import {
     deleteRoute,
     getRoute,
     vendorGetRoute,
+    getOneRoute,
 
     addImages,
     removeImages,
@@ -41,40 +42,7 @@ const productRoutes = (app)=>{
     app.delete("/product/:productId", vendorAuth, deleteRoute);
     app.get("/product/vendor/:vendorId", getRoute);
     app.get("/product/vendor", vendorAuth, vendorGetRoute);
-
-    app.get("/product/:productId", async (req, res)=>{
-        let product;
-        try{
-            product = await Product.aggregate([
-                {$match: {
-                    _id: new ObjectId(req.params.productId),
-                    archived: false
-                }},
-                {$lookup: {
-                    from: "variations",
-                    localField: "variations",
-                    foreignField: "_id",
-                    as: "variations"
-                }},
-                {$project: {
-                    archived: 0,
-                    stripeId: 0,
-                    "variations.product": 0,
-                    "variations.priceId": 0
-                }}
-            ]);
-        }catch(e){
-            console.error(e);
-            return httpError(res, 500, "Internal server error");
-        }
-        if(!product) return httpError(res, 400, "No product with that ID");
-
-        product = product[0];
-        product.id = product._id;
-        product._id = undefined;
-
-        res.json(product);
-    });
+    app.get("/product/:productId", getOneRoute);
 
     app.put("/product/:productId/images/add", vendorAuth, async (req, res)=>{
         //Get product and verify it is owned by authorized vendor
