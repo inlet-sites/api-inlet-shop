@@ -193,19 +193,6 @@ const createProduct = (data, vendorId)=>{
     });
 }
 
-const createStripePrice = async (data, productId, vendorToken)=>{
-    const stripe = stripePack(vendorToken);
-
-    const price = await stripe.prices.create({
-        currency: "usd",
-        product: productId,
-        tax_behavior: "inclusive",
-        unit_amount: data.price
-    });
-
-    return price.id;
-}
-
 /*
  Set images to set size
  Convert to webp
@@ -356,12 +343,5 @@ export {
     getOneRoute,
     addImagesRoute,
     removeImagesRoute,
-    updateRoute,
-
-    addImages,
-    removeImages,
-    createStripeProduct,
-    archiveStripeProduct,
-    updateProduct,
-    responseProduct
+    updateRoute
 };
