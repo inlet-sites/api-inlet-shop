@@ -1,7 +1,52 @@
+import {Product} from "../models/product.js";
+
+import validate from "../validation/product.js";
 import sharp from "sharp";
 import crypto from "crypto";
 import stripePack from "stripe";
 import fs from "fs";
+
+const createRoute = async (req, res, next)=>{
+    try{
+        const data = {
+            ...req.body,
+            tags: JSON.parse(req.body.tags),
+            active: req.body.active === "true" ? true : false
+        };
+        validate(data);
+        const product = createProduct(data, res.locals.vendor._id);
+        if(res.locals.vendor.stripeToken){
+            product.stripeId = await createStripeProduct(
+                res.locals.vendor.stripeToken,
+                data.name,
+                data.active
+            );
+        }
+        if(req.files) product.images = await addImages(req.files.images);
+        await product.save();
+        res.json(responseProduct(product));
+    }catch(e){next(e)}
+}
+
+/*
+ Create and return a new Product object
+
+ @params {Object} data - Object contaning all product data
+ @params {String} vendorId - Vendor ID
+ @params {Product} Product object
+ */
+const createProduct = (data, vendorId)=>{
+    return new Product({
+        vendor: vendorId,
+        name: data.name,
+        tags: data.tags,
+        images: [],
+        description: data.description,
+        variations: [],
+        active: data.active,
+        archived: false
+    });
+}
 
 const createStripePrice = async (data, productId, vendorToken)=>{
     const stripe = stripePack(vendorToken);
@@ -16,6 +61,15 @@ const createStripePrice = async (data, productId, vendorToken)=>{
     return price.id;
 }
 
+/*
+ Set images to set size
+ Convert to webp
+ Save images to disk
+ Return list of file names
+
+ @param {File | [File]} files - Single file or a list of files
+ @return {[String]} List containing filenames of the saved files
+ */
 const addImages = async (files)=>{
     if(!files.length) files = [files];
     const promises = [];
@@ -59,18 +113,21 @@ const removeImages = (images, product)=>{
     return product;
 }
 
-const createStripeProduct = async (token, name, active, price)=>{
+/*
+ Create new product on Stripe
+
+ @param {String} token - Vendor Stripe token
+ @param {String} name - Name of the product
+ @param {Boolean} active - Whether the product is active or not
+ @return {String} Stripe ID for the product
+ */
+const createStripeProduct = async (token, name, active)=>{
     const stripe = stripePack(token);
 
-    let product;
-    try{
-        product = await stripe.products.create({
-            name: name,
-            active: active
-        });
-    }catch(e){
-        console.error(e);
-    }
+    const product = await stripe.products.create({
+        name: name,
+        active: active
+    });
 
     return product.id;
 }
@@ -127,6 +184,8 @@ const responseProduct = (product, variations)=>{
 }
 
 export {
+    createRoute,
+
     addImages,
     removeImages,
     createStripeProduct,

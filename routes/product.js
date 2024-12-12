@@ -4,6 +4,8 @@ import {httpError} from "../error.js";
 import {vendorAuth} from "../auth.js";
 import validate from "../validation/product.js";
 import {
+    createRoute,
+
     addImages,
     removeImages,
     createStripeProduct,
@@ -32,50 +34,7 @@ const productRoutes = (app)=>{
         return product;
     }
 
-    app.post("/product", vendorAuth, async (req, res)=>{
-        let data;
-        try{
-            data = {
-                ...req.body,
-                tags: JSON.parse(req.body.tags),
-                active: req.body.active === "true" ? true : false
-            };
-
-            validate(data);
-        }catch(e){
-            return httpError(res, 400, e.message);
-        }
-
-        const product = new Product({
-            vendor: res.locals.vendor._id,
-            name: data.name,
-            tags: data.tags,
-            images: [],
-            description: data.description,
-            variations: [],
-            active: data.active,
-            archived: false,
-        });
-
-        if(res.locals.vendor.stripeToken){
-            product.stripeId = await createStripeProduct(
-                res.locals.vendor.stripeToken,
-                product.name,
-                product.active
-            );
-        }
-
-        if(req.files) product.images = await addImages(req.files.images);
-
-        try{
-            await product.save();
-        }catch(e){
-            console.error(e);
-            return httpError(res, 500, "Unable to create new product (err-006)");
-        }
-
-        res.json(responseProduct(product));
-    });
+    app.post("/product", vendorAuth, createRoute);
 
     app.delete("/product/:productId", vendorAuth, async (req, res)=>{
         let product = await getProduct(res, req.params.productId);
