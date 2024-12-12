@@ -9,7 +9,8 @@ import crypto from "crypto";
 const createVariation = async (req, res, next)=>{
     try{
         validate(req.body);
-        const product = await getProduct(req.body.product, res.locals.vendor._id.toString());
+        const product = await getProduct(req.body.product);
+        validateOwnership(product, res.locals.vendor._id.toString());
         const variation = await newVariation(
             req.body,
             product._id.toString(),
@@ -20,6 +21,17 @@ const createVariation = async (req, res, next)=>{
         product.variations.push(variation);
         await product.save();
         res.json(responseVariation(variation));
+    }catch(e){next(e)}
+}
+
+const removeVariation = async (req, res, next)=>{
+    try{
+        const product = await getProduct(req.params.productId);
+        validateOwnership(product, res.locals.vendor._id.toString());
+        const variation = archiveVariation(product, req.params.variationId);
+        setStripePriceInactive(res.locals.vendor.stripeToken, variation.priceId);
+        await product.save();
+        res.json({success: true});
     }catch(e){next(e)}
 }
 
@@ -34,10 +46,46 @@ const createVariation = async (req, res, next)=>{
 const getProduct = async (productId, vendorId)=>{
     const product = await Product.findOne({_id: productId});
     if(!product) throw new CustomError(400, "No product with that ID");
+    return product;
+}
+
+/*
+ Throw error if vendor does not own the product
+ 
+ @param {Product} product - Product object
+ @param {String} vendorID - Id of the vendor to verify
+ */
+const validateOwnership = (product, vendorId)=>{
     if(product.vendor.toString() !== vendorId){
         throw new CustomError(403, "Forbidden");
     }
-    return product;
+}
+
+/*
+ Find and archive the designated variation on a product
+
+ @param {Product} product - Product object
+ @param {String} variationId - ID of the variation to be archived
+ */
+const archiveVariation = (product, variationId)=>{
+    for(let i = 0; i < product.variations.length; i++){
+        if(product.variations[i]._id.toString() === variationId){
+            product.variations[i].archived = true;
+            return product.variations[i];
+        }
+    }
+    throw new CustomError(400, "Variation with this ID does not exist");
+}
+
+/*
+ Set the corresponding Stripe price as inactive
+
+ @param {String} vendorToken - Stripe token of the vendor
+ @param {String} priceToken - Stripe token for the price
+ */
+const setStripePriceInactive = (vendorToken, priceToken)=>{
+    const stripe = stripePack(vendorToken);
+    stripe.prices.update(priceToken, {active: false});
 }
 
 /*
@@ -135,6 +183,5 @@ const responseVariation = (variation)=>{
 
 export {
     createVariation,
-    addImages,
-    responseVariation
+    removeVariation
 };
