@@ -31,6 +31,7 @@
         <a class="headSub" href="#createVariation">Create Variation</a>
         <a class="headSub" href="#removeVariation">Remove Variation</a>
         <a class="headSub" href="#addVariationImages">Add Images</a>
+        <a class="headSub" href="#removeVariationImages">Remove Images</a>
     </header>
 
     <article>
@@ -701,6 +702,27 @@
                 <p class="name">N/A</p>
                 <p class="type"><a href="#variation">Varition</a></p>
                 <p class="propDesc">Varition object</p>
+            </div>
+        </div>
+
+        <div id="removeVariationImages" class="route">
+            <h1>Remove Images</h1>
+            <p class="url">PUT /product/:productId/variation/:variationId/images/remove</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Remove one or more images from a variation</p>
+
+            <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">images</p>
+                <p class="type">[string]</p>
+                <p class="propDesc">A list of names of files to remove</p>
+            </div>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">N/A</p>
+                <p class="type"><a href="#variation">Variation</a></p>
+                <p class="propDesc">Variation object</p>
             </div>
         </div>
     </article>

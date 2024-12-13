@@ -5,6 +5,7 @@ import validate from "../validation/variation.js";
 import stripePack from "stripe";
 import sharp from "sharp";
 import crypto from "crypto";
+import fs from "fs";
 
 const createVariation = async (req, res, next)=>{
     try{
@@ -41,7 +42,17 @@ const addImagesRoute = async (req, res, next)=>{
         validateOwnership(product, res.locals.vendor._id.toString());
         variation.images = variation.images.concat(addImages(req.files.images));
         await product.save();
-        res.json(variation);
+        res.json(responseVariation(variation));
+    }catch(e){next(e)}
+}
+
+const removeImagesRoute = async (req, res, next)=>{
+    try{
+        const {product, variation} = await getVariation(req.params.productId, req.params.variationId);
+        validateOwnership(product, res.locals.vendor._id.toString());
+        variation.images = removeImages(variation.images, req.body.images);
+        await product.save();
+        res.json(responseVariation(variation));
     }catch(e){next(e)}
 }
 
@@ -192,6 +203,19 @@ const addImages = (files)=>{
     return newFiles;
 }
 
+const removeImages = (imagesArray, removeImages)=>{
+    for(let i = 0; i < removeImages.length; i++){
+        for(let j = 0; j < imagesArray.length; j++){
+            if(removeImages[i] === imagesArray[j]){
+                fs.unlink(`${global.cwd}/documents/${removeImages[i]}`, (err)=>{console.error(err)});
+                imagesArray.splice(j, 1);
+                break;
+            }
+        }
+    }
+    return imagesArray;
+}
+
 /*
  Create the data to be returned to user/vendor from the full Variation
 
@@ -213,5 +237,6 @@ const responseVariation = (variation)=>{
 export {
     createVariation,
     removeVariation,
-    addImagesRoute
+    addImagesRoute,
+    removeImagesRoute
 };
