@@ -158,14 +158,6 @@ const confirmToken = (vendor, token)=>{
     }
 }
 
-const passwordLength = (password)=>{
-    return password.length >= 10;
-}
-
-const passwordMatch = (password, confirmPassword)=>{
-    return password === confirmPassword;
-}
-
 /*
  Hash a password
 
@@ -306,17 +298,5 @@ export {
     updateRoute,
     changeImageRoute,
     passwordEmailRoute,
-    resetPasswordRoute,
-
-    confirmToken,
-    passwordLength,
-    passwordMatch,
-    createPasswordHash,
-    newToken,
-    validPassword,
-    createToken,
-    createImage,
-    removeImage,
-    updateVendor,
-    responseVendor
+    resetPasswordRoute
 };
