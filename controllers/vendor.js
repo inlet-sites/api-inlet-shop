@@ -40,7 +40,7 @@ const getTokenRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
-const getSelfRoute = async (req, res, next)=>{
+const getSelfRoute = (req, res, next)=>{
     try{
         res.json(responseVendorForSelf(res.locals.vendor));
     }catch(e){next(e)}
@@ -50,6 +50,13 @@ const getVendorRoute = async (req, res, next)=>{
     try{
         const vendor = await getVendor(req.params.vendorUrl);
         res.json(responseVendor(vendor));
+    }catch(e){next(e)}
+}
+
+const getAllVendorsRoute = async (req, res, next)=>{
+    try{
+        const vendors = await getAllVendors();
+        res.json(vendors);
     }catch(e){next(e)}
 }
 
@@ -77,6 +84,20 @@ const getVendorByEmail = async (email)=>{
     const vendor = await Vendor.findOne({email: email.toLowerCase()});
     if(!vendor) throw new CustomError(400, "Vendor with this email doesn't exist");
     return vendor;
+}
+
+/*
+ Retrieve a list of all vendors
+
+ @return {[Vendor]} List of vendors
+ */
+const getAllVendors = async ()=>{
+    return await Vendor.find({}, {
+        store: 1,
+        image: 1,
+        slogan: 1,
+        url: 1
+    });
 }
 
 /*
@@ -184,6 +205,7 @@ const responseVendorForSelf = (vendor)=>{
         email: vendor.email,
         owner: vendor.owner,
         store: vendor.store,
+        url: vendor.url,
         image: vendor.image,
         slogan: vendor.slogan,
         description: vendor.description,
@@ -201,6 +223,7 @@ const responseVendor = (vendor)=>{
     return {
         id: vendor._id,
         store: vendor.store,
+        url: vendor.url,
         image: vendor.image,
         slogan: vendor.slogan,
         description: vendor.description,
@@ -215,6 +238,7 @@ export {
     getTokenRoute,
     getSelfRoute,
     getVendorRoute,
+    getAllVendorsRoute,
 
     confirmToken,
     passwordLength,

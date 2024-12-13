@@ -9,6 +9,7 @@ import {
     getTokenRoute,
     getSelfRoute,
     getVendorRoute,
+    getAllVendorsRoute,
 
     confirmToken,
     passwordLength,
@@ -46,23 +47,7 @@ const vendorRoutes = (app)=>{
     app.post("/vendor/token", getTokenRoute);
     app.get("/vendor/self", vendorAuth, getSelfRoute);
     app.get("/vendor/:vendorUrl", getVendorRoute);
-
-    app.get("/vendor", async (req, res)=>{
-        let vendors;
-        try{
-            vendors = await Vendor.find({}, {
-                store: 1,
-                image: 1,
-                slogan: 1,
-                url: 1
-            });
-        }catch(e){
-            console.error(e);
-            return httpError(res, 500, "Internal server error (err-004)");
-        }
-
-        res.json(vendors);
-    });
+    app.get("/vendor", getAllVendorsRoute);
 
     app.put("/vendor", vendorAuth, async (req, res)=>{
         const vendor = updateVendor(res.locals.vendor, req.body);
