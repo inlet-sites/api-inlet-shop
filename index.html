@@ -30,6 +30,7 @@
         <a class="headMain" href="#variation">Variation</a>
         <a class="headSub" href="#createVariation">Create Variation</a>
         <a class="headSub" href="#removeVariation">Remove Variation</a>
+        <a class="headSub" href="#addVariationImages">Add Images</a>
     </header>
 
     <article>
@@ -679,6 +680,27 @@
                 <p class="name">success</p>
                 <p class="type">true</p>
                 <p class="propDesc">Always '{success: true}' is no error</p>
+            </div>
+        </div>
+
+        <div id="addVariationImages" class="route">
+            <h1>Add Images</h1>
+            <p class="url">PUT /product/:productId/variation/:variationId/images/add</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Add images to a variation</p>
+
+            <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">images</p>
+                <p class="type">File | [File]</p>
+                <p class="propDesc">A file or list of files to add to images list</p>
+            </div>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">N/A</p>
+                <p class="type"><a href="#variation">Varition</a></p>
+                <p class="propDesc">Varition object</p>
             </div>
         </div>
     </article>

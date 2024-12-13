@@ -35,6 +35,17 @@ const removeVariation = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const addImagesRoute = async (req, res, next)=>{
+    try{
+        const product = await getProduct(req.params.productId);
+        validateOwnership(product, res.locals.vendor._id.toString());
+        const variation = archiveVariation(product, req.params.variationId);
+        variation.images = variation.images.concat(addImages(req.files.images));
+        await product.save();
+        res.json(variation);
+    }catch(e){next(e)}
+}
+
 /*
  Retrieve product
  If vendor ID is also passed, verify ownership
@@ -183,5 +194,6 @@ const responseVariation = (variation)=>{
 
 export {
     createVariation,
-    removeVariation
+    removeVariation,
+    addImagesRoute
 };
