@@ -40,6 +40,12 @@ const getTokenRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const getSelfRoute = async (req, res, next)=>{
+    try{
+        res.json(responseVendorForSelf(res.locals.vendor));
+    }catch(e){next(e)}
+}
+
 /*
  Retrieve vendor from an ID
  Throw error if no vendor with that ID
@@ -158,6 +164,25 @@ const updateVendor = (vendor, data)=>{
     return vendor;
 }
 
+/*
+ Format vendor for the vendor to view
+ Not for public use
+
+ @param {Vendor} vendor - Vendor object
+ @return {Object} - Formatted vendor object for the vendor to view
+ */
+const responseVendorForSelf = (vendor)=>{
+    return {
+        email: vendor.email,
+        owner: vendor.owner,
+        store: vendor.store,
+        image: vendor.image,
+        slogan: vendor.slogan,
+        description: vendor.description,
+        contact: vendor.contact
+    };
+}
+
 const responseVendor = (vendor)=>{
     return {
         id: vendor._id,
@@ -174,6 +199,7 @@ export {
     createPassRoute,
     changePassRoute,
     getTokenRoute,
+    getSelfRoute,
 
     confirmToken,
     passwordLength,

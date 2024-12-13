@@ -7,6 +7,7 @@ import {
     createPassRoute,
     changePassRoute,
     getTokenRoute,
+    getSelfRoute,
 
     confirmToken,
     passwordLength,
@@ -42,30 +43,7 @@ const vendorRoutes = (app)=>{
     app.put("/vendor/:vendorId/password/:token", createPassRoute);
     app.put("/vendor/:vendorId/password", vendorAuth, changePassRoute)
     app.post("/vendor/token", getTokenRoute);
-
-    app.post("/vendor/token", async (req, res)=>{
-        const email = req.body.email.toLowerCase();
-        let vendor;
-        try{
-            vendor = await Vendor.findOne({email: email});
-        }catch(e){
-            console.error(e);
-            return httpError(res, 500, "Internal server error (err-003)");
-        }
-        if(!vendor) return httpError(res, 400, "Invalid credentials");
-
-        const valid = await validPassword(req.body.password, vendor.password);
-        if(!valid) return httpError(res, 400, "Invalid credentials");
-
-        const token = createToken(vendor);
-        res.json({token: token});
-    });
-
-    app.get("/vendor/self", vendorAuth, (req, res)=>{
-        res.locals.vendor.password = undefined;
-        res.locals.vendor.token = undefined;
-        res.json(res.locals.vendor);
-    });
+    app.get("/vendor/self", vendorAuth, getSelfRoute);
 
     app.get("/vendor/:vendorUrl", async (req, res)=>{
         let vendor;
