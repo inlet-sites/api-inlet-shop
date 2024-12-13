@@ -13,6 +13,7 @@ import {
     updateRoute,
     changeImageRoute,
     passwordEmailRoute,
+    resetPasswordRoute,
 
     confirmToken,
     passwordLength,
@@ -54,33 +55,7 @@ const vendorRoutes = (app)=>{
     app.put("/vendor", vendorAuth, updateRoute);
     app.put("/vendor/image", vendorAuth, changeImageRoute);
     app.post("/vendor/password/email", passwordEmailRoute);
-
-    app.post("/vendor/password/reset", async (req, res)=>{
-        let vendor = await getVendor(res, req.body.vendor);
-        if(!vendor) return;
-
-        if(!confirmToken(vendor, req.body.token)){
-            return httpError(res, 400, "Invalid Authorization");
-        }
-        if(!passwordLength(req.body.password)){
-            return httpError(res, 400, "Password must contain at least 10 characters");
-        }
-        if(!passwordMatch(req.body.password, req.body.confirmPassword)){
-            return httpError(res, 400, "Passwords do not match");
-        }
-
-        vendor.password = await createPasswordHash(req.body.password);
-        vendor.token = newToken();
-
-        try{
-            await vendor.save();
-        }catch(e){
-            console.error(e);
-            return httpError(res, 500, "Internal server error (err-016)");
-        }
-
-        res.json({success: true});
-    });
+    app.post("/vendor/password/reset", resetPasswordRoute);
 }
 
 export default vendorRoutes;

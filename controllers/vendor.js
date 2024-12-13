@@ -94,6 +94,18 @@ const passwordEmailRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const resetPasswordRoute = async (req, res, next)=>{
+    try{
+        validate(req.body);
+        const vendor = await getVendor(req.body.vendor);
+        confirmToken(vendor, req.body.token);
+        vendor.password = await createPasswordHash(req.body.password);
+        vendor.token = newToken();
+        await vendor.save();
+        res.json({success: true});
+    }catch(e){next(e)}
+}
+
 /*
  Retrieve vendor from an ID
  Throw error if no vendor with that ID
@@ -294,6 +306,7 @@ export {
     updateRoute,
     changeImageRoute,
     passwordEmailRoute,
+    resetPasswordRoute,
 
     confirmToken,
     passwordLength,
