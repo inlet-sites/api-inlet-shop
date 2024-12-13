@@ -4,6 +4,8 @@ import {httpError} from "../error.js";
 import {vendorAuth} from "../auth.js";
 import sendEmail from "../sendEmail.js";
 import {
+    createPassRoute,
+
     confirmToken,
     passwordLength,
     passwordMatch,
@@ -34,6 +36,8 @@ const vendorRoutes = (app)=>{
         }
         return vendor
     }
+
+    app.put("/vendor/:vendorId/password/:token", createPassRoute);
 
     app.put("/vendor/:vendorId/password/:token", async (req, res)=>{
         let vendor = await getVendor(res, req.params.vendorId);
