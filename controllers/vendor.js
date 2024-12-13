@@ -31,6 +31,15 @@ const changePassRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const getTokenRoute = async (req, res, next)=>{
+    try{
+        const vendor = await getVendorByEmail(req.body.email);
+        await validPassword(req.body.password, vendor.password);
+        const token = createToken(vendor);
+        res.json({token: token});
+    }catch(e){next(e)}
+}
+
 /*
  Retrieve vendor from an ID
  Throw error if no vendor with that ID
@@ -41,6 +50,19 @@ const changePassRoute = async (req, res, next)=>{
 const getVendor = async (vendorId)=>{
     const vendor = await Vendor.findOne({_id: vendorId});
     if(!vendor) throw new CustomError(400, "Vendor with this ID doesn't exist");
+    return vendor;
+}
+
+/*
+ Retrieve vendor from an email address
+ Throw error if no vendor with that email address
+
+ @param {String} email - Vendor email address
+ @return {Vendor} Vendor object
+ */
+const getVendorByEmail = async (email)=>{
+    const vendor = await Vendor.findOne({email: email.toLowerCase()});
+    if(!vendor) throw new CustomError(400, "Vendor with this email doesn't exist");
     return vendor;
 }
 
@@ -83,10 +105,23 @@ const newToken = ()=>{
     return crypto.randomUUID();
 }
 
+/*
+ Throw error if password doesn't match
+
+ @param {String} password - Password to compare
+ @param {String} hashedPass - Hashed password from database
+ */
 const validPassword = async (password, hashedPass)=>{
-    return await bcrypt.compare(password, hashedPass);
+    const result = await bcrypt.compare(password, hashedPass);
+    if(result !== true) throw new CustomError(401, "Invalid credentials");
 }
 
+/*
+ Create JWT for vendor authorization
+
+ @param {Vendor} vendor - Vendor object
+ @return {String} JWT for vendor authorization
+ */
 const createToken = (vendor)=>{
     return jwt.sign({
         id: vendor._id,
@@ -138,6 +173,7 @@ const responseVendor = (vendor)=>{
 export {
     createPassRoute,
     changePassRoute,
+    getTokenRoute,
 
     confirmToken,
     passwordLength,
