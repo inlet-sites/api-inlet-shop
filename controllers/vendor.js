@@ -60,6 +60,15 @@ const getAllVendorsRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const updateRoute = async (req, res, next)=>{
+    try{
+        validate(req.body);
+        const vendor = updateVendor(res.locals.vendor, req.body);
+        await vendor.save();
+        res.json(responseVendorForSelf(vendor));
+    }catch(e){next(e)}
+}
+
 /*
  Retrieve vendor from an ID
  Throw error if no vendor with that ID
@@ -182,6 +191,13 @@ const removeImage = (file)=>{
     fs.unlink(`${global.cwd}/documents/${file}`, (err)=>{console.error(err)});
 }
 
+/*
+ Update the data on a specific vendor
+
+ @param {Vendor} vendor - Vendor object
+ @param {Object} data - Object containing the data to be updated
+ @return {Vendor} Updated Vendor object
+ */
 const updateVendor = (vendor, data)=>{
     if(data.slogan) vendor.slogan = data.slogan;
     if(data.description) vendor.description = data.description;
@@ -239,6 +255,7 @@ export {
     getSelfRoute,
     getVendorRoute,
     getAllVendorsRoute,
+    updateRoute,
 
     confirmToken,
     passwordLength,

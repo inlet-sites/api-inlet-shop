@@ -10,6 +10,7 @@ import {
     getSelfRoute,
     getVendorRoute,
     getAllVendorsRoute,
+    updateRoute,
 
     confirmToken,
     passwordLength,
@@ -48,21 +49,7 @@ const vendorRoutes = (app)=>{
     app.get("/vendor/self", vendorAuth, getSelfRoute);
     app.get("/vendor/:vendorUrl", getVendorRoute);
     app.get("/vendor", getAllVendorsRoute);
-
-    app.put("/vendor", vendorAuth, async (req, res)=>{
-        const vendor = updateVendor(res.locals.vendor, req.body);
-
-        try{
-            await vendor.save();
-        }catch(e){
-            console.error(e);
-            return httpError(res, 500, "Internal server error (err-021)");
-        }
-
-        vendor.password = undefined;
-        vendor.token = undefined;
-        res.json(vendor);
-    });
+    app.put("/vendor", vendorAuth, updateRoute);
 
     app.put("/vendor/image", vendorAuth, async (req, res)=>{
         let file;
