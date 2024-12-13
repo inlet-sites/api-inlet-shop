@@ -12,6 +12,7 @@ import {
     getAllVendorsRoute,
     updateRoute,
     changeImageRoute,
+    passwordEmailRoute,
 
     confirmToken,
     passwordLength,
@@ -52,29 +53,7 @@ const vendorRoutes = (app)=>{
     app.get("/vendor", getAllVendorsRoute);
     app.put("/vendor", vendorAuth, updateRoute);
     app.put("/vendor/image", vendorAuth, changeImageRoute);
-
-    app.post("/vendor/password/email", async (req, res)=>{
-        const email = req.body.email.toLowerCase();
-        let vendor;
-        try{
-            vendor = await Vendor.findOne({email: email});
-        }catch(e){
-            console.error(e);
-            return httpError(res, 500, "Internal server error, (err-015)");
-        }
-        if(!vendor){
-            return httpError(res, 401, "User with this email doesn't exist");
-        }
-
-        sendEmail(
-            vendor.email,
-            vendor.name,
-            "Password reset request",
-            resetPasswordEmail(vendor.name, vendor._id, vendor.token)
-        );
-
-        res.json({success: true});
-    });
+    app.post("/vendor/password/email", passwordEmailRoute);
 
     app.post("/vendor/password/reset", async (req, res)=>{
         let vendor = await getVendor(res, req.body.vendor);

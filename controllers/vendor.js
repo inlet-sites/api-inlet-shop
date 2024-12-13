@@ -7,6 +7,8 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import sharp from "sharp";
 import fs from "fs";
+import sendEmail from "../sendEmail.js";
+import resetPasswordEmail from "../email/resetPassword.js";
 
 const createPassRoute = async (req, res, next)=>{
     try{
@@ -76,6 +78,19 @@ const changeImageRoute = async (req, res, next)=>{
         res.locals.vendor.image = file;
         await res.locals.vendor.save();
         res.json(responseVendorForSelf(res.locals.vendor));
+    }catch(e){next(e)}
+}
+
+const passwordEmailRoute = async (req, res, next)=>{
+    try{
+        const vendor = await getVendorByEmail(req.body.email);
+        sendEmail(
+            vendor.email,
+            vendor.name,
+            "Password reset request",
+            resetPasswordEmail(vendor.name, vendor._id, vendor.token)
+        );
+        res.json({success: true});
     }catch(e){next(e)}
 }
 
@@ -278,6 +293,7 @@ export {
     getAllVendorsRoute,
     updateRoute,
     changeImageRoute,
+    passwordEmailRoute,
 
     confirmToken,
     passwordLength,
