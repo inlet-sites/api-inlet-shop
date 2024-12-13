@@ -21,6 +21,16 @@ const createPassRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const changePassRoute = async (req, res, next)=>{
+    try{
+        validate(req.body);
+        res.locals.vendor.password = await createPasswordHash(req.body.password);
+        res.locals.vendor.token = newToken();
+        await res.locals.vendor.save();
+        res.json({success: true});
+    }catch(e){next(e)}
+}
+
 /*
  Retrieve vendor from an ID
  Throw error if no vendor with that ID
@@ -127,6 +137,7 @@ const responseVendor = (vendor)=>{
 
 export {
     createPassRoute,
+    changePassRoute,
 
     confirmToken,
     passwordLength,
