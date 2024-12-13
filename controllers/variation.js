@@ -203,6 +203,14 @@ const addImages = (files)=>{
     return newFiles;
 }
 
+/*
+ Remove images from server
+ Remove images from variation
+
+ @param {[String]} imagesArray - Array of images from the database
+ @param {[String]} removeImages - Array of images to be removed
+ @return {[String]} resulting array of images that still remain
+ */
 const removeImages = (imagesArray, removeImages)=>{
     for(let i = 0; i < removeImages.length; i++){
         for(let j = 0; j < imagesArray.length; j++){
