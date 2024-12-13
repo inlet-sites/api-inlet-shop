@@ -37,9 +37,8 @@ const removeVariation = async (req, res, next)=>{
 
 const addImagesRoute = async (req, res, next)=>{
     try{
-        const product = await getProduct(req.params.productId);
+        const {product, variation} = await getVariation(req.params.productId, req.params.variationId);
         validateOwnership(product, res.locals.vendor._id.toString());
-        const variation = archiveVariation(product, req.params.variationId);
         variation.images = variation.images.concat(addImages(req.files.images));
         await product.save();
         res.json(variation);
@@ -51,13 +50,32 @@ const addImagesRoute = async (req, res, next)=>{
  If vendor ID is also passed, verify ownership
 
  @param {String ID} productId - ID of the product to retrieve
- @param {String ID (optional)} vendorId - If, provided, verifies vendor ownership of product
  @return {Product} The retrieved product
  */
-const getProduct = async (productId, vendorId)=>{
+const getProduct = async (productId)=>{
     const product = await Product.findOne({_id: productId});
     if(!product) throw new CustomError(400, "No product with that ID");
     return product;
+}
+
+/*
+ Retrieve both product and variation
+
+ @param {String} productId - ID of the product to retrieve
+ @param {String} variationId - ID of the variation to retrieve
+ @return {{Product, Variation}} - Object containing both Product and Variation
+ */
+const getVariation = async (productId, variationId)=>{
+    const product = await getProduct(productId);
+    if(!product) throw new CustomError(400, "No product with that ID");
+    let variation;
+    for(let i = 0; i < product.variations.length; i++){
+        if(product.variations[i]._id.toString() === variationId){
+            variation = product.variations[i];
+        }
+    }
+    if(!variation) throw new CustomError(400, "No variation with that ID");
+    return {product, variation};
 }
 
 /*
