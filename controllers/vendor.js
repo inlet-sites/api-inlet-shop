@@ -46,6 +46,13 @@ const getSelfRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const getVendorRoute = async (req, res, next)=>{
+    try{
+        const vendor = await getVendor(req.params.vendorUrl);
+        res.json(responseVendor(vendor));
+    }catch(e){next(e)}
+}
+
 /*
  Retrieve vendor from an ID
  Throw error if no vendor with that ID
@@ -173,6 +180,7 @@ const updateVendor = (vendor, data)=>{
  */
 const responseVendorForSelf = (vendor)=>{
     return {
+        id: vendor._id,
         email: vendor.email,
         owner: vendor.owner,
         store: vendor.store,
@@ -183,6 +191,12 @@ const responseVendorForSelf = (vendor)=>{
     };
 }
 
+/*
+ Format vendor for public viewing
+
+ @param {Vendor} vendor - Vendor object
+ @return {Object} - Formatted Vendor object
+ */
 const responseVendor = (vendor)=>{
     return {
         id: vendor._id,
@@ -200,6 +214,7 @@ export {
     changePassRoute,
     getTokenRoute,
     getSelfRoute,
+    getVendorRoute,
 
     confirmToken,
     passwordLength,

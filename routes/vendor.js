@@ -8,6 +8,7 @@ import {
     changePassRoute,
     getTokenRoute,
     getSelfRoute,
+    getVendorRoute,
 
     confirmToken,
     passwordLength,
@@ -44,20 +45,7 @@ const vendorRoutes = (app)=>{
     app.put("/vendor/:vendorId/password", vendorAuth, changePassRoute)
     app.post("/vendor/token", getTokenRoute);
     app.get("/vendor/self", vendorAuth, getSelfRoute);
-
-    app.get("/vendor/:vendorUrl", async (req, res)=>{
-        let vendor;
-        try{
-            vendor = await Vendor.findOne({url: req.params.vendorUrl})
-            console.log(vendor);
-        }catch(e){
-            console.error(e);
-            return httpError(res, 500, "Internal server error (err-020)");
-        }
-        if(!vendor) return httpError(res, 400, "no vendor");
-
-        res.json(responseVendor(vendor));
-    })
+    app.get("/vendor/:vendorUrl", getVendorRoute);
 
     app.get("/vendor", async (req, res)=>{
         let vendors;
