@@ -11,6 +11,7 @@ import {
     getVendorRoute,
     getAllVendorsRoute,
     updateRoute,
+    changeImageRoute,
 
     confirmToken,
     passwordLength,
@@ -50,30 +51,7 @@ const vendorRoutes = (app)=>{
     app.get("/vendor/:vendorUrl", getVendorRoute);
     app.get("/vendor", getAllVendorsRoute);
     app.put("/vendor", vendorAuth, updateRoute);
-
-    app.put("/vendor/image", vendorAuth, async (req, res)=>{
-        let file;
-        try{
-            file = await createImage(req.files.file);
-        }catch(e){
-            console.error(e);
-            return httpError(res, 500, "Internal server error (err-005)");
-        }
-
-        if(res.locals.vendor.image) removeImage(res.locals.vendor.image);
-
-        res.locals.vendor.image = file;
-        try{
-            await res.locals.vendor.save();
-        }catch(e){
-            console.error(e);
-            return httpError(res, 500, "Unable to save image");
-        }
-
-        res.locals.vendor.password = undefined;
-        res.locals.vendor.token = undefined;
-        res.json(res.locals.vendor);
-    });
+    app.put("/vendor/image", vendorAuth, changeImageRoute);
 
     app.post("/vendor/password/email", async (req, res)=>{
         const email = req.body.email.toLowerCase();

@@ -69,6 +69,16 @@ const updateRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const changeImageRoute = async (req, res, next)=>{
+    try{
+        const file = await createImage(req.files.file);
+        if(res.locals.vendor.image) removeImage(res.locals.vendor.image);
+        res.locals.vendor.image = file;
+        await res.locals.vendor.save();
+        res.json(responseVendorForSelf(res.locals.vendor));
+    }catch(e){next(e)}
+}
+
 /*
  Retrieve vendor from an ID
  Throw error if no vendor with that ID
@@ -172,6 +182,12 @@ const createToken = (vendor)=>{
     }, process.env.JWT_SECRET);
 }
 
+/*
+ Save image to server with unique UUID
+
+ @param {File} file - Image file to save
+ @return {String} Name of the newly created file
+ */
 const createImage = async (file)=>{
     let fileType = file.name.split(".");
     let fileName = fileType[0];
@@ -187,6 +203,11 @@ const createImage = async (file)=>{
     return fileString;
 }
 
+/*
+ Remove an image from the server
+
+ @param {String} file - Filename to remove from server
+ */
 const removeImage = (file)=>{
     fs.unlink(`${global.cwd}/documents/${file}`, (err)=>{console.error(err)});
 }
@@ -256,6 +277,7 @@ export {
     getVendorRoute,
     getAllVendorsRoute,
     updateRoute,
+    changeImageRoute,
 
     confirmToken,
     passwordLength,
