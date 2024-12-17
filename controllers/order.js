@@ -11,8 +11,8 @@ const createRoute = async (req, res, next)=>{
         const vendor = await getVendor(req.body.vendor);
         const items = await getVariations(req.body.items);
         const order = createOrder(vendor, items, subTotal, shipping);
-        updateQuantities(items);
         const paymentIntent = createPaymentIntent();
+        updateQuantities(items);
         await order.save();
         res.json({clientSecret: paymentIntent});
     }catch(e){next(e)}
@@ -112,6 +112,19 @@ const createOrder = (vendor, items, data)=>{
         });
     }
     return order;
+}
+
+/*
+ Update quantities on variations
+ Save products to update database
+
+ @param {Object} items - List containing Product, Variation and quantity
+ */
+const updateQuantities = (items)=>{
+    for(let i = 0; i < items.length; i++){
+        items[i].variation.quantity -= items[i].quantity;
+        items[i].product.save();
+    }
 }
 
 export {
