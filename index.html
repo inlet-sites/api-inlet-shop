@@ -33,6 +33,7 @@
         <a class="headSub" href="#addVariationImages">Add Images</a>
         <a class="headSub" href="#removeVariationImages">Remove Images</a>
         <a class="headMain" href="#order">Order</a>
+        <a class="headSub" href="#createOrder">Create</a>
     </header>
 
     <article>
@@ -790,6 +791,49 @@
                 <p class="name">total</p>
                 <p class="type">Number</p>
                 <p class="propDesc">Integer representing the total of all products and shipping in cents</p>
+            </div>
+        </div>
+
+        <div id="createOrder" class="route">
+            <h1>Create Order</h1>
+            <p class="url">POST /order</p>
+            <p class="description">Create an order and PaymentIntent on Stripe and return the client secret</p>
+
+            <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">name</p>
+                <p class="type">String</p>
+                <p class="propDesc">Name of the purchaser</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">address</p>
+                <p class="type">String</p>
+                <p class="propDesc">Address for shipping</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">items</p>
+                <p class="type">[Object]</p>
+                <p class="propDesc">List containing item details. Properties listed below</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">items.product</p>
+                <p class="type">String</p>
+                <p class="propDesc">ID of the product</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">items.variation</p>
+                <p class="type">String</p>
+                <p class="propDesc">ID of the variation purchased</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">items.quantity</p>
+                <p class="type">Number</p>
+                <p class="propDesc">Quantity of the variation that is being purchased</p>
             </div>
         </div>
     </article>
