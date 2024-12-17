@@ -2,6 +2,7 @@ import Order from "../models/order.js";
 import Vendor from "../models/vendor.js";
 import {Product} from "../models/product.js";
 
+import {CustomError} from "../CustomError.js";
 import validate from "../validation/order.js";
 import stripePack from "stripe";
 
@@ -10,11 +11,12 @@ const createRoute = async (req, res, next)=>{
         validate(req.body);
         const vendor = await getVendor(req.body.vendor);
         const items = await getVariations(req.body.items);
-        const order = createOrder(vendor, items, subTotal, shipping);
-        const paymentIntent = createPaymentIntent(vendor._id.toString(), order.total);
+        const order = createOrder(vendor, items, req.body);
+        const paymentIntent = await createPaymentIntent(vendor.stripeToken, order.total);
+        order.paymentIntent = paymentIntent.id;
         updateQuantities(items);
         await order.save();
-        res.json({clientSecret: paymentIntent});
+        res.json({clientSecret: paymentIntent.client_secret});
     }catch(e){next(e)}
 }
 
@@ -62,7 +64,7 @@ const validateVariationPurchase = (variation, purchaseQuantity)=>{
         throw new CustomError(400, `${variation._id}-Invalid quantity`);
     }
     if(variation.archived !== false) throw new CustomError(400, "Item not available for purchase");
-    if(variation.purchaseOption !== "ship" || variation.purchaseOption !== "buy"){
+    if(variation.purchaseOption !== "ship" && variation.purchaseOption !== "buy"){
         throw new CustomError(400, "Not available for online purchase");
     }
 }
@@ -74,8 +76,8 @@ const validateVariationPurchase = (variation, purchaseQuantity)=>{
  @return {Object} Object containing subTotal, shipping and total
  */
 const calculateTotals = (items)=>{
-    const subTotal = 0;
-    const shipping = 0;
+    let subTotal = 0;
+    let shipping = 0;
     for(let i = 0; i < items.length; i++){
         subTotal += items[i].variation.price * items[i].quantity;
         shipping += items[i].variation.shipping * items[i].quantity;
@@ -134,8 +136,8 @@ const updateQuantities = (items)=>{
  @param {Number} total - Total amount of payment in cents
  @return {PaymentIntent} Stripe PaymentIntent object
  */
-const createPaymentIntent = async (vendorId, total)=>{
-    const stripe = stripePack(vendorId);
+const createPaymentIntent = async (vendorToken, total)=>{
+    const stripe = stripePack(vendorToken);
     return  await stripe.paymentIntents.create({
         amount: total,
         currency: "usd"
