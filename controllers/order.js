@@ -7,6 +7,8 @@ import sendEmail from "../sendEmail.js";
 import validate from "../validation/order.js";
 import stripePack from "stripe";
 
+import paymentSucceededEmail from "../email/paymentSucceeded.js";
+
 const createRoute = async (req, res, next)=>{
     try{
         validate(req.body);
@@ -29,7 +31,7 @@ const webhookRoute = async (req, res, next)=>{
             request.headers["stripe-signature"],
             vendor.webhookSecret
         );
-        handleEvent(event);
+        handleEvent(event, vendor);
         res.send();
     }catch(e){next(e)}
 }
@@ -163,10 +165,10 @@ const createPaymentIntent = async (vendorToken, total)=>{
 
  @param {Event} event - Stripe Event object
  */
-const handleEvent = (event)=>{
+const handleEvent = (event, vendor)=>{
     switch(event.type){
         case "payment_intent.succeeded":
-            handleSuccessEvent(event.data.object.id);
+            handleSuccessEvent(event.data.object.id, vendor);
             break;
         case "payment_intent.canceled":
             handleFailedEvent(event.data.object.id);
@@ -182,11 +184,17 @@ const handleEvent = (event)=>{
 
  @param {String} paymentIntentId - Id of the paymentIntent
  */
-const handleSuccessEvent = async (paymentIntentId)=>{
+const handleSuccessEvent = async (paymentIntentId, vendor)=>{
     try{
         const order = await getOrderByPaymentIntent(paymentIntentId);
         order.status = "paid";
         //sendEmail
+        sendEmail(
+            order.email,
+            order.name,
+            `Your purchase at ${vendor.store}`,
+            paymentSucceededEmail(order, vendor)
+        );
         order.save();
     }catch(e){
         console.error(e);

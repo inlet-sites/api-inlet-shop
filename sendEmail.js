@@ -9,7 +9,7 @@ export default async (email, name, subject, html)=>{
     try{
         await client.sendMail({
             from: {
-                address: "support@inletsites.dev",
+                address: "InletShop@inletsites.dev",
                 name: "Inlet Sites"
             },
             to: [{
