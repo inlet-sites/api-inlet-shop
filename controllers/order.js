@@ -10,9 +10,9 @@ const createRoute = async (req, res, next)=>{
         validate(req.body);
         const vendor = await getVendor(req.body.vendor);
         const items = await getVariations(req.body.items);
-        const subTotal = calculateSubTotal(items);
-        const shipping = calculateShipping(items);
+        const {subTotal, shipping} = calculateTotals(items);
         const order = createOrder(vendor, items, subTotal, shipping);
+        updateQuantities(items);
         const paymentIntent = createPaymentIntent();
         await order.save();
         res.json({clientSecret: paymentIntent});
@@ -66,6 +66,22 @@ const validateVariationPurchase = (variation, purchaseQuantity)=>{
     if(variation.purchaseOption !== "ship" || variation.purchaseOption !== "buy"){
         throw new CustomError(400, "Not available for online purchase");
     }
+}
+
+/*
+ Calculate total prices
+
+ @param {Object} items - Items list of product/variation/quantity
+ @return {Object} Object containing subTotal, shipping and total
+ */
+const calculateTotals = (items)=>{
+    const subTotal = 0;
+    const shipping = 0;
+    for(let i = 0; i < items.length; i++){
+        subTotal += items[i].variation.price * items[i].quantity;
+        shipping += items[i].variation.shipping * items[i].quantity;
+    }
+    return {subTotal, shipping};
 }
 
 export {
