@@ -32,6 +32,7 @@
         <a class="headSub" href="#removeVariation">Remove Variation</a>
         <a class="headSub" href="#addVariationImages">Add Images</a>
         <a class="headSub" href="#removeVariationImages">Remove Images</a>
+        <a class="headMain" href="#order">Order</a>
     </header>
 
     <article>
@@ -723,6 +724,72 @@
                 <p class="name">N/A</p>
                 <p class="type"><a href="#variation">Variation</a></p>
                 <p class="propDesc">Variation object</p>
+            </div>
+        </div>
+
+        <div id="order" class="route">
+            <h1>Order</h1>
+            <p class="description">Order item that contains details on purchases</p>
+
+            <h3>Properties</h3>
+            <div class="prop">
+                <p class="name">vendor</p>
+                <p class="type"><a href="#vendor">Vendor</a></p>
+                <p class="propDesc">Vendor object, or ID of vendor, depending on situation</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">name</p>
+                <p class="type">String</p>
+                <p class="propDesc">Name of the purchaser</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">address</p>
+                <p class="type">String</p>
+                <p class="propDesc">Address of the purchaser</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">items</p>
+                <p class="type">[Object]</p>
+                <p class="propDesc">List of objects that contains information on the products purchased. Properties detailed below.</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">items.product</p>
+                <p class="type">String</p>
+                <p class="propDesc">Id of the product purchased</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">items.variation</p>
+                <p class="type">String</p>
+                <p class="propDesc">ID of the variation on the product that was purchased</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">items.quantity</p>
+                <p class="type">Number</p>
+                <p class="propDesc">Quantity representing the amount purchased of the product/variation</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">subTotal</p>
+                <p class="type">Number</p>
+                <p class="propDesc">Integer representing the total of all products purchsed in cents</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">shipping</p>
+                <p class="type">Number</p>
+                <p class="propDesc">Integer representing shiping cost in cents</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">total</p>
+                <p class="type">Number</p>
+                <p class="propDesc">Integer representing the total of all products and shipping in cents</p>
             </div>
         </div>
     </article>

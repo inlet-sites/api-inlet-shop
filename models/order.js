@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 
 const OrderSchema = new mongoose.Schema({
+    vendor: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        index: true
+    },
     name: {
         type: String,
         required: true
@@ -11,11 +16,11 @@ const OrderSchema = new mongoose.Schema({
     },
     items: [{
         product: {
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
             required: true
         },
         variation: {
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
             required: true
         },
         quantity: {
@@ -23,6 +28,14 @@ const OrderSchema = new mongoose.Schema({
             required: true
         }
     }],
+    subTotal: {
+        type: Number,
+        required: true
+    },
+    shipping: {
+        type: Number,
+        required: true
+    },
     total: {
         type: Number,
         required: true
