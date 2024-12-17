@@ -10,7 +10,6 @@ const createRoute = async (req, res, next)=>{
         validate(req.body);
         const vendor = await getVendor(req.body.vendor);
         const items = await getVariations(req.body.items);
-        const {subTotal, shipping} = calculateTotals(items);
         const order = createOrder(vendor, items, subTotal, shipping);
         updateQuantities(items);
         const paymentIntent = createPaymentIntent();
@@ -82,6 +81,37 @@ const calculateTotals = (items)=>{
         shipping += items[i].variation.shipping * items[i].quantity;
     }
     return {subTotal, shipping};
+}
+
+/*
+ Create a new order object
+
+ @param {Vendor} vendor - Vendor object
+ @param {Object} Items - Items object with Product, Variation and quantity
+ @param {object} data - Data from the request body
+ @return {Order} Order object
+ */
+const createOrder = (vendor, items, data)=>{
+    const {subTotal, shipping} = calculateTotals(items);
+    const order = new Order({
+        vendor: vendor._id,
+        name: data.name,
+        address: data.address,
+        email: data.email.toLowerCase(),
+        items: [],
+        subTotal: subTotal,
+        shipping: shipping,
+        total: subTotal + shipping,
+        status: "incomplete"
+    });
+    for(let i = 0; i < items.length; i++){
+        order.items.push({
+            product: items[i].product._id,
+            variation: items[i].variation._id,
+            quantity: items[i].quantity
+        });
+    }
+    return order;
 }
 
 export {

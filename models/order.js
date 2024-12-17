@@ -44,10 +44,6 @@ const OrderSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    stripeCustomer: {
-        type: String,
-        required: true
-    },
     //enum: incomplete, complete, confirmed, shipped
     status: {
         type: String,
