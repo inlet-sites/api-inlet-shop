@@ -11,7 +11,7 @@ const createRoute = async (req, res, next)=>{
         const vendor = await getVendor(req.body.vendor);
         const items = await getVariations(req.body.items);
         const order = createOrder(vendor, items, subTotal, shipping);
-        const paymentIntent = createPaymentIntent();
+        const paymentIntent = createPaymentIntent(vendor._id.toString(), order.total);
         updateQuantities(items);
         await order.save();
         res.json({clientSecret: paymentIntent});
@@ -125,6 +125,21 @@ const updateQuantities = (items)=>{
         items[i].variation.quantity -= items[i].quantity;
         items[i].product.save();
     }
+}
+
+/*
+ Create Stripe PaymentIntent
+
+ @param {String} vendorId - ID of the vendor
+ @param {Number} total - Total amount of payment in cents
+ @return {PaymentIntent} Stripe PaymentIntent object
+ */
+const createPaymentIntent = async (vendorId, total)=>{
+    const stripe = stripePack(vendorId);
+    return  await stripe.paymentIntents.create({
+        amount: total,
+        currency: "usd"
+    });
 }
 
 export {
