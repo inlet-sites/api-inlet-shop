@@ -9,6 +9,7 @@ import {catchError} from "./CustomError.js";
 import vendorRoutes from "./routes/vendor.js";
 import productRoutes from "./routes/product.js";
 import variationRoutes from "./routes/variation.js";
+import orderRoutes from "./routes/order.js";
 import otherRoutes from "./routes/other.js";
 
 const app = express();
@@ -28,6 +29,7 @@ app.use(cors());
 vendorRoutes(app);
 productRoutes(app);
 variationRoutes(app);
+orderRoutes(app);
 otherRoutes(app);
 
 app.use(catchError);
