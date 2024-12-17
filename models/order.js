@@ -44,7 +44,7 @@ const OrderSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    //enum: incomplete, complete, confirmed, shipped
+    //enum: incomplete, paid, paymentFailed, declined, confirmed, shipped
     status: {
         type: String,
         required: true

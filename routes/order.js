@@ -5,5 +5,5 @@ import {
 
 export default (app)=>{
     app.post("/order", createRoute);
-    app.post("/order/webhook", webhookRoute);
+    app.post("/order/webhook/:vendorId", webhookRoute);
 }

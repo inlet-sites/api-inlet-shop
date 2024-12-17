@@ -3,6 +3,7 @@ import Vendor from "../models/vendor.js";
 import {Product} from "../models/product.js";
 
 import {CustomError} from "../CustomError.js";
+import sendEmail from "../sendEmail.js";
 import validate from "../validation/order.js";
 import stripePack from "stripe";
 
@@ -22,7 +23,14 @@ const createRoute = async (req, res, next)=>{
 
 const webhookRoute = async (req, res, next)=>{
     try{
-        return null;
+        const vendor = await getVendor(req.params.vendorId);
+        const event = stripe.webhooks.constructEvent(
+            req.body,
+            request.headers["stripe-signature"],
+            vendor.webhookSecret
+        );
+        handleEvent(event);
+        res.send();
     }catch(e){next(e)}
 }
 
@@ -148,6 +156,77 @@ const createPaymentIntent = async (vendorToken, total)=>{
         amount: total,
         currency: "usd"
     });
+}
+
+/*
+ Take in an event and pass it off to the correction function
+
+ @param {Event} event - Stripe Event object
+ */
+const handleEvent = (event)=>{
+    switch(event.type){
+        case "payment_intent.succeeded":
+            handleSuccessEvent(event.data.object.id);
+            break;
+        case "payment_intent.canceled":
+            handleFailedEvent(event.data.object.id);
+            break;
+        case "payment_intent.payment_failed":
+            handleFailedEvent(event.data.object.id);
+            break;
+    }
+}
+
+/*
+ Update order status and send email to customer once payment succeeds
+
+ @param {String} paymentIntentId - Id of the paymentIntent
+ */
+const handleSuccessEvent = async (paymentIntentId)=>{
+    try{
+        const order = await getOrderByPaymentIntent(paymentIntentId);
+        order.status = "paid";
+        //sendEmail
+        order.save();
+    }catch(e){
+        console.error(e);
+    }
+}
+
+/*
+ Update order status and send email to customer if payment fails
+
+ @param {String} paymentIntentId - Id of the PaymentIntent
+ */
+const handleFailedEvent = async (paymentIntentId)=>{
+    try{
+        const order = await getOrderByPaymentIntent(paymentIntentId);
+        order.status = "paymentFailed";
+        //sendEmail
+        order.save();
+    }catch(e){
+        console.error(e);
+    }
+}
+
+/*
+ Retrieve order from database based on Stripe PaymentIntent
+ 
+ @param {String} paymentIntentId - ID of Stripe PaymentIntent
+ @return {Order} - Order object
+ */
+const getOrderByPaymentIntent = async (paymentIntentId)=>{
+    const order = await Order.findOne({paymentIntent: paymentIntentId});
+    if(!order){
+        const error = {
+            error: {
+                paymentIntent: paymentIntentId,
+                message: "Order not found"
+            }
+        };
+        throw new Error(error);
+    }
+    return order;
 }
 
 export {
