@@ -20,6 +20,12 @@ const createRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const webhookRoute = async (req, res, next)=>{
+    try{
+        return null;
+    }catch(e){next(e)}
+}
+
 /*
  Retrieve a vendor
  Throw error if vendor does not have good contact information
@@ -145,5 +151,6 @@ const createPaymentIntent = async (vendorToken, total)=>{
 }
 
 export {
-    createRoute
+    createRoute,
+    webhookRoute
 }
