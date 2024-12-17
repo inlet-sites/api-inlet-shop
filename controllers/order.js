@@ -8,6 +8,7 @@ import validate from "../validation/order.js";
 import stripePack from "stripe";
 
 import paymentSucceededEmail from "../email/paymentSucceeded.js";
+import paymentFailedEmail from "../email/paymentFailed.js";
 
 const createRoute = async (req, res, next)=>{
     try{
@@ -171,10 +172,10 @@ const handleEvent = (event, vendor)=>{
             handleSuccessEvent(event.data.object.id, vendor);
             break;
         case "payment_intent.canceled":
-            handleFailedEvent(event.data.object.id);
+            handleFailedEvent(event.data.object.id, vendor);
             break;
         case "payment_intent.payment_failed":
-            handleFailedEvent(event.data.object.id);
+            handleFailedEvent(event.data.object.id, vendor);
             break;
     }
 }
@@ -188,7 +189,6 @@ const handleSuccessEvent = async (paymentIntentId, vendor)=>{
     try{
         const order = await getOrderByPaymentIntent(paymentIntentId);
         order.status = "paid";
-        //sendEmail
         sendEmail(
             order.email,
             order.name,
@@ -206,11 +206,16 @@ const handleSuccessEvent = async (paymentIntentId, vendor)=>{
 
  @param {String} paymentIntentId - Id of the PaymentIntent
  */
-const handleFailedEvent = async (paymentIntentId)=>{
+const handleFailedEvent = async (paymentIntentId, vendor)=>{
     try{
         const order = await getOrderByPaymentIntent(paymentIntentId);
         order.status = "paymentFailed";
-        //sendEmail
+        sendEmail(
+            order.email,
+            order.name,
+            `Failed payment at ${vendor.store}`,
+            paymentFailedEmail(order, vendor)
+        );
         order.save();
     }catch(e){
         console.error(e);
