@@ -34,6 +34,7 @@
         <a class="headSub" href="#removeVariationImages">Remove Images</a>
         <a class="headMain" href="#order">Order</a>
         <a class="headSub" href="#createOrder">Create</a>
+        <a class="headSub" href="#orderWebhook">Webhook</a>
     </header>
 
     <article>
@@ -853,6 +854,12 @@
                 <p class="type">Number</p>
                 <p class="propDesc">Quantity of the variation that is being purchased</p>
             </div>
+        </div>
+
+        <div id="orderWebhook" class="route">
+            <h1>PaymentIntent Webhook</h1>
+            <p class="url">POST /order/webhook/:vendorId</p>
+            <p class="description">Route to catch webhooks from Stripe regarding updates to a PaymentIntent. Request body defined by Stripe and response is just 200 success response.</p>
         </div>
     </article>
 </body>
