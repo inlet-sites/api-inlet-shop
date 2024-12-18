@@ -7,6 +7,8 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import sharp from "sharp";
 import fs from "fs";
+import stripePack from "stripe";
+
 import sendEmail from "../sendEmail.js";
 import resetPasswordEmail from "../email/resetPassword.js";
 
@@ -66,6 +68,7 @@ const updateRoute = async (req, res, next)=>{
     try{
         validate(req.body);
         const vendor = updateVendor(res.locals.vendor, req.body);
+        if(req.body.stripeToken) await testToken(req.body.stripeToken);
         await vendor.save();
         res.json(responseVendorForSelf(vendor));
     }catch(e){next(e)}
@@ -244,8 +247,26 @@ const updateVendor = (vendor, data)=>{
     if(data.phone) vendor.contact.phone = data.phone;
     if(data.email) vendor.contact.email = data.email;
     if(data.address) vendor.contact.address = data.address;
+    if(data.stripeToken) vendor.stripeToken = data.stripeToken;
+    if(data.webhookSecret) vendor.webhookSecret = data.webhookSecret;
 
     return vendor;
+}
+
+/*
+ Test that a stripe token is valid and can create a product
+ Throws error if it fails to create/delete a product
+
+ @param {String} token - New Stripe API token
+ */
+const testToken = async (token)=>{
+    try{
+        const stripe = stripePack(token);
+        const product = await stripe.products.create({name: "Test Product"});
+        await stripe.products.del(product.id);
+    }catch(e){
+        throw new CustomError(400, "Invalid Stripe token");
+    }
 }
 
 /*

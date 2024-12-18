@@ -41,4 +41,13 @@ export default (data)=>{
     if(data.address){
         if(typeof(data.address) !== "string") throw new CustomError(400, "Invalid address");
     }
+
+    if(data.stripeToken){
+        if(typeof(data.stripeToken) !== "string") throw new CustomError(400, "Invalid API token");
+    }
+
+    if(data.webhookSecret){
+        if(typeof(data.stripeToken) !== "string") throw new CustomError(400, "Invalid Webhook Secret");
+        if(data.stripeToken.substring(0, 5) !== "whsec") throw new CustomError(400, "Invalid Webhook Secret");
+    }
 }
