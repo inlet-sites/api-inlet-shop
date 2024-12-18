@@ -6,6 +6,7 @@ import {CustomError} from "../CustomError.js";
 import sendEmail from "../sendEmail.js";
 import validate from "../validation/order.js";
 import stripePack from "stripe";
+import crypto from "crypto";
 
 import paymentSucceededEmail from "../email/paymentSucceeded.js";
 import paymentFailedEmail from "../email/paymentFailed.js";
@@ -117,6 +118,7 @@ const createOrder = (vendor, items, data)=>{
         name: data.name,
         address: data.address,
         email: data.email.toLowerCase(),
+        uuid: crypto.randomUUID(),
         items: [],
         subTotal: subTotal,
         shipping: shipping,
