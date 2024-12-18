@@ -35,6 +35,7 @@
         <a class="headMain" href="#order">Order</a>
         <a class="headSub" href="#createOrder">Create</a>
         <a class="headSub" href="#orderWebhook">Webhook</a>
+        <a class="headSub" href="#getOrders">Get (Vendor)</a>
     </header>
 
     <article>
@@ -860,6 +861,39 @@
             <h1>PaymentIntent Webhook</h1>
             <p class="url">POST /order/webhook/:vendorId</p>
             <p class="description">Route to catch webhooks from Stripe regarding updates to a PaymentIntent. Request body defined by Stripe and response is just 200 success response.</p>
+        </div>
+
+        <div id="getVendors" class="route">
+            <h1>Get Orders</h1>
+            <p class="url">GET /order?</p>
+            <p>Vendor Auth Required</p>
+            <p class="description"> Retrieve orders for a vendor passed on queries passed in</p>
+
+            <h3>Queries</h3>
+            <div class="prop">
+                <p class="name">from</p>
+                <p class="type">Date</p>
+                <p class="propDesc">(optional) Date to start searching from. If not provided, it is from beginning of time.</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">to</p>
+                <p class="type">Date</p>
+                <p class="propDesc">(optional) Date to end searching. If not provided, it is from beginning of time.</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">status</p>
+                <p class="type">String</p>
+                <p class="propDesc">Comma delimited list of statuses to search for. One of: incomplete, paid, paymentFailed, declined, confirmed, shipped. If omitted, will get all.</p>
+            </div>
+
+            <h3>Response</h3>
+            <div class="prop">
+                <p class="name">N/A</p>
+                <p class="type">[<a href="#order">order</a>]</p>
+                <p class="propDesc">A list of Order objects</p>
+            </div>
         </div>
     </article>
 </body>
