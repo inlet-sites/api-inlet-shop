@@ -38,6 +38,20 @@ const webhookRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const getOrdersRoute = async (req, res, next)=>{
+    try{
+        validate(req.query);
+        const {status, from, to} = getSearchQueryData(req.query);
+        const orders = await searchOrders(
+            res.locals.vendor._id,
+            from,
+            to,
+            status
+        );
+        res.json(orders);
+    }catch(e){next(e)}
+}
+
 /*
  Retrieve a vendor
  Throw error if vendor does not have good contact information
@@ -123,7 +137,8 @@ const createOrder = (vendor, items, data)=>{
         subTotal: subTotal,
         shipping: shipping,
         total: subTotal + shipping,
-        status: "incomplete"
+        status: "incomplete",
+        date: new Date()
     });
     for(let i = 0; i < items.length; i++){
         order.items.push({
@@ -244,7 +259,48 @@ const getOrderByPaymentIntent = async (paymentIntentId)=>{
     return order;
 }
 
+/*
+ Format data from search query into appropriate data for the search
+
+ @param {Object} data - Strings including, status, from, or to
+ @return {Object} Similar object with formatted data
+ */
+const getSearchQueryData = (data)=>{
+    return{
+        status: data.status ? data.status.split(",") : undefined,
+        from: data.from ? new Date(data.from) : undefined,
+        to: data.to ? new Date(data.to) : undefined
+    };
+}
+
+const searchOrders = async (vendorId, from, to, status)=>{
+    const match = {$match: {
+        vendor: vendorId,
+        date: {}
+    }};
+    if(from) match.$match.date.$gte = from;
+    if(to) match.$match.date.$lt = to;
+    if(status) match.$match.status = {$in: status};
+
+    return await Order.aggregate([
+        match,
+        {$project: {
+            id: "$_id",
+            _id: 0,
+            name: 1,
+            address: 1,
+            email: 1,
+            items: 1,
+            subTotal: 1,
+            shipping: 1,
+            total: 1,
+            status: 1
+        }}
+    ]);
+}
+
 export {
     createRoute,
-    webhookRoute
+    webhookRoute,
+    getOrdersRoute
 }

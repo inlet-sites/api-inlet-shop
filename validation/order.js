@@ -23,4 +23,23 @@ export default (data)=>{
         }
         if(data.email !== data.confirmEmail) throw new CustomError(400, "Email address mismatch");
     }
+    
+    if(data.from){
+        const from = new Date(data.from);
+        if(from.toString() === "Invalid Date") throw new CustomError(400, "Invalid 'from' date");
+    }
+
+    if(data.to){
+        const to = new Date(data.to);
+        if(to.toString() === "Invalid Date") throw new CustomError(400, "Invalid 'to' date");
+    }
+
+    if(data.status){
+        const valids = ["incomplete", "paid", "paymentFailed", "declined", "confirmed", "shipped"];
+        const statuses = data.status.split(",");
+        for(let i = 0; i < statuses.length; i++){
+            if(typeof(statuses[i]) !== "string") throw new CustomError(400, "Invalid status");
+            if(!valids.includes(statuses[i])) throw new CustomError(400, `Invalid status '${statuses[i]}'`);
+        }
+    }
 }

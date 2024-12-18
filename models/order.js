@@ -56,6 +56,10 @@ const OrderSchema = new mongoose.Schema({
     paymentIntent: {
         type: String,
         required: true
+    },
+    date: {
+        type: Date,
+        required: true
     }
 });
 
