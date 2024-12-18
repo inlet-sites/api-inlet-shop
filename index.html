@@ -36,6 +36,7 @@
         <a class="headSub" href="#createOrder">Create</a>
         <a class="headSub" href="#orderWebhook">Webhook</a>
         <a class="headSub" href="#getOrders">Get (Vendor)</a>
+        <a class="headSub" href="#getOrder">Get (One)</a>
     </header>
 
     <article>
@@ -893,6 +894,26 @@
                 <p class="name">N/A</p>
                 <p class="type">[<a href="#order">order</a>]</p>
                 <p class="propDesc">A list of Order objects</p>
+            </div>
+        </div>
+
+        <div id="getOrder" class="route">
+            <h1>Get Single Order (Customer)</h1>
+            <p class="url">GET /order/:orderId?</h1>
+            <p class="description">Retrieve full order details for a customer</p>
+
+            <h3>Query</h3>
+            <div class="prop">
+                <p class="name">token</p>
+                <p class="type">String</p>
+                <p class="propDesc">UUID associated with the order</p>
+            </div>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">N/A</p>
+                <p class="type"><a href="#order">Order</a></p>
+                <p class="propDesc">Order object with all necessary data populated</p>
             </div>
         </div>
     </article>
