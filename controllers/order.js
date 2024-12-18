@@ -7,6 +7,7 @@ import sendEmail from "../sendEmail.js";
 import validate from "../validation/order.js";
 import stripePack from "stripe";
 import crypto from "crypto";
+import mongoose from "mongoose";
 
 import paymentSucceededEmail from "../email/paymentSucceeded.js";
 import paymentFailedEmail from "../email/paymentFailed.js";
@@ -38,6 +39,15 @@ const webhookRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const getOrderRoute = async (req, res, next)=>{
+    try{
+        const order = await getOrder(req.params.orderId);
+        verifyOrderUUID(order, req.params.token);
+        order.uuid = undefined;
+        res.json(order);
+    }catch(e){next(e)}
+}
+
 const getOrdersRoute = async (req, res, next)=>{
     try{
         validate(req.query);
@@ -65,6 +75,16 @@ const getVendor = async (vendorId)=>{
         throw new CustomError(400, "Vendor has not provided contact information");
     }
     return vendor;
+}
+
+/*
+ Throw error if token does not match UUID
+
+ @param {Order} order - Order object
+ @param {String} uuid - UUID from the query
+ */
+const verifyOrderUUID = (order, uuid)=>{
+    if(order.uuid !== uuid) throw new CustomError(403, "Forbidden");
 }
 
 /*
@@ -240,6 +260,79 @@ const handleFailedEvent = async (paymentIntentId, vendor)=>{
 }
 
 /*
+ Retrieve a single order from the ID
+
+ @param {String} orderId - ID of the order to retrieve
+ @return {Order} Order object
+ */
+const getOrder = async (orderId)=>{
+    const order = await Order.aggregate([
+        {$match: {_id: new mongoose.Types.ObjectId(orderId)}},
+        {$lookup: {
+            from: "vendors",
+            localField: "vendor",
+            foreignField: "_id",
+            as: "vendor",
+            pipeline: [{$project: {
+                store: 1,
+                url: 1,
+                image: 1,
+                slogan: 1,
+                "contact.phone": 1,
+                "contact.email": 1,
+                "contact.address": 1
+            }}]
+        }},
+        {$unwind: "$items"},
+        {$lookup: {
+            from: "products",
+            localField: "items.product",
+            foreignField: "_id",
+            as: "productDetails",
+            pipeline: [{$project: {
+                id: "$_id",
+                _id: 0,
+                name: 1,
+                tags: 1,
+                images: 1,
+                description: 1,
+                variations: {
+                    $map: {
+                        input: "$variations",
+                        as: "variation",
+                        in: {
+                            id: "$$variation._id",
+                            descriptor: "$$variation.descriptor",
+                            price: "$$variation.price",
+                            shipping: "$$variation.shipping",
+                            images: "$$variation.images"
+                        }
+                    }
+                }
+            }}]
+        }},
+        {$unwind: "$productDetails"},
+        {$addFields: {"items.product": "$productDetails"}},
+        {$group: {
+            _id: "$_id",
+            items: {$push: "$items"},
+            vendor: {$first: "$vendor"},
+            name: {$first: "$name"},
+            address: {$first: "$address"},
+            email: {$first: "$email"},
+            subTotal: {$first: "$subTotal"},
+            shipping: {$first: "$shipping"},
+            total: {$first: "$total"},
+            status: {$first: "$status"},
+            date: {$first: "$date"},
+            uuid: {$first: "$uuid"}
+        }}
+    ]);
+    if(order.length === 0) throw new CustomError(400, "Order with that ID doesn't exist");
+    return order[0];
+}
+
+/*
  Retrieve order from database based on Stripe PaymentIntent
  
  @param {String} paymentIntentId - ID of Stripe PaymentIntent
@@ -302,5 +395,6 @@ const searchOrders = async (vendorId, from, to, status)=>{
 export {
     createRoute,
     webhookRoute,
+    getOrderRoute,
     getOrdersRoute
 }
