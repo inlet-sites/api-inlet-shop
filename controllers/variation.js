@@ -144,7 +144,7 @@ const newVariation = async (data, productId, stripeProductId, stripeToken)=>{
         quantity: data.quantity,
         shipping: data.shipping,
         images: [],
-        purchaseOption: stripeToken ? data.purchaseOption : "list",
+        purchaseOption: (stripeToken && webhookSecret) ? data.purchaseOption : "list",
         archived: false
     });
 
