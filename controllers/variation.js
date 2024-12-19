@@ -232,6 +232,7 @@ const removeImages = (imagesArray, removeImages)=>{
  */
 const responseVariation = (variation)=>{
     return {
+        id: variation._id,
         product: variation.product,
         descriptor: variation.descriptor,
         price: variation.price,
