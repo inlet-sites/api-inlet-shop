@@ -2,9 +2,9 @@ import {Product, Variation} from "../models/product.js";
 
 import {CustomError} from "../CustomError.js";
 import validate from "../validation/variation.js";
+import {decrypt, newUUID} from "../crypto.js";
 import stripePack from "stripe";
 import sharp from "sharp";
-import crypto from "crypto";
 import fs from "fs";
 
 const createVariation = async (req, res, next)=>{
@@ -124,7 +124,7 @@ const archiveVariation = (product, variationId)=>{
  @param {String} priceToken - Stripe token for the price
  */
 const setStripePriceInactive = (vendorToken, priceToken)=>{
-    const stripe = stripePack(vendorToken);
+    const stripe = stripePack(decrypt(vendorToken));
     stripe.prices.update(priceToken, {active: false});
 }
 
@@ -164,7 +164,7 @@ const newVariation = async (data, productId, stripeProductId, stripeToken)=>{
  @return {String} ID of the newly create Stripe price
  */
 const createPrice = async (token, amount, product)=>{
-    const stripe = stripePack(token);
+    const stripe = stripePack(decrypt(token));
 
     const price = await stripe.prices.create({
         currency: "usd",
@@ -188,7 +188,7 @@ const addImages = (files)=>{
     const newFiles = [];
 
     for(let i = 0; i < files.length; i++){
-        const uuid = crypto.randomUUID();
+        const uuid = newUUID();
         const filename = `${uuid}.webp`;
         promises.push(
             sharp(files[i].data)

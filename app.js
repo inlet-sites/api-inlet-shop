@@ -34,9 +34,6 @@ otherRoutes(app);
 
 app.use(catchError);
 
-app.get("/", (req, res)=>{res.sendFile(`${global.cwd}/index.html`)});
-app.get("/style.css", (req, res)=>{res.sendFile(`${global.cwd}/index.css`)});
-
 if(process.env.NODE_ENV !== "production"){
     app.listen(8000);
 }

@@ -26,8 +26,14 @@ const VendorSchema = new mongoose.Schema({
         required: true
     },
     stripeToken: {
-        type: String,
-        required: false
+        iv: {
+            type: String,
+            required: false
+        },
+        encryptedData: {
+            type: String,
+            required: false
+        }
     },
     webhookSecret: {
         type: String,

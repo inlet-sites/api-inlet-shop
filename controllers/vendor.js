@@ -2,8 +2,8 @@ import Vendor from "../models/vendor.js";
 
 import {CustomError} from "../CustomError.js";
 import validate from "../validation/vendor.js";
+import {encrypt, newUUID} from "../crypto.js";
 import bcrypt from "bcrypt";
-import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import sharp from "sharp";
 import fs from "fs";
@@ -19,7 +19,7 @@ const createPassRoute = async (req, res, next)=>{
         if(vendor.password) throw new CustomError(400, "Password already created");
         confirmToken(vendor, req.params.token);
         vendor.password = await createPasswordHash(req.body.password);
-        vendor.token = newToken();
+        vendor.token = newUUID();
         await vendor.save();
         res.json({success: true});
     }catch(e){next(e)}
@@ -29,7 +29,7 @@ const changePassRoute = async (req, res, next)=>{
     try{
         validate(req.body);
         res.locals.vendor.password = await createPasswordHash(req.body.password);
-        res.locals.vendor.token = newToken();
+        res.locals.vendor.token = newUUID();
         await res.locals.vendor.save();
         res.json({success: true});
     }catch(e){next(e)}
@@ -103,7 +103,7 @@ const resetPasswordRoute = async (req, res, next)=>{
         const vendor = await getVendor(req.body.vendor);
         confirmToken(vendor, req.body.token);
         vendor.password = await createPasswordHash(req.body.password);
-        vendor.token = newToken();
+        vendor.token = newUUID();
         await vendor.save();
         res.json({success: true});
     }catch(e){next(e)}
@@ -172,15 +172,6 @@ const createPasswordHash = async (password)=>{
 }
 
 /*
- Create a new UUID
-
- @return {String} Newly created UUID
- */
-const newToken = ()=>{
-    return crypto.randomUUID();
-}
-
-/*
  Throw error if password doesn't match
 
  @param {String} password - Password to compare
@@ -214,7 +205,7 @@ const createImage = async (file)=>{
     let fileType = file.name.split(".");
     let fileName = fileType[0];
     fileType = fileType[fileType.length-1];
-    let uuid = crypto.randomUUID();
+    let uuid = newUUID;
     let fileString = `${uuid}.webp`;
 
     let image = await sharp(file.data)
@@ -247,8 +238,8 @@ const updateVendor = (vendor, data)=>{
     if(data.phone) vendor.contact.phone = data.phone;
     if(data.email) vendor.contact.email = data.email;
     if(data.address) vendor.contact.address = data.address;
-    if(data.stripeToken) vendor.stripeToken = data.stripeToken;
-    if(data.webhookSecret) vendor.webhookSecret = data.webhookSecret;
+    if(data.stripeToken) vendor.stripeToken = encrypt(data.stripeToken);
+    if(data.webhookSecret) vendor.webhookSecret = encrypt(data.webhookSecret);
 
     return vendor;
 }

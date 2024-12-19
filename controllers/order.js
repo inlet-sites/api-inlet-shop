@@ -5,8 +5,8 @@ import {Product} from "../models/product.js";
 import {CustomError} from "../CustomError.js";
 import sendEmail from "../sendEmail.js";
 import validate from "../validation/order.js";
+import {decrypt, newUUID} from "../crypto.js";
 import stripePack from "stripe";
-import crypto from "crypto";
 import mongoose from "mongoose";
 
 import paymentSucceededEmail from "../email/paymentSucceeded.js";
@@ -152,7 +152,7 @@ const createOrder = (vendor, items, data)=>{
         name: data.name,
         address: data.address,
         email: data.email.toLowerCase(),
-        uuid: crypto.randomUUID(),
+        uuid: newUUID(),
         items: [],
         subTotal: subTotal,
         shipping: shipping,
@@ -191,7 +191,7 @@ const updateQuantities = (items)=>{
  @return {PaymentIntent} Stripe PaymentIntent object
  */
 const createPaymentIntent = async (vendorToken, total)=>{
-    const stripe = stripePack(vendorToken);
+    const stripe = stripePack(decrypt(vendorToken));
     return  await stripe.paymentIntents.create({
         amount: total,
         currency: "usd"

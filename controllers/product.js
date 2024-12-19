@@ -1,8 +1,8 @@
 import {Product} from "../models/product.js";
 
 import validate from "../validation/product.js";
+import {decrypt, newUUID} from "../crypto.js";
 import sharp from "sharp";
-import crypto from "crypto";
 import stripePack from "stripe";
 import fs from "fs";
 import mongoose from "mongoose";
@@ -208,7 +208,7 @@ const addImages = async (files)=>{
     const newFiles = [];
 
     for(let i = 0; i < files.length; i++){
-        let uuid = crypto.randomUUID();
+        let uuid = newUUID();
         const fileName = `${uuid}.webp`;
         promises.push(
             sharp(files[i].data)
@@ -254,7 +254,7 @@ const removeImages = (images, product)=>{
  @return {String} Stripe ID for the product
  */
 const createStripeProduct = async (token, name, active)=>{
-    const stripe = stripePack(token);
+    const stripe = stripePack(decrypt(token));
 
     const product = await stripe.products.create({
         name: name,
@@ -264,8 +264,8 @@ const createStripeProduct = async (token, name, active)=>{
     return product.id;
 }
 
-const archiveStripeProduct = async (vendorId, productId)=>{
-    const stripe = stripePack(vendorId);
+const archiveStripeProduct = async (token, productId)=>{
+    const stripe = stripePack(decrypt(token));
 
     await stripe.products.update(
         productId,
@@ -284,7 +284,7 @@ const archiveStripeProduct = async (vendorId, productId)=>{
  @return {Product} The updated product
  */
 const updateProduct = async (data, product, token)=>{
-    const stripe = stripePack(token);
+    const stripe = stripePack(decrypt(token));
     const stripeData = {};
     if(data.name){
         product.name = data.name;
