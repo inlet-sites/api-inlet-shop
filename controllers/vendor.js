@@ -205,7 +205,7 @@ const createImage = async (file)=>{
     let fileType = file.name.split(".");
     let fileName = fileType[0];
     fileType = fileType[fileType.length-1];
-    let uuid = newUUID;
+    let uuid = newUUID();
     let fileString = `${uuid}.webp`;
 
     let image = await sharp(file.data)
