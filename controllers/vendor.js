@@ -277,7 +277,9 @@ const responseVendorForSelf = (vendor)=>{
         image: vendor.image,
         slogan: vendor.slogan,
         description: vendor.description,
-        contact: vendor.contact
+        contact: vendor.contact,
+        stripeToken: Boolean(vendor.stripeToken),
+        webhookSecret: Boolean(vendor.webhookSecret)
     };
 }
 
