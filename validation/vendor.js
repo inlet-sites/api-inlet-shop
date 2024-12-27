@@ -47,7 +47,7 @@ export default (data)=>{
     }
 
     if(data.webhookSecret){
-        if(typeof(data.stripeToken) !== "string") throw new CustomError(400, "Invalid Webhook Secret");
-        if(data.stripeToken.substring(0, 5) !== "whsec") throw new CustomError(400, "Invalid Webhook Secret");
+        if(typeof(data.webhookSecret) !== "string") throw new CustomError(400, "Invalid Webhook Secret");
+        if(data.webhookSecret.substring(0, 5) !== "whsec") throw new CustomError(400, "Invalid Webhook Secret");
     }
 }

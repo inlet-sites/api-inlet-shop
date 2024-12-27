@@ -16,7 +16,8 @@ const createVariation = async (req, res, next)=>{
             req.body,
             product._id.toString(),
             product.stripeId,
-            res.locals.vendor.stripeToken
+            res.locals.vendor.stripeToken,
+            res.locals.vendor.webhookSecret
         );
         if(req.files) variation.images = addImages(req.files.images);
         product.variations.push(variation);
@@ -136,7 +137,7 @@ const setStripePriceInactive = (vendorToken, priceToken)=>{
  @param {String} stripeToken - Stripe token of user, if any
  @return {Variation} Newly created variation
  */
-const newVariation = async (data, productId, stripeProductId, stripeToken)=>{
+const newVariation = async (data, productId, stripeProductId, stripeToken, webhookSecret)=>{
     const variation = new Variation({
         product: productId,
         descriptor: data.descriptor,

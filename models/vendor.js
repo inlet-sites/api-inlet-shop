@@ -36,9 +36,14 @@ const VendorSchema = new mongoose.Schema({
         }
     },
     webhookSecret: {
-        type: String,
-        required: false,
-        index: true
+        iv: {
+            type: String,
+            required: false
+        },
+        encryptedData: {
+            type: String,
+            required: false
+        }
     },
     image: {
         type: String,
