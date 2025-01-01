@@ -278,8 +278,8 @@ const responseVendorForSelf = (vendor)=>{
         slogan: vendor.slogan,
         description: vendor.description,
         contact: vendor.contact,
-        stripeToken: Boolean(vendor.stripeToken),
-        webhookSecret: Boolean(vendor.webhookSecret)
+        stripeToken: Boolean(vendor.stripeToken.encryptedData),
+        webhookSecret: Boolean(vendor.webhookSecret.encryptedData)
     };
 }
 

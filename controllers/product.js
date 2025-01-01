@@ -321,6 +321,7 @@ const responseProduct = (product)=>{
     };
 
     for(let i = 0; i < product.variations.length; i++){
+        if(product.variations[i].archived) continue;
         productObj.variations.push({
             id: product.variations[i]._id,
             descriptor: product.variations[i].descriptor,
