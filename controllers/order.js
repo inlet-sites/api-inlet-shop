@@ -369,8 +369,8 @@ const getSearchQueryData = (data)=>{
 const searchOrders = async (vendorId, from, to, status)=>{
     const match = {$match: {
         vendor: vendorId,
-        date: {}
     }};
+    if(from || to) match.$match.date = {};
     if(from) match.$match.date.$gte = from;
     if(to) match.$match.date.$lt = to;
     if(status) match.$match.status = {$in: status};
