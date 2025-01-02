@@ -441,5 +441,7 @@ export {
     createRoute,
     webhookRoute,
     getOrderRoute,
-    getOrdersRoute
+    getOrdersRoute,
+    getOrderVendorRoute,
+    updateOrderRoute
 }
