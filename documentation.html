@@ -100,6 +100,7 @@
         <a class="headSub" href="#orderWebhook">Webhook</a>
         <a class="headSub" href="#getOrders">Get (Vendor)</a>
         <a class="headSub" href="#getOrder">Get (One)</a>
+        <a class="headSub" href="#getOrderVendor">Get One (Vendor)</a>
     </header>
 
     <article>
@@ -939,7 +940,7 @@
             <p class="description">Route to catch webhooks from Stripe regarding updates to a PaymentIntent. Request body defined by Stripe and response is just 200 success response.</p>
         </div>
 
-        <div id="getVendors" class="route">
+        <div id="getOrders" class="route">
             <h1>Get Orders</h1>
             <p class="url">GET /order?</p>
             <p>Vendor Auth Required</p>
@@ -989,6 +990,20 @@
                 <p class="name">N/A</p>
                 <p class="type"><a href="#order">Order</a></p>
                 <p class="propDesc">Order object with all necessary data populated</p>
+            </div>
+        </div>
+
+        <div id="getOrderVendor" class="route">
+            <h1>Get Single Order for Vendor</h1>
+            <p class="url">GET /order/:orderId/vendor</p>
+            <p>Vendor Auth required</p>
+            <p class="description">Retrieve the full data for a single order. Verify with vendor details rather than token</p>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">N/A</p>
+                <p class="type"><a href="#order">Order</a></p>
+                <p class="propDesc">Full details for a single order, including all products/variations</p>
             </div>
         </div>
     </article>

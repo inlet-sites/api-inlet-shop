@@ -62,6 +62,15 @@ const getOrdersRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const getOrderVendorRoute = async (req, res, next)=>{
+    try{
+        const order = await getOrder(req.params.orderId);
+        verifyOwnership(res.locals.vendor, order);
+        order.uuid = undefined;
+        res.json(order);
+    }catch(e){next(e)}
+}
+
 /*
  Retrieve a vendor
  Throw error if vendor does not have good contact information
@@ -85,6 +94,18 @@ const getVendor = async (vendorId)=>{
  */
 const verifyOrderUUID = (order, uuid)=>{
     if(order.uuid !== uuid) throw new CustomError(403, "Forbidden");
+}
+
+/*
+ Throw error if vendor does not own the order
+
+ @param {Vendor} vendor - Vendor object
+ @param {Order} order - Order object
+ */
+const verifyOwnership = (vendor, order)=>{
+    if(vendor._id.toString() !== order.vendor.toString()){
+        throw new CustomError(403, "Forbidden");
+    }
 }
 
 /*
