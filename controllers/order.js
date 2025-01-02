@@ -114,7 +114,7 @@ const verifyOrderUUID = (order, uuid)=>{
  @param {Order} order - Order object
  */
 const verifyOwnership = (vendor, order)=>{
-    if(vendor._id.toString() !== order.vendor.toString()){
+    if(vendor._id.toString() !== order.vendor[0]._id.toString()){
         throw new CustomError(403, "Forbidden");
     }
 }
