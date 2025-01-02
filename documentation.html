@@ -101,6 +101,7 @@
         <a class="headSub" href="#getOrders">Get (Vendor)</a>
         <a class="headSub" href="#getOrder">Get (One)</a>
         <a class="headSub" href="#getOrderVendor">Get One (Vendor)</a>
+        <a class="headSub" href="#updateOrder">Update</a>
     </header>
 
     <article>
@@ -1004,6 +1005,27 @@
                 <p class="name">N/A</p>
                 <p class="type"><a href="#order">Order</a></p>
                 <p class="propDesc">Full details for a single order, including all products/variations</p>
+            </div>
+        </div>
+
+        <div id="updateOrder" class="route">
+            <h1>Update Order</h1>
+            <p class="url">PUT /order/:orderId</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Update some of the data on an order</p>
+
+            <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">status</p>
+                <p class="type">String</p>
+                <p class="propDesc">String representing status of the order. May be one of: confirmed, shipped, declined.</p>
+            </div>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">N/A</p>
+                <p class="type"><a href="#order">Order</a></p>
+                <p class="propDesc">Full order including all details, including products/variations</p>
             </div>
         </div>
     </article>

@@ -71,6 +71,17 @@ const getOrderVendorRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const updateOrderRoute = async (req, res, next)=>{
+    try{
+        validate(req.body);
+        let order = await getOrder(req.params.orderId);
+        verifyOwnership(res.locals.vendor, order);
+        order = updateOrder(order, req.body);
+        await order.save();
+        res.json(order);
+    }catch(e){next(e)}
+}
+
 /*
  Retrieve a vendor
  Throw error if vendor does not have good contact information
@@ -106,6 +117,19 @@ const verifyOwnership = (vendor, order)=>{
     if(vendor._id.toString() !== order.vendor.toString()){
         throw new CustomError(403, "Forbidden");
     }
+}
+
+/*
+ Update data on an order
+ 
+ @param {Order} order - Order object
+ @param {String} data.status - String representing the new status
+ @return {Order} Order object
+ */
+const updateOrder = (order, data)=>{
+    if(data.status) order.status = data.status;
+
+    return order;
 }
 
 /*

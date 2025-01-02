@@ -5,7 +5,8 @@ import {
     webhookRoute,
     getOrderRoute,
     getOrdersRoute,
-    getOrderVendorRoute
+    getOrderVendorRoute,
+    updateOrderRoute
 } from "../controllers/order.js";
 
 export default (app)=>{
@@ -14,4 +15,5 @@ export default (app)=>{
     app.get("/order/:orderId/token/:token", getOrderRoute);
     app.get("/order?*", vendorAuth, getOrdersRoute);
     app.get("/order/:orderId/vendor", vendorAuth, getOrderVendorRoute);
+    app.put("/order/:orderId", vendorAuth, updateOrderRoute);
 }
