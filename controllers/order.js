@@ -41,7 +41,7 @@ const webhookRoute = async (req, res, next)=>{
 
 const getOrderRoute = async (req, res, next)=>{
     try{
-        const order = await getOrder(req.params.orderId);
+        const order = await getFullOrder(req.params.orderId);
         verifyOrderUUID(order, req.params.token);
         order.uuid = undefined;
         res.json(order);
@@ -64,7 +64,7 @@ const getOrdersRoute = async (req, res, next)=>{
 
 const getOrderVendorRoute = async (req, res, next)=>{
     try{
-        const order = await getOrder(req.params.orderId);
+        const order = await getFullOrder(req.params.orderId);
         verifyOwnership(res.locals.vendor, order);
         order.uuid = undefined;
         res.json(order);
@@ -74,12 +74,23 @@ const getOrderVendorRoute = async (req, res, next)=>{
 const updateOrderRoute = async (req, res, next)=>{
     try{
         validate(req.body);
-        let order = await getOrder(req.params.orderId);
-        verifyOwnership(res.locals.vendor, order);
+        let order = await getSingleOrder(req.params.orderId);
+        verifyOwnership2(res.locals.vendor, order);
         order = updateOrder(order, req.body);
         await order.save();
+        order = await getFullOrder(req.params.orderId);
         res.json(order);
     }catch(e){next(e)}
+}
+
+/*
+ Retrieve a single order with the order ID
+
+ @param {String} orderId - ID of the order to retrieve
+ @return {Order} Order object
+ */
+const getSingleOrder = async (orderId)=>{
+    return await Order.findOne({_id: orderId});
 }
 
 /*
@@ -115,6 +126,16 @@ const verifyOrderUUID = (order, uuid)=>{
  */
 const verifyOwnership = (vendor, order)=>{
     if(vendor._id.toString() !== order.vendor[0]._id.toString()){
+        throw new CustomError(403, "Forbidden");
+    }
+}
+
+/*
+ Throw error if vendor does not own the order
+ This function assumes vendor is an ObjectId and has not been populated
+ */
+const verifyOwnership2 = (vendor, order)=>{
+    if(vendor._id.toString() !== order.vendor.toString()){
         throw new CustomError(403, "Forbidden");
     }
 }
@@ -310,7 +331,7 @@ const handleFailedEvent = async (paymentIntentId, vendor)=>{
  @param {String} orderId - ID of the order to retrieve
  @return {Order} Order object
  */
-const getOrder = async (orderId)=>{
+const getFullOrder = async (orderId)=>{
     const order = await Order.aggregate([
         {$match: {_id: new mongoose.Types.ObjectId(orderId)}},
         {$lookup: {
