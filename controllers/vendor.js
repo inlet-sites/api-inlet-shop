@@ -52,7 +52,7 @@ const getSelfRoute = (req, res, next)=>{
 
 const getVendorRoute = async (req, res, next)=>{
     try{
-        const vendor = await getVendor(req.params.vendorUrl);
+        const vendor = await getVendorByUrl(req.params.vendorUrl);
         res.json(responseVendor(vendor));
     }catch(e){next(e)}
 }
@@ -119,6 +119,19 @@ const resetPasswordRoute = async (req, res, next)=>{
 const getVendor = async (vendorId)=>{
     const vendor = await Vendor.findOne({_id: vendorId});
     if(!vendor) throw new CustomError(400, "Vendor with this ID doesn't exist");
+    return vendor;
+}
+
+/*
+ Retrieve vendor from a URL
+ Throw error if no vendor with that URL
+
+ @param {String} url - URL of the vendor
+ @return {Vendor} Vendor object
+ */
+const getVendorByUrl = async (url)=>{
+    const vendor = await Vendor.findOne({url: url});
+    if(!vendor) throw new CustomError(400, "Vendor with this URL doesn't exist");
     return vendor;
 }
 
