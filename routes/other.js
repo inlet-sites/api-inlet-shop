@@ -1,5 +1,9 @@
+import {
+    getDocumentRoute,
+    getCartRoute
+} from "../controllers/other.js";
+
 export default (app)=>{
-    app.get("/document/:document", (req, res)=>{
-        res.sendFile(`${global.cwd}/documents/${req.params.document}`);
-    });
+    app.get("/document/:document", getDocumentRoute)
+    app.post("/cart", getCartRoute);
 }

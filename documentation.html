@@ -102,6 +102,8 @@
         <a class="headSub" href="#getOrder">Get (One)</a>
         <a class="headSub" href="#getOrderVendor">Get One (Vendor)</a>
         <a class="headSub" href="#updateOrder">Update</a>
+        <a class="headMain" href="#cart">Cart</a>
+        <a class="headSub" href="#getCart">Get</a>
     </header>
 
     <article>
@@ -1027,6 +1029,17 @@
                 <p class="type"><a href="#order">Order</a></p>
                 <p class="propDesc">Full order including all details, including products/variations</p>
             </div>
+        </div>
+
+        <div id="cart" class="route">
+            <h1>Cart</h1>
+            <p class="description">The cart is not an actual object in the database. It is a collection of data stored on the front-end to define what is in the user's cart. Some of this data is sent to the server when checking out.</p>
+        </div>
+
+        <div id="getCart" class="route">
+            <p>Get Cart Data</p>
+            <p class="url">POST /cart</p>
+            <p class="description">Format and retrieve the data from the cart data stored on the front-end</p>
         </div>
     </article>
 </body>
