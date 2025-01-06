@@ -149,7 +149,7 @@ const newVariation = async (data, productId, stripeProductId, stripeToken, webho
         archived: false
     });
 
-    if(stripeToken){
+    if(typeof(stripeToken.encryptedData) === "string" && stripeToken.encryptedData.length > 1){
         variation.priceId = await createPrice(stripeToken, data.price, stripeProductId);
     }
 

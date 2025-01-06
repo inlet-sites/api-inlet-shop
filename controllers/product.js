@@ -16,7 +16,10 @@ const createRoute = async (req, res, next)=>{
         };
         validate(data);
         const product = createProduct(data, res.locals.vendor._id);
-        if(res.locals.vendor.stripeToken){
+        if(
+            typeof(res.locals.vendor.stripeToken.encryptedData) === "string" &&
+            res.locals.vendor.stripeToken.encryptedData.length > 1
+        ){
             product.stripeId = await createStripeProduct(
                 res.locals.vendor.stripeToken,
                 data.name,
