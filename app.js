@@ -17,7 +17,7 @@ global.cwd = `${import.meta.dirname}`;
 
 let mongoString = "mongodb://127.0.0.1/inletshop";
 if(process.env.NODE_ENV === "production"){
-    mongoString = `mongodb://inletshop:${process.env.MONGODB_PASS}@127.0.0.1:27017/inletsites?authSource=admin`;
+    mongoString = `mongodb://inletshop:${process.env.MONGODB_PASS}@127.0.0.1:27017/inletshop?authSource=admin`;
 }
 mongoose.connect(mongoString);
 
