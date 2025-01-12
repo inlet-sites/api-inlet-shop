@@ -35,6 +35,10 @@ const VendorSchema = new mongoose.Schema({
             required: false
         }
     },
+    publishableKey: {
+        type: String,
+        required: false
+    },
     webhookSecret: {
         iv: {
             type: String,

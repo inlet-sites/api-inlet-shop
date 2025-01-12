@@ -252,6 +252,7 @@ const updateVendor = (vendor, data)=>{
     if(data.email) vendor.contact.email = data.email;
     if(data.address) vendor.contact.address = data.address;
     if(data.stripeToken) vendor.stripeToken = encrypt(data.stripeToken);
+    if(data.publishableKey) vendor.publishableKey = data.publishableKey;
     if(data.webhookSecret) vendor.webhookSecret = encrypt(data.webhookSecret);
 
     return vendor;
