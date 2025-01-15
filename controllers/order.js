@@ -22,7 +22,10 @@ const createRoute = async (req, res, next)=>{
         order.paymentIntent = paymentIntent.id;
         updateQuantities(items);
         await order.save();
-        res.json({clientSecret: paymentIntent.client_secret});
+        res.json({
+            clientSecret: paymentIntent.client_secret,
+            publishableKey: vendor.publishableKey
+        });
     }catch(e){next(e)}
 }
 
@@ -102,9 +105,6 @@ const getSingleOrder = async (orderId)=>{
  */
 const getVendor = async (vendorId)=>{
     const vendor = await Vendor.findOne({_id: vendorId});
-    if(!vendor.contact.phone && !vendor.contact.email){
-        throw new CustomError(400, "Vendor has not provided contact information");
-    }
     return vendor;
 }
 
