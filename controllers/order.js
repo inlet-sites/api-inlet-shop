@@ -17,6 +17,7 @@ const createRoute = async (req, res, next)=>{
         validate(req.body);
         const vendor = await getVendor(req.body.vendor);
         const items = await getVariations(req.body.items);
+        console.log(items);
         const order = createOrder(vendor, items, req.body);
         const paymentIntent = await createPaymentIntent(vendor.stripeToken, order.total);
         order.paymentIntent = paymentIntent.id;
@@ -24,7 +25,9 @@ const createRoute = async (req, res, next)=>{
         await order.save();
         res.json({
             clientSecret: paymentIntent.client_secret,
-            publishableKey: vendor.publishableKey
+            publishableKey: vendor.publishableKey,
+            orderId: order._id,
+            orderToken: order.uuid
         });
     }catch(e){next(e)}
 }
@@ -115,6 +118,8 @@ const getVendor = async (vendorId)=>{
  @param {String} uuid - UUID from the query
  */
 const verifyOrderUUID = (order, uuid)=>{
+    console.log(order.uuid);
+    console.log(uuid);
     if(order.uuid !== uuid) throw new CustomError(403, "Forbidden");
 }
 
@@ -179,7 +184,7 @@ const getVariations = async (items)=>{
  */
 const validateVariationPurchase = (variation, purchaseQuantity)=>{
     if(purchaseQuantity > variation.quantity){
-        throw new CustomError(400, `${variation._id}-Invalid quantity`);
+        throw new CustomError(400, `${variation.descriptor} - ${variation.quantity} available`);
     }
     if(variation.archived !== false) throw new CustomError(400, "Item not available for purchase");
     if(variation.purchaseOption !== "ship" && variation.purchaseOption !== "buy"){
@@ -344,9 +349,7 @@ const getFullOrder = async (orderId)=>{
                 url: 1,
                 image: 1,
                 slogan: 1,
-                "contact.phone": 1,
-                "contact.email": 1,
-                "contact.address": 1
+                contact: 1
             }}]
         }},
         {$unwind: "$items"},
