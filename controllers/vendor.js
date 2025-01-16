@@ -282,6 +282,16 @@ const testToken = async (token)=>{
  @return {Object} - Formatted vendor object for the vendor to view
  */
 const responseVendorForSelf = (vendor)=>{
+    let canSell = false;
+    if(
+        vendor.stripeToken.encryptedData &&
+        vendor.webhookSecret.encryptedData &&
+        (
+            vendor.contact.phone ||
+            vendor.contact.email
+        )
+    ) canSell = true;
+
     return {
         id: vendor._id,
         email: vendor.email,
@@ -292,8 +302,8 @@ const responseVendorForSelf = (vendor)=>{
         slogan: vendor.slogan,
         description: vendor.description,
         contact: vendor.contact,
-        stripeToken: Boolean(vendor.stripeToken.encryptedData),
-        webhookSecret: Boolean(vendor.webhookSecret.encryptedData)
+        webhook: Boolean(vendor.webhookSecret.encryptedData),
+        onlineSales: canSell
     };
 }
 

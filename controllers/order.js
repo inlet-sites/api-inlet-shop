@@ -186,7 +186,7 @@ const validateVariationPurchase = (variation, purchaseQuantity)=>{
     if(purchaseQuantity > variation.quantity){
         throw new CustomError(400, `${variation.descriptor} - ${variation.quantity} available`);
     }
-    if(variation.archived !== false) throw new CustomError(400, "Item not available for purchase");
+    if(variation.archived !== false) throw new CustomError(400, `${variation.descriptor} no longer available`);
     if(variation.purchaseOption !== "ship" && variation.purchaseOption !== "buy"){
         throw new CustomError(400, "Not available for online purchase");
     }
