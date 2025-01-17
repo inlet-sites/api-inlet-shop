@@ -9,7 +9,7 @@ const vendorAuth = async (req, res, next)=>{
         if(bearer !== "Bearer") throw new CustomError(401, "Unauthorized");
         const vendorData = jwt.verify(token, process.env.JWT_SECRET);
 
-        const vendor = await Vendor.findOne({_id: vendorData._id});
+        const vendor = await Vendor.findOne({_id: vendorData.id});
         if(!vendor || vendor.token !== vendorData.token){
             throw new CustomError(401, "Unauthorized");
         }
@@ -20,7 +20,7 @@ const vendorAuth = async (req, res, next)=>{
         res.locals.vendor = vendor;
         next();
     }catch(e){
-        catchError(e)
+        catchError(e, req, res, next);
     }
 }
 
