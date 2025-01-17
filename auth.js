@@ -1,30 +1,27 @@
 import Vendor from "./models/vendor.js";
 
+import {CustomError, catchError} from "./CustomError.js";
 import jwt from "jsonwebtoken";
-import {httpError} from "./error.js";
 
 const vendorAuth = async (req, res, next)=>{
-    let vendorData;
     try{
         const [bearer, token] = req.headers.authorization.split(" ");
-        if(bearer !== "Bearer") return httpError(res, 401, "Unauthorized");
-        vendorData = jwt.verify(token, process.env.JWT_SECRET);
-    }catch(e){
-        return httpError(res, 401, "Unauthorized");
-    }
+        if(bearer !== "Bearer") throw new CustomError(401, "Unauthorized");
+        const vendorData = jwt.verify(token, process.env.JWT_SECRET);
 
-    let vendor;
-    try{
-        vendor = await Vendor.findOne({_id: vendorData.id});
-    }catch(e){
-        return httpError(res, 500, "Internal server error");
-    }
-    if(!vendor || vendor.token !== vendorData.token){
-        return httpError(res, 401, "Unauthorized");
-    }
+        const vendor = await Vendor.findOne({_id: vendorData._id});
+        if(!vendor || vendor.token !== vendorData.token){
+            throw new CustomError(401, "Unauthorized");
+        }
+        if(vendor.active === false){
+            throw new CustomError(401, "Account Suspended");
+        }
 
-    res.locals.vendor = vendor;
-    next();
+        res.locals.vendor = vendor;
+        next();
+    }catch(e){
+        catchError(e)
+    }
 }
 
 export {vendorAuth};
