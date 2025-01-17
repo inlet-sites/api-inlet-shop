@@ -78,6 +78,10 @@ const VendorSchema = new mongoose.Schema({
     html: {
         type: String,
         required: false
+    },
+    active: {
+        type: Boolean,
+        required: true
     }
 });
 

@@ -17,7 +17,6 @@ const createRoute = async (req, res, next)=>{
         validate(req.body);
         const vendor = await getVendor(req.body.vendor);
         const items = await getVariations(req.body.items);
-        console.log(items);
         const order = createOrder(vendor, items, req.body);
         const paymentIntent = await createPaymentIntent(vendor.stripeToken, order.total);
         order.paymentIntent = paymentIntent.id;
@@ -270,7 +269,7 @@ const createPaymentIntent = async (vendorToken, total)=>{
 }
 
 /*
- Take in an event and pass it off to the correction function
+ Take in an event and pass it off to the correct function
 
  @param {Event} event - Stripe Event object
  */

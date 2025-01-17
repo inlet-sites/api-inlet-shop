@@ -117,7 +117,7 @@ const resetPasswordRoute = async (req, res, next)=>{
  @return {Vendor} Vendor object
  */
 const getVendor = async (vendorId)=>{
-    const vendor = await Vendor.findOne({_id: vendorId});
+    const vendor = await Vendor.findOne({_id: vendorId, active: true});
     if(!vendor) throw new CustomError(400, "Vendor with this ID doesn't exist");
     return vendor;
 }
@@ -130,7 +130,7 @@ const getVendor = async (vendorId)=>{
  @return {Vendor} Vendor object
  */
 const getVendorByUrl = async (url)=>{
-    const vendor = await Vendor.findOne({url: url});
+    const vendor = await Vendor.findOne({url: url, active: true});
     if(!vendor) throw new CustomError(400, "Vendor with this URL doesn't exist");
     return vendor;
 }
@@ -143,7 +143,7 @@ const getVendorByUrl = async (url)=>{
  @return {Vendor} Vendor object
  */
 const getVendorByEmail = async (email)=>{
-    const vendor = await Vendor.findOne({email: email.toLowerCase()});
+    const vendor = await Vendor.findOne({email: email.toLowerCase(), active: true});
     if(!vendor) throw new CustomError(400, "Vendor with this email doesn't exist");
     return vendor;
 }
@@ -154,7 +154,7 @@ const getVendorByEmail = async (email)=>{
  @return {[Vendor]} List of vendors
  */
 const getAllVendors = async ()=>{
-    return await Vendor.find({}, {
+    return await Vendor.find({active: true}, {
         store: 1,
         image: 1,
         slogan: 1,
