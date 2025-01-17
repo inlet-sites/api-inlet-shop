@@ -445,6 +445,7 @@ const searchOrders = async (vendorId, from, to, status)=>{
 
     return await Order.aggregate([
         match,
+        {$sort: {date: -1}},
         {$project: {
             id: "$_id",
             _id: 0,
