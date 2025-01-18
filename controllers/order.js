@@ -373,6 +373,7 @@ const getFullOrder = async (orderId)=>{
                             descriptor: "$$variation.descriptor",
                             price: "$$variation.price",
                             shipping: "$$variation.shipping",
+                            purchaseOption: "$$variation.purchaseOption",
                             images: "$$variation.images"
                         }
                     }
