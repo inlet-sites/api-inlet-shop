@@ -117,8 +117,6 @@ const getVendor = async (vendorId)=>{
  @param {String} uuid - UUID from the query
  */
 const verifyOrderUUID = (order, uuid)=>{
-    console.log(order.uuid);
-    console.log(uuid);
     if(order.uuid !== uuid) throw new CustomError(403, "Forbidden");
 }
 
