@@ -41,5 +41,8 @@ export default (data)=>{
             if(typeof(statuses[i]) !== "string") throw new CustomError(400, "Invalid status");
             if(!valids.includes(statuses[i])) throw new CustomError(400, `Invalid status '${statuses[i]}'`);
         }
+        if(data.status === "declined" && !data.note){
+            throw new CustomError(400, "Vendor note required");
+        }
     }
 }

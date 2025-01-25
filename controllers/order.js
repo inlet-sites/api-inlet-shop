@@ -11,6 +11,7 @@ import mongoose from "mongoose";
 
 import paymentSucceededEmail from "../email/paymentSucceeded.js";
 import paymentFailedEmail from "../email/paymentFailed.js";
+import orderCanceledEmail from "../email/orderCanceled.js";
 
 const createRoute = async (req, res, next)=>{
     try{
@@ -83,6 +84,14 @@ const updateOrderRoute = async (req, res, next)=>{
         verifyOwnership2(res.locals.vendor, order);
         order = updateOrder(order, req.body);
         await order.save();
+        if(req.body.status === "declined"){
+            sendEmail(
+                order.email,
+                order.name,
+                "Your order has been declined",
+                orderCanceledEmail(order._id, order.uuid, req.body.note)
+            );
+        }
         order = await getFullOrder(req.params.orderId);
         res.json(order);
     }catch(e){next(e)}
