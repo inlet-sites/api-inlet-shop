@@ -38,7 +38,7 @@ const webhookRoute = async (req, res, next)=>{
         const stripe = stripePack(decrypt(vendor.stripeToken));
         const event = stripe.webhooks.constructEvent(
             req.body,
-            request.headers["stripe-signature"],
+            req.headers["stripe-signature"],
             vendor.webhookSecret
         );
         handleEvent(event, vendor);
