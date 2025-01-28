@@ -12,7 +12,7 @@ import {
 
 export default (app)=>{
     app.post("/order", createRoute);
-    app.post("/order/webhook/:vendorId", express.raw(), webhookRoute);
+    app.post("/order/webhook/:vendorId", express.raw({type: "application/json"}), webhookRoute);
     app.get("/order/:orderId/token/:token", getOrderRoute);
     app.get("/order/:orderId/vendor", vendorAuth, getOrderVendorRoute);
     app.get("/order?*", vendorAuth, getOrdersRoute);
