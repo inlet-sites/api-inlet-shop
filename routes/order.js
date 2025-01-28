@@ -1,5 +1,5 @@
 import {vendorAuth} from "../auth.js";
-import rawBody from "../rawBody.js";
+import express from "express";
 
 import {
     createRoute,
@@ -12,7 +12,7 @@ import {
 
 export default (app)=>{
     app.post("/order", createRoute);
-    app.post("/order/webhook/:vendorId", rawBody, webhookRoute);
+    app.post("/order/webhook/:vendorId", express.raw(), webhookRoute);
     app.get("/order/:orderId/token/:token", getOrderRoute);
     app.get("/order/:orderId/vendor", vendorAuth, getOrderVendorRoute);
     app.get("/order?*", vendorAuth, getOrdersRoute);
