@@ -36,10 +36,11 @@ const webhookRoute = async (req, res, next)=>{
     try{
         const vendor = await getVendor(req.params.vendorId);
         const stripe = stripePack(decrypt(vendor.stripeToken));
+        const webhookSecret = decrypt(vendor.webhookSecret);
         const event = stripe.webhooks.constructEvent(
             req.body,
             req.headers["stripe-signature"],
-            vendor.webhookSecret
+            webhookSecret
         );
         handleEvent(event, vendor);
         res.send();
