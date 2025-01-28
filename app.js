@@ -25,7 +25,7 @@ app.use(compression());
 app.use([
     "/document",
     "/cart",
-    "/vendor"
+    "/vendor",
     "/product",
     "/variation"
 ], express.json());
