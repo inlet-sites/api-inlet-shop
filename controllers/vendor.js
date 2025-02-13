@@ -12,6 +12,8 @@ import stripePack from "stripe";
 import sendEmail from "../sendEmail.js";
 import resetPasswordEmail from "../email/resetPassword.js";
 
+const stripe = stripePack(process.env.STRIPE_INLETSITES_KEY);
+
 const createPassRoute = async (req, res, next)=>{
     try{
         validate(req.body);
@@ -111,7 +113,10 @@ const resetPasswordRoute = async (req, res, next)=>{
 
 const createConnectRoute = async (req, res, next)=>{
     try{
-        return null;
+        const account = await stripe.accounts.create({});
+        res.locals.vendor.stripe.accountId = account.id;
+        await res.locals.vendor.save();
+        res.json({account: account.id});
     }catch(e){next(e)}
 }
 
@@ -272,9 +277,9 @@ const updateVendor = (vendor, data)=>{
  */
 const testToken = async (token)=>{
     try{
-        const stripe = stripePack(token);
-        const product = await stripe.products.create({name: "Test Product"});
-        await stripe.products.del(product.id);
+        const stripeTwo = stripePack(token);
+        const product = await stripeTwo.products.create({name: "Test Product"});
+        await stripeTwo.products.del(product.id);
     }catch(e){
         throw new CustomError(400, "Invalid Stripe token");
     }
