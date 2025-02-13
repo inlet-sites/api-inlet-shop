@@ -81,6 +81,7 @@
         <a class="headSub" href="#uploadVendorImg">Upload Store Image</a>
         <a class="headSub" href="#passwordResetEmail">Send Password Reset Email</a>
         <a class="headSub" href="#resetPassword">Reset Password</a>
+        <a class="headSub" href="#createConnectedAccount">Create Stripe Account</a>
         <a class="headMain" href="#product">Product</a>
         <a class="headSub" href="#createProduct">Create Product</a>
         <a class="headSub" href="#deleteProduct">Delete Product</a>
@@ -430,6 +431,20 @@
                 <p class="name">success</p>
                 <p class="type">boolean</p>
                 <p class="propDesc">Always '{success: true}' if no error.</p>
+            </div>
+        </div>
+
+        <div id="createConnectedAccount" class="route">
+            <h1>Create Stripe Account</h1>
+            <p class="url">POST /vendor/connect</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Create a connected account on Stripe for the user</p>
+
+            <h3>Response</h3>
+            <div class="prop">
+                <p class="name">account</p>
+                <p class="type">String</p>
+                <p class="propDesc">ID for newly created connected account of the vendor</p>
             </div>
         </div>
 
