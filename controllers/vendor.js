@@ -314,14 +314,7 @@ const connectData = (vendor)=>{
  */
 const responseVendorForSelf = (vendor)=>{
     let canSell = false;
-    if(
-        vendor.stripeToken.encryptedData &&
-        vendor.webhookSecret.encryptedData &&
-        (
-            vendor.contact.phone ||
-            vendor.contact.email
-        )
-    ) canSell = true;
+    if(vendor.stripe && vendor.stripe.activated) canSell = true;
 
     return {
         id: vendor._id,
@@ -345,6 +338,9 @@ const responseVendorForSelf = (vendor)=>{
  @return {Object} - Formatted Vendor object
  */
 const responseVendor = (vendor)=>{
+    let canSell = false;
+    if(vendor.stripe && vendor.stripe.activated) canSell = true;
+
     return {
         id: vendor._id,
         store: vendor.store,
@@ -353,7 +349,8 @@ const responseVendor = (vendor)=>{
         slogan: vendor.slogan,
         description: vendor.description,
         contact: vendor.contact,
-        html: vendor.html
+        html: vendor.html,
+        onlineSales: canSell
     };
 }
 
