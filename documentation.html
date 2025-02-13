@@ -82,6 +82,7 @@
         <a class="headSub" href="#passwordResetEmail">Send Password Reset Email</a>
         <a class="headSub" href="#resetPassword">Reset Password</a>
         <a class="headSub" href="#createConnectedAccount">Create Stripe Account</a>
+        <a class="headSub" href="#createConnectSession">Create Stripe Session</a>
         <a class="headMain" href="#product">Product</a>
         <a class="headSub" href="#createProduct">Create Product</a>
         <a class="headSub" href="#deleteProduct">Delete Product</a>
@@ -438,13 +439,27 @@
             <h1>Create Stripe Account</h1>
             <p class="url">POST /vendor/connect</p>
             <p>Vendor Auth Required</p>
-            <p class="description">Create a connected account on Stripe for the user</p>
+            <p class="description">Create a connected account on Stripe for the user. Then create onboarding session.</p>
 
-            <h3>Response</h3>
+            <h3>Response Body</h3>
             <div class="prop">
-                <p class="name">account</p>
+                <p class="name">sessionSecret</p>
                 <p class="type">String</p>
-                <p class="propDesc">ID for newly created connected account of the vendor</p>
+                <p class="propDesc">Client secret for the onboarding session</p>
+            </div>
+        </div>
+
+        <div id="createConnectSession" class="route">
+            <h1>Create Stripe Account Session</h1>
+            <p class="url">POST /vendor/connect/session</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Create an account session on Stripe for a vendor</p>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">sessionSecret</p>
+                <p class="type">String</p>
+                <p class="propDesc">Client secret for the onboarding session</p>
             </div>
         </div>
 
