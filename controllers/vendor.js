@@ -123,6 +123,12 @@ const createConnectRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const createSessionRoute = async (req, res, next)=>{
+    try{
+        return null;
+    }catch(e){next(e)}
+}
+
 /*
  Retrieve vendor from an ID
  Throw error if no vendor with that ID
@@ -365,5 +371,6 @@ export {
     changeImageRoute,
     passwordEmailRoute,
     resetPasswordRoute,
-    createConnectRoute
+    createConnectRoute,
+    createSessionRoute
 };
