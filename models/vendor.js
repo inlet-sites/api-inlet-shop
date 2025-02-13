@@ -87,6 +87,10 @@ const VendorSchema = new mongoose.Schema({
         accountId: {
             type: String,
             required: true,
+        },
+        activated: {
+            type: Boolean,
+            required: true
         }
     }
 });
