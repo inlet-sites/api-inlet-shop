@@ -113,7 +113,7 @@ const resetPasswordRoute = async (req, res, next)=>{
 
 const createConnectRoute = async (req, res, next)=>{
     try{
-        const account = await stripe.accounts.create({});
+        const account = await stripe.accounts.create(connectData(res.locals.vendor));
         res.locals.vendor.stripe.accountId = account.id;
         await res.locals.vendor.save();
         res.json({account: account.id});
@@ -282,6 +282,23 @@ const testToken = async (token)=>{
         await stripeTwo.products.del(product.id);
     }catch(e){
         throw new CustomError(400, "Invalid Stripe token");
+    }
+}
+
+/*
+ Simply creates the data to give to stripe for connect account creation
+
+ @param {Vendor} vendor - Vendor object
+ @return {Object} - Account creation object
+ */
+const connectData = (vendor)=>{
+    return {
+        business_type: "company",
+        company: {
+            name: vendor.store
+       },
+        country: "US",
+        email: vendor.email
     }
 }
 
