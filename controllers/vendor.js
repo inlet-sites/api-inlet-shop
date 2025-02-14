@@ -119,13 +119,7 @@ const createConnectRoute = async (req, res, next)=>{
             activated: false
         };
         await res.locals.vendor.save();
-        const session = await stripe.accountSessions.create({
-            account: account.id,
-            components: {
-                account_onboarding: {enabled: true}
-            }
-        });
-        res.json({sessionSecret: session.client_secret});
+        res.json({account: account.id});
     }catch(e){next(e)}
 }
 
