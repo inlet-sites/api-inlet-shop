@@ -112,7 +112,7 @@ const resetPasswordRoute = async (req, res, next)=>{
 
 const createConnectRoute = async (req, res, next)=>{
     try{
-        if(res.locals.vendor.stripe){
+        if(res.locals.vendor.stripe.accountId){
             return res.json({account: res.locals.vendor.stripe.accountId});
         }
         const account = await stripe.accounts.create(connectData(res.locals.vendor));
