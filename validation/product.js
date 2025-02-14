@@ -9,7 +9,6 @@ import {CustomError} from "../CustomError.js";
     description
     active
     archived
-    stripeId
  */
 export default (data)=>{
     if(data.name){
@@ -31,9 +30,5 @@ export default (data)=>{
 
     if(data.archived){
         if(typeof(data.archived) !== "boolean") throw new CustomError(400, "Invalid archive status");
-    }
-
-    if(data.stripeId){
-        if(typeof(data.stripeId) !== "string") throw new CustomError(400, "Invalid Stripe ID");
     }
 }

@@ -1,5 +1,6 @@
 import {Product} from "../models/product.js";
 
+import {CustomError} from "../CustomError.js";
 import validate from "../validation/product.js";
 import {decrypt, newUUID} from "../crypto.js";
 import sharp from "sharp";
