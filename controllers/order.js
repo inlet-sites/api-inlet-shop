@@ -13,13 +13,15 @@ import paymentSucceededEmail from "../email/paymentSucceeded.js";
 import paymentFailedEmail from "../email/paymentFailed.js";
 import orderCanceledEmail from "../email/orderCanceled.js";
 
+const stripe = stripePack(process.env.STRIPE_INLETSITES_KEY);
+
 const createRoute = async (req, res, next)=>{
     try{
         validate(req.body);
         const vendor = await getVendor(req.body.vendor);
         const items = await getVariations(req.body.items);
         const order = createOrder(vendor, items, req.body);
-        const paymentIntent = await createPaymentIntent(vendor.stripeToken, order.total);
+        const paymentIntent = await createPaymentIntent(vendor.stripe.accountId, order.total);
         order.paymentIntent = paymentIntent.id;
         updateQuantities(items);
         await order.save();
@@ -269,8 +271,17 @@ const updateQuantities = (items)=>{
  @param {Number} total - Total amount of payment in cents
  @return {PaymentIntent} Stripe PaymentIntent object
  */
-const createPaymentIntent = async (vendorToken, total)=>{
-    const stripe = stripePack(decrypt(vendorToken));
+const createPaymentIntent = async (connectedId, total)=>{
+    return await stripe.paymentIntents.create({
+        amount: total,
+        currency: "usd",
+        automatic_payment_methods: {enabled: true}
+    })
+
+
+
+
+    const stripe = stripePack(decrypt(connectedId));
     return  await stripe.paymentIntents.create({
         amount: total,
         currency: "usd"

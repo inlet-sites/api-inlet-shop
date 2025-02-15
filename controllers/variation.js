@@ -178,7 +178,7 @@ const removeImages = (imagesArray, removeImages)=>{
     for(let i = 0; i < removeImages.length; i++){
         for(let j = 0; j < imagesArray.length; j++){
             if(removeImages[i] === imagesArray[j]){
-                fs.unlink(`${global.cwd}/documents/${removeImages[i]}`, (err)=>{console.error(err)});
+                fs.unlink(`${global.cwd}/documents/${removeImages[i]}`, (err)=>{if(err) console.error(err)});
                 imagesArray.splice(j, 1);
                 break;
             }
