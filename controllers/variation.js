@@ -3,7 +3,6 @@ import {Product, Variation} from "../models/product.js";
 import {CustomError} from "../CustomError.js";
 import validate from "../validation/variation.js";
 import {decrypt, newUUID} from "../crypto.js";
-import stripePack from "stripe";
 import sharp from "sharp";
 import fs from "fs";
 
@@ -15,9 +14,7 @@ const createVariation = async (req, res, next)=>{
         const variation = await newVariation(
             req.body,
             product._id.toString(),
-            product.stripeId,
-            res.locals.vendor.stripeToken,
-            res.locals.vendor.webhookSecret
+            res.locals.vendor.stripe.validated
         );
         if(req.files) variation.images = addImages(req.files.images);
         product.variations.push(variation);
@@ -31,7 +28,6 @@ const removeVariation = async (req, res, next)=>{
         const product = await getProduct(req.params.productId);
         validateOwnership(product, res.locals.vendor._id.toString());
         const variation = archiveVariation(product, req.params.variationId);
-        setStripePriceInactive(res.locals.vendor.stripeToken, variation.priceId);
         await product.save();
         res.json({success: true});
     }catch(e){next(e)}
@@ -119,25 +115,14 @@ const archiveVariation = (product, variationId)=>{
 }
 
 /*
- Set the corresponding Stripe price as inactive
-
- @param {String} vendorToken - Stripe token of the vendor
- @param {String} priceToken - Stripe token for the price
- */
-const setStripePriceInactive = (vendorToken, priceToken)=>{
-    const stripe = stripePack(decrypt(vendorToken));
-    stripe.prices.update(priceToken, {active: false});
-}
-
-/*
  Creates a new Variation object with only necessary data
 
  @param {Object} data - All body data from request
  @param {String ID} productId - Product ID that the variation belongs to
- @param {String} stripeToken - Stripe token of user, if any
+ @param {Boolean} stripeValidated - Whether the user has a Stripe account
  @return {Variation} Newly created variation
  */
-const newVariation = async (data, productId, stripeProductId, stripeToken, webhookSecret)=>{
+const newVariation = async (data, productId, stripeValidated)=>{
     const variation = new Variation({
         product: productId,
         descriptor: data.descriptor,
@@ -145,35 +130,11 @@ const newVariation = async (data, productId, stripeProductId, stripeToken, webho
         quantity: data.quantity,
         shipping: data.shipping,
         images: [],
-        purchaseOption: (stripeToken && webhookSecret) ? data.purchaseOption : "list",
+        purchaseOption: stripeValidated ? data.purchaseOption : "list",
         archived: false
     });
 
-    if(typeof(stripeToken.encryptedData) === "string" && stripeToken.encryptedData.length > 1){
-        variation.priceId = await createPrice(stripeToken, data.price, stripeProductId);
-    }
-
     return variation;
-}
-
-/*
- Create a Stripe price on the product
-
- @param {String} token - Vendor's stripe token
- @param {Number} amount - Price of the variation
- @param {String} product - Product ID to add this price to
- @return {String} ID of the newly create Stripe price
- */
-const createPrice = async (token, amount, product)=>{
-    const stripe = stripePack(decrypt(token));
-
-    const price = await stripe.prices.create({
-        currency: "usd",
-        unit_amount: amount,
-        product: product
-    });
-
-    return price.id;
 }
 
 /*
