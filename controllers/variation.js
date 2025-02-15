@@ -27,7 +27,8 @@ const removeVariation = async (req, res, next)=>{
     try{
         const product = await getProduct(req.params.productId);
         validateOwnership(product, res.locals.vendor._id.toString());
-        const variation = archiveVariation(product, req.params.variationId);
+        let variation = archiveVariation(product, req.params.variationId);
+        variation.images = removeImages(variation.images, Array.from(variation.images));
         await product.save();
         res.json({success: true});
     }catch(e){next(e)}
