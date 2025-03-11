@@ -27,9 +27,10 @@ const createRoute = async (req, res, next)=>{
         await order.save();
         res.json({
             clientSecret: paymentIntent.client_secret,
-            publishableKey: vendor.publishableKey,
+            publishableKey: process.env.STRIPE_PUBLISHABLE,
             orderId: order._id,
-            orderToken: order.uuid
+            orderToken: order.uuid,
+            connectedId: vendor.stripe.accountId
         });
     }catch(e){next(e)}
 }
@@ -277,7 +278,7 @@ const createPaymentIntent = async (connectedId, total)=>{
             amount: total,
             currency: "usd",
             automatic_payment_methods: {enabled: true},
-            application_fee_amount: Math.floor(total * 0.01);
+            application_fee_amount: Math.floor(total * 0.01)
         },
         {stripeAccount: connectedId}
     );
