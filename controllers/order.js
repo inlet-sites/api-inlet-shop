@@ -38,14 +38,12 @@ const createRoute = async (req, res, next)=>{
 const webhookRoute = async (req, res, next)=>{
     try{
         const vendor = await getVendor(req.params.vendorId);
-        const stripe = stripePack(decrypt(vendor.stripeToken));
-        const webhookSecret = decrypt(vendor.webhookSecret);
         const event = stripe.webhooks.constructEvent(
             req.body,
             req.headers["stripe-signature"],
-            webhookSecret
+            "whsec_a6d6b1ca9986ccb08a714318705749a4869cb5f389793287116d77e290af1939"
         );
-        handleEvent(event, vendor);
+        handleEvent(event);
         res.send();
     }catch(e){next(e)}
 }
@@ -121,6 +119,13 @@ const getSingleOrder = async (orderId)=>{
  */
 const getVendor = async (vendorId)=>{
     const vendor = await Vendor.findOne({_id: vendorId});
+    if(!vendor) trhow new CustomError(400, "No vendor with that ID");
+    return vendor;
+}
+
+const getVendorByConnectId = async (id)=>{
+    const vendor = await Vendor.findOne({"stripe.accountId": id});
+    if(!vendor) throw new CustomError(400, "Vendor not found");
     return vendor;
 }
 
@@ -289,16 +294,16 @@ const createPaymentIntent = async (connectedId, total)=>{
 
  @param {Event} event - Stripe Event object
  */
-const handleEvent = (event, vendor)=>{
+const handleEvent = (event)=>{
     switch(event.type){
         case "payment_intent.succeeded":
-            handleSuccessEvent(event.data.object.id, vendor);
+            handleSuccessEvent(event.data.object.id, event.account);
             break;
         case "payment_intent.canceled":
-            handleFailedEvent(event.data.object.id, vendor);
+            handleFailedEvent(event.data.object.id, event.account);
             break;
         case "payment_intent.payment_failed":
-            handleFailedEvent(event.data.object.id, vendor);
+            handleFailedEvent(event.data.object.id, event.account);
             break;
     }
 }
@@ -308,8 +313,9 @@ const handleEvent = (event, vendor)=>{
 
  @param {String} paymentIntentId - Id of the paymentIntent
  */
-const handleSuccessEvent = async (paymentIntentId, vendor)=>{
+const handleSuccessEvent = async (paymentIntentId, connectId)=>{
     try{
+        const vendor = await getVendorByConnectId(connectId);
         const order = await getOrderByPaymentIntent(paymentIntentId);
         order.status = "paid";
         sendEmail(
@@ -329,8 +335,9 @@ const handleSuccessEvent = async (paymentIntentId, vendor)=>{
 
  @param {String} paymentIntentId - Id of the PaymentIntent
  */
-const handleFailedEvent = async (paymentIntentId, vendor)=>{
+const handleFailedEvent = async (paymentIntentId, connectId)=>{
     try{
+        const vendor = await getVendorByConnectId(connectId);
         const order = await getOrderByPaymentIntent(paymentIntentId);
         order.status = "paymentFailed";
         sendEmail(
