@@ -280,7 +280,7 @@ const updateVendor = (vendor, data)=>{
     if(data.phone) vendor.contact.phone = data.phone;
     if(data.email) vendor.contact.email = data.email;
     if(data.address) vendor.contact.address = data.address;
-    if(data.stripeValidated !== undefined) vendor.stripe.validated = data.stripeValidated;
+    if(data.stripeActivated !== undefined) vendor.stripe.activated = data.stripeActivated;
 
     return vendor;
 }

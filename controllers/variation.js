@@ -14,7 +14,7 @@ const createVariation = async (req, res, next)=>{
         const variation = await newVariation(
             req.body,
             product._id.toString(),
-            res.locals.vendor.stripe.validated
+            res.locals.vendor.stripe.activated
         );
         if(req.files) variation.images = addImages(req.files.images);
         product.variations.push(variation);

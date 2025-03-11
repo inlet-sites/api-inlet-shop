@@ -62,11 +62,11 @@ const VendorSchema = new mongoose.Schema({
     stripe:{
         accountId: {
             type: String,
-            required: true,
+            required: false,
         },
         activated: {
             type: Boolean,
-            required: true
+            required: false
         }
     }
 });

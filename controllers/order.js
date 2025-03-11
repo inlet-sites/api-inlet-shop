@@ -272,20 +272,15 @@ const updateQuantities = (items)=>{
  @return {PaymentIntent} Stripe PaymentIntent object
  */
 const createPaymentIntent = async (connectedId, total)=>{
-    return await stripe.paymentIntents.create({
-        amount: total,
-        currency: "usd",
-        automatic_payment_methods: {enabled: true}
-    })
-
-
-
-
-    const stripe = stripePack(decrypt(connectedId));
-    return  await stripe.paymentIntents.create({
-        amount: total,
-        currency: "usd"
-    });
+    return await stripe.paymentIntents.create(
+        {
+            amount: total,
+            currency: "usd",
+            automatic_payment_methods: {enabled: true},
+            application_fee_amount: (total * 0.01)
+        },
+        {stripeAccount: connectedId}
+    );
 }
 
 /*
