@@ -277,7 +277,7 @@ const createPaymentIntent = async (connectedId, total)=>{
             amount: total,
             currency: "usd",
             automatic_payment_methods: {enabled: true},
-            application_fee_amount: (total * 0.01)
+            application_fee_amount: Math.floor(total * 0.01);
         },
         {stripeAccount: connectedId}
     );
