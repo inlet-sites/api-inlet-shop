@@ -37,13 +37,11 @@ const createRoute = async (req, res, next)=>{
 
 const webhookRoute = async (req, res, next)=>{
     try{
-        console.log("webhook route");
         const event = stripe.webhooks.constructEvent(
             req.body,
             req.headers["stripe-signature"],
             "whsec_a6d6b1ca9986ccb08a714318705749a4869cb5f389793287116d77e290af1939"
         );
-        console.log(event.type);
         handleEvent(event);
         res.send();
     }catch(e){next(e)}
@@ -296,7 +294,6 @@ const createPaymentIntent = async (connectedId, total)=>{
  @param {Event} event - Stripe Event object
  */
 const handleEvent = (event)=>{
-    console.log(event.type);
     switch(event.type){
         case "payment_intent.succeeded":
             handleSuccessEvent(event.data.object.id, event.account);
@@ -319,10 +316,7 @@ const handleSuccessEvent = async (paymentIntentId, connectId)=>{
     try{
         const vendor = await getVendorByConnectId(connectId);
         const order = await getOrderByPaymentIntent(paymentIntentId);
-        console.log(order);
         order.status = "paid";
-        console.log(order);
-        console.log();
         sendEmail(
             order.email,
             order.name,
