@@ -7,7 +7,8 @@ import {
     getOrderRoute,
     getOrdersRoute,
     getOrderVendorRoute,
-    updateOrderRoute
+    updateOrderRoute,
+    refundRoute
 } from "../controllers/order.js";
 
 export default (app)=>{
@@ -17,4 +18,5 @@ export default (app)=>{
     app.get("/order/:orderId/vendor", express.json(), vendorAuth, getOrderVendorRoute);
     app.get("/order?*", express.json(), vendorAuth, getOrdersRoute);
     app.put("/order/:orderId", express.json(), vendorAuth, updateOrderRoute);
+    app.post("/order/:orderId/refund", express.json(), vendorAuth, refundRoute);
 }

@@ -104,6 +104,7 @@
         <a class="headSub" href="#getOrder">Get (One)</a>
         <a class="headSub" href="#getOrderVendor">Get One (Vendor)</a>
         <a class="headSub" href="#updateOrder">Update</a>
+        <a class="headSub" href="#refundOrder">Refund</a>
         <a class="headMain" href="#cart">Cart</a>
         <a class="headSub" href="#getCart">Get</a>
     </header>
@@ -1058,6 +1059,27 @@
                 <p class="name">N/A</p>
                 <p class="type"><a href="#order">Order</a></p>
                 <p class="propDesc">Full order including all details, including products/variations</p>
+            </div>
+        </div>
+
+        <div id="refundOrder" class="route">
+            <h1>Refund Order</h1>
+            <p class="url">POST /order/:orderId/refund</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Create a refund for an order</p>
+
+            <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">amount</p>
+                <p class="type">Number (optional)</p>
+                <p class="propDesc">Amount to refund as integer. Must be less than total order amount. If not provided, then a full refund will be issued.</p>
+            </div>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">success</p>
+                <p class="type">true</p>
+                <p class="propDesc">Always '{success: true}' if no error</p>
             </div>
         </div>
 

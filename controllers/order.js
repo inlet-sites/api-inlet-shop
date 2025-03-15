@@ -19,7 +19,7 @@ const createRoute = async (req, res, next)=>{
     try{
         validate(req.body);
         const vendor = await getVendor(req.body.vendor);
-        const items = await getVariations(req.body.items);
+        const items = await getVariations(req.body.items, true);
         const order = createOrder(vendor, items, req.body);
         const paymentIntent = await createPaymentIntent(vendor.stripe.accountId, order.total);
         order.paymentIntent = paymentIntent.id;
@@ -99,6 +99,28 @@ const updateOrderRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const refundRoute = async (req, res, next)=>{
+    try{
+        const order = await getSingleOrder(req.params.orderId);
+        verifyOwnership2(res.locals.vendor, order);
+        const amount = await refundAmount(order, req.body.amount);
+        const stripeRefund = await stripe.refunds.create(
+            {
+                payment_intent: order.paymentIntent,
+                amount: amount
+            },
+            {stripeAccount: res.locals.vendor.stripe.accountId}
+        );
+        order.refunds.push({
+            amount: amount,
+            stripeId: stripeRefund.id,
+            date: new Date()
+        });
+        await order.save();
+        res.json({success: true});
+    }catch(e){next(e)}
+}
+
 /*
  Retrieve a single order with the order ID
 
@@ -106,7 +128,9 @@ const updateOrderRoute = async (req, res, next)=>{
  @return {Order} Order object
  */
 const getSingleOrder = async (orderId)=>{
-    return await Order.findOne({_id: orderId});
+    const order = await Order.findOne({_id: orderId});
+    if(!order) throw new CustomError(400, "No order with that ID");
+    return order;
 }
 
 /*
@@ -180,12 +204,12 @@ const updateOrder = (order, data)=>{
  @param {Object} items - Object containing product/variation IDs and purchase quantity
  @return {Object} Same as 'items', but with product/variation populated
  */
-const getVariations = async (items)=>{
+const getVariations = async (items, isPurchase = false)=>{
     const itemsList = [];
     for(let i = 0; i < items.length; i++){
         const product = await Product.findOne({_id: items[i].product});
-        const variation = product.variations.find(v => v._id.toString() === items[i].variation);
-        validateVariationPurchase(variation, items[i].quantity);
+        const variation = product.variations.find(v => v._id.toString() === items[i].variation.toString());
+        if(isPurchase) validateVariationPurchase(variation, items[i].quantity);
         itemsList.push({product, variation, quantity: items[i].quantity});
     }
     return itemsList;
@@ -211,7 +235,7 @@ const validateVariationPurchase = (variation, purchaseQuantity)=>{
  Calculate total prices
 
  @param {Object} items - Items list of product/variation/quantity
- @return {Object} Object containing subTotal, shipping and total
+ @return {Object} Object containing subTotal and shipping
  */
 const calculateTotals = (items)=>{
     let subTotal = 0;
@@ -244,7 +268,8 @@ const createOrder = (vendor, items, data)=>{
         shipping: shipping,
         total: subTotal + shipping,
         status: "incomplete",
-        date: new Date()
+        date: new Date(),
+        refunds: []
     });
     for(let i = 0; i < items.length; i++){
         order.items.push({
@@ -457,6 +482,38 @@ const getSearchQueryData = (data)=>{
     };
 }
 
+/*
+ Check that refund amount doesn't exceed what can be refunded
+ Throws error if amount is invalid
+ @param {Order} order - List of refunds from the Order object
+ @param {Number} amount - Amount to refund. Full refund if undefined
+ @return {Number} Amount to refund
+ */
+const refundAmount = async (order, amount)=>{
+    const items = await getVariations(order.items);
+    const {subTotal, shipping} = calculateTotals(items);
+    const refundable = getRefundable(order.refunds, subTotal + shipping);
+    if(amount){
+        if(amount > refundable) throw new CustomError(400, "Amount is more than can be refunded");
+        return amount;
+    }
+    return refundable;
+}
+
+/*
+ Retrieve the total amount that can be refunded from an order
+ @param {[Refund]} refunds - List of refunds on an order
+ @param {Number} totalCharged - Grand total charged for this order
+ @return {Number} Total refundable amount
+ */
+const getRefundable = (refunds, totalCharged)=>{
+    let totalRefunds = 0;
+    for(let i = 0; i < refunds.length; i++){
+        totalRefunds += refunds[i].amount;
+    }
+    return totalCharged - totalRefunds;
+}
+
 const searchOrders = async (vendorId, from, to, status)=>{
     const match = {$match: {
         vendor: vendorId,
@@ -490,5 +547,6 @@ export {
     getOrderRoute,
     getOrdersRoute,
     getOrderVendorRoute,
-    updateOrderRoute
+    updateOrderRoute,
+    refundRoute
 }
