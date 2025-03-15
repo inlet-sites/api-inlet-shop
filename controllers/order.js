@@ -40,7 +40,7 @@ const webhookRoute = async (req, res, next)=>{
         const event = stripe.webhooks.constructEvent(
             req.body,
             req.headers["stripe-signature"],
-            "whsec_a6d6b1ca9986ccb08a714318705749a4869cb5f389793287116d77e290af1939"
+            process.env.STRIPE_WEBHOOK_SECRET
         );
         handleEvent(event);
         res.send();
