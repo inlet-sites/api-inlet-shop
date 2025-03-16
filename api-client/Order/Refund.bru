@@ -5,11 +5,17 @@ meta {
 }
 
 post {
-  url: http://localhost:8000/order/67d0b147493d8998464321f0/refund
-  body: none
+  url: http://localhost:8000/order/67d5ee3bcdffc6bf9207d139/refund
+  body: json
   auth: bearer
 }
 
 auth:bearer {
   token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Y2RhZmUwMjNjZjcyN2M5ODZiMTQwYiIsInRva2VuIjoiNzlmNmRhM2MtZTBiZC00NGQ5LTlhNzctN2I0ZTIyNTBjMzkzIiwiaWF0IjoxNzQyMDYyNjIyfQ.EyL0tFwoh6N5m-ujKRtXxIinYxgIregrmT4kbHj5lvY
+}
+
+body:json {
+  {
+    "amount": 100
+  }
 }
