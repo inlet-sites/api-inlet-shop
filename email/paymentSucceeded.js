@@ -2,7 +2,7 @@ export default (order, vendor)=>{
     return `
 <p>Hello ${order.name},</p>
 <p>Thank you for shopping with ${vendor.store}</p>
-<p>Your order has beend recieved and is now processing</p>
+<p>Your order has beend recieved and is now processing. Your order number is ${order.orderNumber}</p>
 <p>To view details of your order, including the current status, use the following link:</p>
 <a href="https://inlet.shop/order/${order._id}?token=${order.uuid}">https://inlet.shop/order/${order._id}/token/${order.uuid}</a>
 <p>Save this link to check in on the status of your order at any time</p>

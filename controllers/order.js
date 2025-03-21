@@ -433,6 +433,7 @@ const getFullOrder = async (orderId)=>{
         {$addFields: {"items.product": "$productDetails"}},
         {$group: {
             _id: "$_id",
+            orderNumber: {$first: "$orderNumber"},
             items: {$push: "$items"},
             vendor: {$first: "$vendor"},
             name: {$first: "$name"},
@@ -548,6 +549,7 @@ const searchOrders = async (vendorId, from, to, status)=>{
         {$project: {
             id: "$_id",
             _id: 0,
+            orderNumber: 1,
             name: 1,
             address: 1,
             email: 1,
