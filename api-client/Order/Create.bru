@@ -1,0 +1,22 @@
+meta {
+  name: Create
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8000/order
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "vendor": "67cdafe023cf727c986b140b",
+    "name": "A person",
+    "address": "123 place",
+    "email": "person@inletsites.dev",
+    "confirmEmail": "person@inletsites.dev",
+    
+  }
+}

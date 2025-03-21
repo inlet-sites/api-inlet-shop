@@ -14,6 +14,7 @@ import paymentFailedEmail from "../email/paymentFailed.js";
 import orderCanceledEmail from "../email/orderCanceled.js";
 
 const stripe = stripePack(process.env.STRIPE_INLETSITES_KEY);
+let refNumber = 0;
 
 const createRoute = async (req, res, next)=>{
     try{
@@ -259,6 +260,7 @@ const createOrder = (vendor, items, data)=>{
     const {subTotal, shipping} = calculateTotals(items);
     const order = new Order({
         vendor: vendor._id,
+        orderNumber: orderNumber(),
         name: data.name,
         address: data.address,
         email: data.email.toLowerCase(),
@@ -512,6 +514,23 @@ const getRefundable = (refunds, totalCharged)=>{
         totalRefunds += refunds[i].amount;
     }
     return totalCharged - totalRefunds;
+}
+
+const orderNumber = ()=>{
+    const now = new Date();
+    const year = now.getFullYear() % 100;
+    const month = (now.getMonth() + 1).toString().padStart(2, "0");
+    const date = now.getDate().toString().padStart(2, "0");
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = now.getMinutes().toString().padStart(2, "0");
+    const number = refNumber.toString().padStart(4, "0");
+
+    refNumber++;
+    if(refNumber > 9999){
+        refNumber = 0;
+    }
+
+    return `${year}${month}${date}${hours}${minutes}-${number}`;
 }
 
 const searchOrders = async (vendorId, from, to, status)=>{
