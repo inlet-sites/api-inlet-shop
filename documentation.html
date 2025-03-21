@@ -95,6 +95,7 @@
         <a class="headMain" href="#variation">Variation</a>
         <a class="headSub" href="#createVariation">Create Variation</a>
         <a class="headSub" href="#removeVariation">Remove Variation</a>
+        <a class="headSub" href="#updateVariation">Update Variation</a>
         <a class="headSub" href="#addVariationImages">Add Images</a>
         <a class="headSub" href="#removeVariationImages">Remove Images</a>
         <a class="headMain" href="#order">Order</a>
@@ -790,6 +791,26 @@
                 <p class="name">success</p>
                 <p class="type">true</p>
                 <p class="propDesc">Always '{success: true}' is no error</p>
+            </div>
+        </div>
+
+        <div id="updateVariation" class="route">
+            <h1>Update Variation</h1>
+            <p class="url">PUT /product/:productId/variation/:variationId</p>
+            <p>User Auth Required</p>
+            <p class="description">Update some of the data for a variation. Many parts of a variation cannot be changed once created.</p>
+
+            <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">quantity</p>
+                <p class="type">Number (optional)</p>
+                <p class="propDesc">Integer representing quantity available of this item</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">purchaseOption</p>
+                <p class="type">String (optional)</p>
+                <p class="propDesc">One of: "ship", "buy", "list"</p>
             </div>
         </div>
 
