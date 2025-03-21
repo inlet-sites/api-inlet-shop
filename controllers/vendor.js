@@ -12,6 +12,8 @@ import stripePack from "stripe";
 import sendEmail from "../sendEmail.js";
 import resetPasswordEmail from "../email/resetPassword.js";
 
+const stripe = stripePack(process.env.STRIPE_INLETSITES_KEY);
+
 const createPassRoute = async (req, res, next)=>{
     try{
         validate(req.body);
@@ -68,7 +70,6 @@ const updateRoute = async (req, res, next)=>{
     try{
         validate(req.body);
         const vendor = updateVendor(res.locals.vendor, req.body);
-        if(req.body.stripeToken) await testToken(req.body.stripeToken);
         await vendor.save();
         res.json(responseVendorForSelf(vendor));
     }catch(e){next(e)}
@@ -106,6 +107,34 @@ const resetPasswordRoute = async (req, res, next)=>{
         vendor.token = newUUID();
         await vendor.save();
         res.json({success: true});
+    }catch(e){next(e)}
+}
+
+const createConnectRoute = async (req, res, next)=>{
+    try{
+        if(res.locals.vendor.stripe.accountId){
+            return res.json({account: res.locals.vendor.stripe.accountId});
+        }
+        const account = await stripe.accounts.create(connectData(res.locals.vendor));
+        res.locals.vendor.stripe = {
+            accountId: account.id,
+            activated: false
+        };
+        await res.locals.vendor.save();
+        res.json({account: account.id});
+    }catch(e){next(e)}
+}
+
+const createSessionRoute = async (req, res, next)=>{
+    try{
+        const session = await stripe.accountSessions.create({
+            account: res.locals.vendor.stripe.accountId,
+            components: {
+                account_onboarding: {enabled: true}
+            }
+        });
+
+        res.json({sessionSecret: session.client_secret});
     }catch(e){next(e)}
 }
 
@@ -251,26 +280,25 @@ const updateVendor = (vendor, data)=>{
     if(data.phone) vendor.contact.phone = data.phone;
     if(data.email) vendor.contact.email = data.email;
     if(data.address) vendor.contact.address = data.address;
-    if(data.stripeToken) vendor.stripeToken = encrypt(data.stripeToken);
-    if(data.publishableKey) vendor.publishableKey = data.publishableKey;
-    if(data.webhookSecret) vendor.webhookSecret = encrypt(data.webhookSecret);
+    if(data.stripeActivated !== undefined) vendor.stripe.activated = data.stripeActivated;
 
     return vendor;
 }
 
 /*
- Test that a stripe token is valid and can create a product
- Throws error if it fails to create/delete a product
+ Simply creates the data to give to stripe for connect account creation
 
- @param {String} token - New Stripe API token
+ @param {Vendor} vendor - Vendor object
+ @return {Object} - Account creation object
  */
-const testToken = async (token)=>{
-    try{
-        const stripe = stripePack(token);
-        const product = await stripe.products.create({name: "Test Product"});
-        await stripe.products.del(product.id);
-    }catch(e){
-        throw new CustomError(400, "Invalid Stripe token");
+const connectData = (vendor)=>{
+    return {
+        business_type: "company",
+        company: {
+            name: vendor.store
+       },
+        country: "US",
+        email: vendor.email
     }
 }
 
@@ -283,14 +311,7 @@ const testToken = async (token)=>{
  */
 const responseVendorForSelf = (vendor)=>{
     let canSell = false;
-    if(
-        vendor.stripeToken.encryptedData &&
-        vendor.webhookSecret.encryptedData &&
-        (
-            vendor.contact.phone ||
-            vendor.contact.email
-        )
-    ) canSell = true;
+    if(vendor.stripe && vendor.stripe.activated) canSell = true;
 
     return {
         id: vendor._id,
@@ -302,7 +323,6 @@ const responseVendorForSelf = (vendor)=>{
         slogan: vendor.slogan,
         description: vendor.description,
         contact: vendor.contact,
-        webhook: Boolean(vendor.webhookSecret.encryptedData),
         onlineSales: canSell
     };
 }
@@ -314,6 +334,9 @@ const responseVendorForSelf = (vendor)=>{
  @return {Object} - Formatted Vendor object
  */
 const responseVendor = (vendor)=>{
+    let canSell = false;
+    if(vendor.stripe && vendor.stripe.activated) canSell = true;
+
     return {
         id: vendor._id,
         store: vendor.store,
@@ -322,7 +345,8 @@ const responseVendor = (vendor)=>{
         slogan: vendor.slogan,
         description: vendor.description,
         contact: vendor.contact,
-        html: vendor.html
+        html: vendor.html,
+        onlineSales: canSell
     };
 }
 
@@ -336,5 +360,7 @@ export {
     updateRoute,
     changeImageRoute,
     passwordEmailRoute,
-    resetPasswordRoute
+    resetPasswordRoute,
+    createConnectRoute,
+    createSessionRoute
 };

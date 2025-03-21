@@ -6,6 +6,10 @@ const OrderSchema = new mongoose.Schema({
         required: true,
         index: true
     },
+    orderNumber: {
+        type: String,
+        required: true
+    },
     name: {
         type: String,
         required: true
@@ -60,7 +64,12 @@ const OrderSchema = new mongoose.Schema({
     date: {
         type: Date,
         required: true
-    }
+    },
+    refunds: [{
+        amount: Number,
+        stripeId: String,
+        date: Date
+    }]
 });
 
 export default mongoose.model("order", OrderSchema);

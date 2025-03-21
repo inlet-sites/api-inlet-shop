@@ -1,9 +1,9 @@
 import {Product} from "../models/product.js";
 
+import {CustomError} from "../CustomError.js";
 import validate from "../validation/product.js";
 import {decrypt, newUUID} from "../crypto.js";
 import sharp from "sharp";
-import stripePack from "stripe";
 import fs from "fs";
 import mongoose from "mongoose";
 
@@ -16,16 +16,6 @@ const createRoute = async (req, res, next)=>{
         };
         validate(data);
         const product = createProduct(data, res.locals.vendor._id);
-        if(
-            typeof(res.locals.vendor.stripeToken.encryptedData) === "string" &&
-            res.locals.vendor.stripeToken.encryptedData.length > 1
-        ){
-            product.stripeId = await createStripeProduct(
-                res.locals.vendor.stripeToken,
-                data.name,
-                data.active
-            );
-        }
         if(req.files) product.images = await addImages(req.files.images);
         await product.save();
         res.json(responseProduct(product));
@@ -39,7 +29,6 @@ const deleteRoute = async (req, res, next)=>{
         product = deleteAllImages(product);
         product.archived = true;
         await product.save();
-        archiveStripeProduct(res.locals.vendor.stripeToken, product.stripeId);
         res.json({success: true});
     }catch(e){next(e)}
 }
@@ -90,7 +79,7 @@ const updateRoute = async (req, res, next)=>{
         validate(req.body);
         let product = await getProduct(req.params.productId);
         validateOwnership(product, res.locals.vendor._id.toString());
-        product = await updateProduct(req.body, product, res.locals.vendor.stripeToken);
+        product = updateProduct(req.body, product);
         await product.save();
         res.json(responseProduct(product));
     }catch(e){next(e)}
@@ -124,7 +113,6 @@ const getAllVendorProducts = async (vendorId, forVendor)=>{
         _id: 0,
         vendor: 0,
         archived: 0,
-        stripeId: 0,
         "variations.priceId": 0,
         "variations.archived": 0
     }};
@@ -249,34 +237,6 @@ const removeImages = (images, product)=>{
 }
 
 /*
- Create new product on Stripe
-
- @param {String} token - Vendor Stripe token
- @param {String} name - Name of the product
- @param {Boolean} active - Whether the product is active or not
- @return {String} Stripe ID for the product
- */
-const createStripeProduct = async (token, name, active)=>{
-    const stripe = stripePack(decrypt(token));
-
-    const product = await stripe.products.create({
-        name: name,
-        active: active
-    });
-
-    return product.id;
-}
-
-const archiveStripeProduct = async (token, productId)=>{
-    const stripe = stripePack(decrypt(token));
-
-    await stripe.products.update(
-        productId,
-        {active: false}
-    );
-}
-
-/*
  Checks validity of input data
  Updates the information on the product
  Updates Stripe product/price data as necessary
@@ -286,23 +246,14 @@ const archiveStripeProduct = async (token, productId)=>{
  @param {String} token - Stripe token for the vendor
  @return {Product} The updated product
  */
-const updateProduct = async (data, product, token)=>{
-    const stripe = stripePack(decrypt(token));
-    const stripeData = {};
-    if(data.name){
-        product.name = data.name;
-        stripeData.name = data.name;
-    }
+const updateProduct = (data, product)=>{
+    if(data.name) product.name = data.name;
 
     if(data.tags) product.tags = data.tags;
 
     if(data.description) product.description = data.description;
 
     if(data.active !== undefined) product.active = data.active;
-
-    if(Object.keys(stripeData).length > 0){
-        await stripe.products.update(product.stripeId, stripeData);
-    }
 
     return product;
 }

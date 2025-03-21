@@ -81,6 +81,8 @@
         <a class="headSub" href="#uploadVendorImg">Upload Store Image</a>
         <a class="headSub" href="#passwordResetEmail">Send Password Reset Email</a>
         <a class="headSub" href="#resetPassword">Reset Password</a>
+        <a class="headSub" href="#createConnectedAccount">Create Stripe Account</a>
+        <a class="headSub" href="#createConnectSession">Create Stripe Session</a>
         <a class="headMain" href="#product">Product</a>
         <a class="headSub" href="#createProduct">Create Product</a>
         <a class="headSub" href="#deleteProduct">Delete Product</a>
@@ -102,6 +104,7 @@
         <a class="headSub" href="#getOrder">Get (One)</a>
         <a class="headSub" href="#getOrderVendor">Get One (Vendor)</a>
         <a class="headSub" href="#updateOrder">Update</a>
+        <a class="headSub" href="#refundOrder">Refund</a>
         <a class="headMain" href="#cart">Cart</a>
         <a class="headSub" href="#getCart">Get</a>
     </header>
@@ -336,21 +339,9 @@
             </div>
 
             <div class="prop">
-                <p class="name">stripeToken</p>
-                <p class="type">string (optional)</p>
-                <p class="propDesc">Stripe API token to add/change</p>
-            </div>
-
-            <div class="prop">
-                <p class="name">publishableKey</p>
-                <p class="type">string (optional)</p>
-                <p class="propDesc">Publishable key to add/change</p>
-            </div>
-
-            <div class="prop">
-                <p class="name">webhookSecret</p>
-                <p class="type">string (optional)</p>
-                <p class="propDesc">Webhook secret to add/change. For the PaymentIntent webhooks.</p>
+                <p class="name">stripeActivated</p>
+                <p class="type">Boolean (optional)</p>
+                <p class="propDesc">Set whether Stripe has been fully onboarded</p>
             </div>
         </div>
 
@@ -430,6 +421,34 @@
                 <p class="name">success</p>
                 <p class="type">boolean</p>
                 <p class="propDesc">Always '{success: true}' if no error.</p>
+            </div>
+        </div>
+
+        <div id="createConnectedAccount" class="route">
+            <h1>Create Stripe Account</h1>
+            <p class="url">POST /vendor/connect</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Create a connected account on Stripe for the user</p>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">account</p>
+                <p class="type">String</p>
+                <p class="propDesc">ID of the newly created connected account</p>
+            </div>
+        </div>
+
+        <div id="createConnectSession" class="route">
+            <h1>Create Stripe Account Session</h1>
+            <p class="url">POST /vendor/connect/session</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Create an account session on Stripe for a vendor</p>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">sessionSecret</p>
+                <p class="type">String</p>
+                <p class="propDesc">Client secret for the onboarding session</p>
             </div>
         </div>
 
@@ -1040,6 +1059,27 @@
                 <p class="name">N/A</p>
                 <p class="type"><a href="#order">Order</a></p>
                 <p class="propDesc">Full order including all details, including products/variations</p>
+            </div>
+        </div>
+
+        <div id="refundOrder" class="route">
+            <h1>Refund Order</h1>
+            <p class="url">POST /order/:orderId/refund</p>
+            <p>Vendor Auth Required</p>
+            <p class="description">Create a refund for an order</p>
+
+            <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">amount</p>
+                <p class="type">Number (optional)</p>
+                <p class="propDesc">Amount to refund as integer. Must be less than total order amount. If not provided, then a full refund will be issued.</p>
+            </div>
+
+            <h3>Response Body</h3>
+            <div class="prop">
+                <p class="name">success</p>
+                <p class="type">true</p>
+                <p class="propDesc">Always '{success: true}' if no error</p>
             </div>
         </div>
 

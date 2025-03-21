@@ -13,36 +13,37 @@ import paymentSucceededEmail from "../email/paymentSucceeded.js";
 import paymentFailedEmail from "../email/paymentFailed.js";
 import orderCanceledEmail from "../email/orderCanceled.js";
 
+const stripe = stripePack(process.env.STRIPE_INLETSITES_KEY);
+let refNumber = 0;
+
 const createRoute = async (req, res, next)=>{
     try{
         validate(req.body);
         const vendor = await getVendor(req.body.vendor);
-        const items = await getVariations(req.body.items);
+        const items = await getVariations(req.body.items, true);
         const order = createOrder(vendor, items, req.body);
-        const paymentIntent = await createPaymentIntent(vendor.stripeToken, order.total);
+        const paymentIntent = await createPaymentIntent(vendor.stripe.accountId, order.total);
         order.paymentIntent = paymentIntent.id;
         updateQuantities(items);
         await order.save();
         res.json({
             clientSecret: paymentIntent.client_secret,
-            publishableKey: vendor.publishableKey,
+            publishableKey: process.env.STRIPE_PUBLISHABLE,
             orderId: order._id,
-            orderToken: order.uuid
+            orderToken: order.uuid,
+            connectedId: vendor.stripe.accountId
         });
     }catch(e){next(e)}
 }
 
 const webhookRoute = async (req, res, next)=>{
     try{
-        const vendor = await getVendor(req.params.vendorId);
-        const stripe = stripePack(decrypt(vendor.stripeToken));
-        const webhookSecret = decrypt(vendor.webhookSecret);
         const event = stripe.webhooks.constructEvent(
             req.body,
             req.headers["stripe-signature"],
-            webhookSecret
+            process.env.STRIPE_WEBHOOK_SECRET
         );
-        handleEvent(event, vendor);
+        handleEvent(event);
         res.send();
     }catch(e){next(e)}
 }
@@ -99,6 +100,28 @@ const updateOrderRoute = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const refundRoute = async (req, res, next)=>{
+    try{
+        const order = await getSingleOrder(req.params.orderId);
+        verifyOwnership2(res.locals.vendor, order);
+        const amount = await refundAmount(order, req.body.amount);
+        const stripeRefund = await stripe.refunds.create(
+            {
+                payment_intent: order.paymentIntent,
+                amount: amount
+            },
+            {stripeAccount: res.locals.vendor.stripe.accountId}
+        );
+        order.refunds.push({
+            amount: amount,
+            stripeId: stripeRefund.id,
+            date: new Date()
+        });
+        await order.save();
+        res.json({success: true});
+    }catch(e){next(e)}
+}
+
 /*
  Retrieve a single order with the order ID
 
@@ -106,7 +129,9 @@ const updateOrderRoute = async (req, res, next)=>{
  @return {Order} Order object
  */
 const getSingleOrder = async (orderId)=>{
-    return await Order.findOne({_id: orderId});
+    const order = await Order.findOne({_id: orderId});
+    if(!order) throw new CustomError(400, "No order with that ID");
+    return order;
 }
 
 /*
@@ -118,6 +143,13 @@ const getSingleOrder = async (orderId)=>{
  */
 const getVendor = async (vendorId)=>{
     const vendor = await Vendor.findOne({_id: vendorId});
+    if(!vendor) throw new CustomError(400, "No vendor with that ID");
+    return vendor;
+}
+
+const getVendorByConnectId = async (id)=>{
+    const vendor = await Vendor.findOne({"stripe.accountId": id});
+    if(!vendor) throw new CustomError(400, "Vendor not found");
     return vendor;
 }
 
@@ -173,12 +205,12 @@ const updateOrder = (order, data)=>{
  @param {Object} items - Object containing product/variation IDs and purchase quantity
  @return {Object} Same as 'items', but with product/variation populated
  */
-const getVariations = async (items)=>{
+const getVariations = async (items, isPurchase = false)=>{
     const itemsList = [];
     for(let i = 0; i < items.length; i++){
         const product = await Product.findOne({_id: items[i].product});
-        const variation = product.variations.find(v => v._id.toString() === items[i].variation);
-        validateVariationPurchase(variation, items[i].quantity);
+        const variation = product.variations.find(v => v._id.toString() === items[i].variation.toString());
+        if(isPurchase) validateVariationPurchase(variation, items[i].quantity);
         itemsList.push({product, variation, quantity: items[i].quantity});
     }
     return itemsList;
@@ -204,7 +236,7 @@ const validateVariationPurchase = (variation, purchaseQuantity)=>{
  Calculate total prices
 
  @param {Object} items - Items list of product/variation/quantity
- @return {Object} Object containing subTotal, shipping and total
+ @return {Object} Object containing subTotal and shipping
  */
 const calculateTotals = (items)=>{
     let subTotal = 0;
@@ -228,6 +260,7 @@ const createOrder = (vendor, items, data)=>{
     const {subTotal, shipping} = calculateTotals(items);
     const order = new Order({
         vendor: vendor._id,
+        orderNumber: orderNumber(),
         name: data.name,
         address: data.address,
         email: data.email.toLowerCase(),
@@ -237,7 +270,8 @@ const createOrder = (vendor, items, data)=>{
         shipping: shipping,
         total: subTotal + shipping,
         status: "incomplete",
-        date: new Date()
+        date: new Date(),
+        refunds: []
     });
     for(let i = 0; i < items.length; i++){
         order.items.push({
@@ -269,12 +303,16 @@ const updateQuantities = (items)=>{
  @param {Number} total - Total amount of payment in cents
  @return {PaymentIntent} Stripe PaymentIntent object
  */
-const createPaymentIntent = async (vendorToken, total)=>{
-    const stripe = stripePack(decrypt(vendorToken));
-    return  await stripe.paymentIntents.create({
-        amount: total,
-        currency: "usd"
-    });
+const createPaymentIntent = async (connectedId, total)=>{
+    return await stripe.paymentIntents.create(
+        {
+            amount: total,
+            currency: "usd",
+            automatic_payment_methods: {enabled: true},
+            application_fee_amount: Math.floor(total * 0.01)
+        },
+        {stripeAccount: connectedId}
+    );
 }
 
 /*
@@ -282,16 +320,16 @@ const createPaymentIntent = async (vendorToken, total)=>{
 
  @param {Event} event - Stripe Event object
  */
-const handleEvent = (event, vendor)=>{
+const handleEvent = (event)=>{
     switch(event.type){
         case "payment_intent.succeeded":
-            handleSuccessEvent(event.data.object.id, vendor);
+            handleSuccessEvent(event.data.object.id, event.account);
             break;
         case "payment_intent.canceled":
-            handleFailedEvent(event.data.object.id, vendor);
+            handleFailedEvent(event.data.object.id, event.account);
             break;
         case "payment_intent.payment_failed":
-            handleFailedEvent(event.data.object.id, vendor);
+            handleFailedEvent(event.data.object.id, event.account);
             break;
     }
 }
@@ -301,8 +339,9 @@ const handleEvent = (event, vendor)=>{
 
  @param {String} paymentIntentId - Id of the paymentIntent
  */
-const handleSuccessEvent = async (paymentIntentId, vendor)=>{
+const handleSuccessEvent = async (paymentIntentId, connectId)=>{
     try{
+        const vendor = await getVendorByConnectId(connectId);
         const order = await getOrderByPaymentIntent(paymentIntentId);
         order.status = "paid";
         sendEmail(
@@ -322,8 +361,9 @@ const handleSuccessEvent = async (paymentIntentId, vendor)=>{
 
  @param {String} paymentIntentId - Id of the PaymentIntent
  */
-const handleFailedEvent = async (paymentIntentId, vendor)=>{
+const handleFailedEvent = async (paymentIntentId, connectId)=>{
     try{
+        const vendor = await getVendorByConnectId(connectId);
         const order = await getOrderByPaymentIntent(paymentIntentId);
         order.status = "paymentFailed";
         sendEmail(
@@ -393,6 +433,7 @@ const getFullOrder = async (orderId)=>{
         {$addFields: {"items.product": "$productDetails"}},
         {$group: {
             _id: "$_id",
+            orderNumber: {$first: "$orderNumber"},
             items: {$push: "$items"},
             vendor: {$first: "$vendor"},
             name: {$first: "$name"},
@@ -444,6 +485,55 @@ const getSearchQueryData = (data)=>{
     };
 }
 
+/*
+ Check that refund amount doesn't exceed what can be refunded
+ Throws error if amount is invalid
+ @param {Order} order - List of refunds from the Order object
+ @param {Number} amount - Amount to refund. Full refund if undefined
+ @return {Number} Amount to refund
+ */
+const refundAmount = async (order, amount)=>{
+    const items = await getVariations(order.items);
+    const {subTotal, shipping} = calculateTotals(items);
+    const refundable = getRefundable(order.refunds, subTotal + shipping);
+    if(amount){
+        if(amount > refundable) throw new CustomError(400, "Amount is more than can be refunded");
+        return amount;
+    }
+    return refundable;
+}
+
+/*
+ Retrieve the total amount that can be refunded from an order
+ @param {[Refund]} refunds - List of refunds on an order
+ @param {Number} totalCharged - Grand total charged for this order
+ @return {Number} Total refundable amount
+ */
+const getRefundable = (refunds, totalCharged)=>{
+    let totalRefunds = 0;
+    for(let i = 0; i < refunds.length; i++){
+        totalRefunds += refunds[i].amount;
+    }
+    return totalCharged - totalRefunds;
+}
+
+const orderNumber = ()=>{
+    const now = new Date();
+    const year = now.getFullYear() % 100;
+    const month = (now.getMonth() + 1).toString().padStart(2, "0");
+    const date = now.getDate().toString().padStart(2, "0");
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = now.getMinutes().toString().padStart(2, "0");
+    const number = refNumber.toString().padStart(4, "0");
+
+    refNumber++;
+    if(refNumber > 9999){
+        refNumber = 0;
+    }
+
+    return `${year}${month}${date}${hours}${minutes}-${number}`;
+}
+
 const searchOrders = async (vendorId, from, to, status)=>{
     const match = {$match: {
         vendor: vendorId,
@@ -459,6 +549,7 @@ const searchOrders = async (vendorId, from, to, status)=>{
         {$project: {
             id: "$_id",
             _id: 0,
+            orderNumber: 1,
             name: 1,
             address: 1,
             email: 1,
@@ -477,5 +568,6 @@ export {
     getOrderRoute,
     getOrdersRoute,
     getOrderVendorRoute,
-    updateOrderRoute
+    updateOrderRoute,
+    refundRoute
 }

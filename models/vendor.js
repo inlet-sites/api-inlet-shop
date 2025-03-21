@@ -25,30 +25,6 @@ const VendorSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    stripeToken: {
-        iv: {
-            type: String,
-            required: false
-        },
-        encryptedData: {
-            type: String,
-            required: false
-        }
-    },
-    publishableKey: {
-        type: String,
-        required: false
-    },
-    webhookSecret: {
-        iv: {
-            type: String,
-            required: false
-        },
-        encryptedData: {
-            type: String,
-            required: false
-        }
-    },
     image: {
         type: String,
         required: false
@@ -82,6 +58,16 @@ const VendorSchema = new mongoose.Schema({
     active: {
         type: Boolean,
         required: true
+    },
+    stripe:{
+        accountId: {
+            type: String,
+            required: false,
+        },
+        activated: {
+            type: Boolean,
+            required: false
+        }
     }
 });
 

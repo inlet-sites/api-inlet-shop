@@ -61,10 +61,6 @@ const ProductSchema = new mongoose.Schema({
         type: Boolean,
         required: true
     },
-    stripeId: {
-        type: String,
-        required: false
-    },
     variations: [VariationSchema]
 });
 const Product = mongoose.model("product", ProductSchema);

@@ -10,6 +10,8 @@ import {
     changeImageRoute,
     passwordEmailRoute,
     resetPasswordRoute,
+    createConnectRoute,
+    createSessionRoute
 } from "../controllers/vendor.js";
 
 const vendorRoutes = (app)=>{
@@ -23,6 +25,8 @@ const vendorRoutes = (app)=>{
     app.put("/vendor/image", vendorAuth, changeImageRoute);
     app.post("/vendor/password/email", passwordEmailRoute);
     app.post("/vendor/password/reset", resetPasswordRoute);
+    app.post("/vendor/connect", vendorAuth, createConnectRoute);
+    app.post("/vendor/connect/session", vendorAuth, createSessionRoute);
 }
 
 export default vendorRoutes;
