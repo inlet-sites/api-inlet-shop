@@ -223,7 +223,6 @@ const updateVariation = (variation, data, vendor)=>{
  */
 const validatePurchaseOption = (purchaseOption, vendor)=>{
     if(purchaseOption !== "list" && !vendor.stripe.activated){
-        console.log("iffed");
         throw new CustomError(400, "Online sales unavailable");
     }
 }
