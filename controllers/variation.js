@@ -34,6 +34,17 @@ const removeVariation = async (req, res, next)=>{
     }catch(e){next(e)}
 }
 
+const updateVariationRoute = async (req, res, next)=>{
+    try{
+        validate(req.body);
+        const {product, variation} = await getVariation(req.params.productId, req.params.variationId);
+        validateOwnership(product, res.locals.vendor._id.toString());
+        updateVariation(variation, req.body, res.locals.vendor);
+        await product.save();
+        res.json(responseVariation(variation));
+    }catch(e){next(e)}
+}
+
 const addImagesRoute = async (req, res, next)=>{
     try{
         const {product, variation} = await getVariation(req.params.productId, req.params.variationId);
@@ -62,7 +73,7 @@ const removeImagesRoute = async (req, res, next)=>{
  @return {Product} The retrieved product
  */
 const getProduct = async (productId)=>{
-    const product = await Product.findOne({_id: productId});
+    const product = await Product.findOne({_id: productId, archived: false});
     if(!product) throw new CustomError(400, "No product with that ID");
     return product;
 }
@@ -76,14 +87,15 @@ const getProduct = async (productId)=>{
  */
 const getVariation = async (productId, variationId)=>{
     const product = await getProduct(productId);
-    if(!product) throw new CustomError(400, "No product with that ID");
     let variation;
     for(let i = 0; i < product.variations.length; i++){
         if(product.variations[i]._id.toString() === variationId){
             variation = product.variations[i];
         }
     }
-    if(!variation) throw new CustomError(400, "No variation with that ID");
+    if(!variation || variation.archived === true){
+        throw new CustomError(400, "No variation with that ID");
+    }
     return {product, variation};
 }
 
@@ -188,6 +200,35 @@ const removeImages = (imagesArray, removeImages)=>{
 }
 
 /*
+ Update some data on a Variation
+ @param {Variation} variation - Variation object
+ @param {Object} data - Request body with data to update
+ @param {Vendor} vendor - Vendor object
+ @return {Variation} - Variation object
+ */
+const updateVariation = (variation, data, vendor)=>{
+    if(data.quantity) variation.quantity = data.quantity;
+    if(data.purchaseOption){
+        validatePurchaseOption(data.purchaseOption, vendor);
+        variation.purchaseOption = data.purchaseOption;
+    }
+    return variation;
+}
+
+/*
+ Validate that vendor has right permissions for the purchaseOption
+ Throws error for invalid permissions
+ @param {String} purchaseOption - "list", "buy", "ship"
+ @param {Vendor} vendor - Vendor object
+ */
+const validatePurchaseOption = (purchaseOption, vendor)=>{
+    if(purchaseOption !== "list" && !vendor.stripe.activated){
+        console.log("iffed");
+        throw new CustomError(400, "Online sales unavailable");
+    }
+}
+
+/*
  Create the data to be returned to user/vendor from the full Variation
 
  @param {Variation} variation - Full Variation object
@@ -209,6 +250,7 @@ const responseVariation = (variation)=>{
 export {
     createVariation,
     removeVariation,
+    updateVariationRoute,
     addImagesRoute,
     removeImagesRoute
 };

@@ -1,0 +1,22 @@
+meta {
+  name: Update
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://localhost:8000/product/67deedfe517e3ca8c289c584/variation/67deedff517e3ca8c289c588
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZGVlYzQxOWIzN2ViMjViNzZiMTQwYiIsInRva2VuIjoiOWZjYjU4MDgtZjhkZC00NmFkLThmNGItYTU0N2YyZTdhYzBlIiwiaWF0IjoxNzQyNjYzMDUzfQ.MuPR4zIvjnKxOXTTAsc0G5aIrMk86HkpdR3OGPMOpEQ
+}
+
+body:json {
+  {
+    "quantity": "123",
+    "purchaseOption": "buy"
+  }
+}
