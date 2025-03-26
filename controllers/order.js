@@ -12,6 +12,7 @@ import mongoose from "mongoose";
 import paymentSucceededEmail from "../email/paymentSucceeded.js";
 import paymentFailedEmail from "../email/paymentFailed.js";
 import orderCanceledEmail from "../email/orderCanceled.js";
+import orderShipped from "../email/orderShipped.js";
 
 const stripe = stripePack(process.env.STRIPE_INLETSITES_KEY);
 let refNumber = 0;
@@ -87,14 +88,6 @@ const updateOrderRoute = async (req, res, next)=>{
         verifyOwnership2(res.locals.vendor, order);
         order = updateOrder(order, req.body);
         await order.save();
-        if(req.body.status === "declined"){
-            sendEmail(
-                order.email,
-                order.name,
-                "Your order has been declined",
-                orderCanceledEmail(order._id, order.uuid, req.body.note)
-            );
-        }
         order = await getFullOrder(req.params.orderId);
         res.json(order);
     }catch(e){next(e)}
@@ -193,7 +186,23 @@ const verifyOwnership2 = (vendor, order)=>{
  @return {Order} Order object
  */
 const updateOrder = (order, data)=>{
-    if(data.status) order.status = data.status;
+    let subject = "";
+    let html = "";
+    if(data.status){
+        order.status = data.status;
+        switch(data.status){
+            case "declined":
+                subject = "Your order has been declined";
+                html = orderCanceledEmail(order._id, order.uuid, data.note);
+                break;
+            case "shipped":
+                subject = "Your order has been shipped";
+                html = orderShipped(order);
+                break;
+        }
+    }
+
+    sendEmail(order.email, order.name, subject, html);
 
     return order;
 }
