@@ -199,9 +199,12 @@ const updateOrder = (order, data)=>{
                 subject = "Your order has been shipped";
                 html = orderShipped(order);
                 break;
+            default:
+                return order;
         }
     }
 
+    console.log("test");
     sendEmail(order.email, order.name, subject, html);
 
     return order;
