@@ -76,3 +76,14 @@ const VendorSchema = new mongoose.Schema({
 });
 
 export default mongoose.model("vendor", VendorSchema);
+
+/*
+ New Vendor required data:
+     email
+     owner
+     store
+     url
+     token
+     active
+     newOrderSendEmail
+ */
