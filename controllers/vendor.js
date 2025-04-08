@@ -323,6 +323,7 @@ const responseVendorForSelf = (vendor)=>{
         slogan: vendor.slogan,
         description: vendor.description,
         contact: vendor.contact,
+        newOrderSendEmail: vendor.newOrderSendEmail,
         onlineSales: canSell
     };
 }
