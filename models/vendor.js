@@ -59,6 +59,10 @@ const VendorSchema = new mongoose.Schema({
         type: Boolean,
         required: true
     },
+    newOrderSendEmail: {
+        type: Boolean,
+        required: true
+    },
     stripe:{
         accountId: {
             type: String,
