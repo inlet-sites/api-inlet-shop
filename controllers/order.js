@@ -13,6 +13,7 @@ import paymentSucceededEmail from "../email/paymentSucceeded.js";
 import paymentFailedEmail from "../email/paymentFailed.js";
 import orderCanceledEmail from "../email/orderCanceled.js";
 import orderShipped from "../email/orderShipped.js";
+import newOrderEmail from "../email/newOrder.js";
 
 const stripe = stripePack(process.env.STRIPE_INLETSITES_KEY);
 let refNumber = 0;
@@ -27,6 +28,14 @@ const createRoute = async (req, res, next)=>{
         order.paymentIntent = paymentIntent.id;
         updateQuantities(items);
         await order.save();
+        if(vendor.newOrderSendEmail) {
+            sendEmail(
+                vendor.email,
+                vendor.owner,
+                "New Order",
+                newOrderEmail(order.name)
+            );
+        }
         res.json({
             clientSecret: paymentIntent.client_secret,
             publishableKey: process.env.STRIPE_PUBLISHABLE,
