@@ -35,8 +35,14 @@ const VendorSchema = new mongoose.Schema({
             required: false
         },
         address: {
-            type: String,
-            required: false
+            text: {
+                type: String,
+                required: false
+            },
+            link: {
+                type: String,
+                required: false
+            }
         },
         slogan: {
             type: String,

@@ -139,41 +139,59 @@
                 <p class="type">string</p>
                 <p class="propDesc">The name of the store</p>
             </div>
-            
+
             <div class="prop">
-                <p class="name">image</p>
-                <p class="type">string URL</p>
-                <p class="propDesc">Image used for the store</p>
+                <p class="name">publicData.phone</p>
+                <p class="type">String</p>
+                <p class="propDesc">Public phone number for vendor</p>
             </div>
 
             <div class="prop">
-                <p class="name">slogan</p>
-                <p class="type">string</p>
-                <p class="propDesc">Short text to display on store list</p>
+                <p class="name">publicData.email</p>
+                <p class="type">String</p>
+                <p class="propDesc">Public email address for vendor</p>
             </div>
 
             <div class="prop">
-                <p class="name">description</p>
-                <p class="type">string</p>
-                <p class="propDesc">Extended description of the vendor. Containing all necessary information</p>
+                <p class="name">publicData.address.text</p>
+                <p class="type">String</p>
+                <p class="propDesc">Text to display for address</p>
             </div>
 
             <div class="prop">
-                <p class="name">contact.phone</p>
-                <p class="type">string</p>
-                <p class="propDesc">Phone number for display to customers. Must have this or email.</p>
+                <p class="name">publicData.address.link</p>
+                <p class="type">String</p>
+                <p class="propDesc">URL link for address</p>
             </div>
 
             <div class="prop">
-                <p class="name">contact.email</p>
-                <p class="type">string</p>
-                <p class="propDesc">Email for display to customers. Must have this or phone number.</p>
+                <p class="name">publicData.slogan</p>
+                <p class="type">String</p>
+                <p class="propDesc">Short slogan for the business</p>
             </div>
 
             <div class="prop">
-                <p class="name">contact.address</p>
-                <p class="type">string</p>
-                <p class="propDesc">Address for display to customers</p>
+                <p class="name">publicData.description</p>
+                <p class="type">String</p>
+                <p class="propDesc">Long form description/information about the business</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">publicData.image</p>
+                <p class="type">String</p>
+                <p class="propDesc">Link to the vendor image</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">publicData.hours</p>
+                <p class="type">Object</p>
+                <p class="propDesc">Object containing each day of the week as a property. Each day of the week contains an array with two dates. Open/close. Ignore date, just time.</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">publicData.links</p>
+                <p class="type">[{url: String, text: String}]</p>
+                <p class="propDesc">Array of objects. Each object contains url and text for an anchor tag. For any links the vendor wants to add, such as socials.</p>
             </div>
 
             <div class="prop">
