@@ -1,0 +1,26 @@
+meta {
+  name: Update
+  type: http
+  seq: 2
+}
+
+put {
+  url: http://localhost:8000/vendor
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Y2RhZmUwMjNjZjcyN2M5ODZiMTQwYiIsInRva2VuIjoiMjJlNzZhNmEtNzQxZi00MmI2LWI4ZTQtZjkyM2ZlYmFkMTEwIiwiaWF0IjoxNzQ0MjI2OTI1fQ.5Yr4CkDS0W_F4FnFJ_Xdz45HaOBqFN8ef2y7qXnq91I
+}
+
+body:json {
+  {
+    "phone": "12345",
+    "email": "lee@inletsites.dev",
+    "links": [{
+      "url": "inletsites.dev",
+      "link": "inletsites.dev"
+    }]
+  }
+}

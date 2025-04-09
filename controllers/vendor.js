@@ -277,8 +277,8 @@ const removeImage = (file)=>{
 const updateVendor = (vendor, data)=>{
     if(data.phone) vendor.publicData.phone = data.phone;
     if(data.email) vendor.publicData.email = data.email;
-    if(data.address.text) vendor.publicData.address.text = data.address.text;
-    if(data.address.link) vendor.publicData.address.link = data.address.link;
+    if(data.address?.text) vendor.publicData.address.text = data.address.text;
+    if(data.address?.link) vendor.publicData.address.link = data.address.link;
     if(data.slogan) vendor.publicData.slogan = data.slogan;
     if(data.description) vendor.publicData.description = data.description;
     if(data.hours) vendor.publicData.hours = data.hours;

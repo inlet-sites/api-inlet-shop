@@ -73,7 +73,7 @@ const VendorSchema = new mongoose.Schema({
             type: String,
             required: false
         }
-    }
+    },
     html: {
         type: String,
         required: false
