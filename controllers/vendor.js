@@ -328,6 +328,7 @@ const responseVendorForSelf = (vendor)=>{
         slogan: vendor.slogan,
         description: vendor.description,
         contact: vendor.contact,
+        publicData: vendor.publicData,
         newOrderSendEmail: vendor.newOrderSendEmail,
         onlineSales: canSell
     };
@@ -351,6 +352,7 @@ const responseVendor = (vendor)=>{
         slogan: vendor.slogan,
         description: vendor.description,
         contact: vendor.contact,
+        publicData: vendor.publicData,
         html: vendor.html,
         onlineSales: canSell
     };
