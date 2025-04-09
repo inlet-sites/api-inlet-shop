@@ -68,7 +68,11 @@ const VendorSchema = new mongoose.Schema({
         links: [{
             url: String,
             text: String
-        }]
+        }],
+        website: {
+            type: String,
+            required: false
+        }
     }
     html: {
         type: String,
