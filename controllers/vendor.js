@@ -275,19 +275,6 @@ const removeImage = (file)=>{
  @return {Vendor} Updated Vendor object
  */
 const updateVendor = (vendor, data)=>{
-    if(data.stripeActivated !== undefined) vendor.stripe.activated = data.stripeActivated;
-    if(data.newOrderSendEmail !== undefined) vendor.newOrderSendEmail = data.newOrderSendEmail;
-
-    return vendor;
-}
-
-/*
- Update the public data for a vendor
- @param {Vendor} vendor - Vendor object
- @param {Object} data - Object containing the data to be updated
- @return {Vendor} Updated Vendor object
- */
-const updatePublicData = (vendor, data)=>{
     if(data.phone) vendor.publicData.phone = data.phone;
     if(data.email) vendor.publicData.email = data.email;
     if(data.address.text) vendor.publicData.address.text = data.address.text;
@@ -296,6 +283,9 @@ const updatePublicData = (vendor, data)=>{
     if(data.description) vendor.publicData.description = data.description;
     if(data.hours) vendor.publicData.hours = data.hours;
     if(data.links) vendor.publicData.links = data.links;
+    if(data.website) vendor.publicData.website = data.website;
+    if(data.stripeActivated !== undefined) vendor.stripe.activated = data.stripeActivated;
+    if(data.newOrderSendEmail !== undefined) vendor.newOrderSendEmail = data.newOrderSendEmail;
 
     return vendor;
 }

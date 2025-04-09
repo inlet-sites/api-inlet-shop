@@ -78,6 +78,7 @@
         <a class="headSub" href="#getVendor">Get Vendor</a>
         <a class="headSub" href="#getVendors">Get All Vendors</a>
         <a class="headSub" href="#updateVendor">Update Vendor</a>
+        <a class="headSub" href="#updatePublicDataVendor">Update Public Data</a>
         <a class="headSub" href="#uploadVendorImg">Upload Store Image</a>
         <a class="headSub" href="#passwordResetEmail">Send Password Reset Email</a>
         <a class="headSub" href="#resetPassword">Reset Password</a>
@@ -339,6 +340,54 @@
             <p class="description">Update vendor information</p>
 
             <h3>Request Body</h3>
+            <div class="prop">
+                <p class="name">phone</p>
+                <p class="type">String (optional)</p>
+                <p class="propDesc">Public phone number for vendor</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">email</p>
+                <p class="type">String (optional)</p>
+                <p class="propDesc">Public email address for vendor</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">address.text</p>
+                <p class="type">String (optional)</p>
+                <p class="propDesc">Text of the vendor's address</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">address.link</p>
+                <p class="type">String (optional)</p>
+                <p class="propDesc">Map link to display vendor's address</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">slogan</p>
+                <p class="type">String (optional)</p>
+                <p class="propDesc">Short slogan for the vendor</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">description</p>
+                <p class="type">String (optional)</p>
+                <p class="propDesc">Long term description and other info for the vendor</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">hours</p>
+                <p class="type">{Object}</p>
+                <p class="propDesc">Object containing days of the week as properties. Each day of the week is an array containing two dates. Open/close time. Date ignored, only time. Will fully replace previous hours.</p>
+            </div>
+
+            <div class="prop">
+                <p class="name">links</p>
+                <p class="type">[{url: String, text: String}]</p>
+                <p class="propDesc">Array of objects. Each object contains url and text for an anchor tag. For any links the vendor wants to add, such as socials. Will completely replace previous links.</p>
+            </div>
+
             <div class="prop">
                 <p class="name">newOrderSendEmail</p>
                 <p class="type">Boolean (optional)</p>
