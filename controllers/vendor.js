@@ -281,6 +281,7 @@ const updateVendor = (vendor, data)=>{
     if(data.email) vendor.contact.email = data.email;
     if(data.address) vendor.contact.address = data.address;
     if(data.stripeActivated !== undefined) vendor.stripe.activated = data.stripeActivated;
+    if(data.newOrderSendEmail) vendor.newOrderSendEmail = data.newOrderSendEmail;
 
     return vendor;
 }
