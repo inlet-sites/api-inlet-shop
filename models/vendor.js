@@ -25,19 +25,7 @@ const VendorSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    image: {
-        type: String,
-        required: false
-    },
-    slogan: {
-        type: String,
-        required: false
-    },
-    description: {
-        type: String,
-        required: false
-    },
-    contact: {
+    publicData: {
         phone: {
             type: String,
             required: false
@@ -49,8 +37,33 @@ const VendorSchema = new mongoose.Schema({
         address: {
             type: String,
             required: false
-        }
-    },
+        },
+        slogan: {
+            type: String,
+            required: false
+        },
+        description: {
+            type: String,
+            required: false
+        },
+        image: {
+            type: String,
+            required: false
+        },
+        hours: {
+            sunday: [Date, Date],
+            monday: [Date, Date],
+            tuesday: [Date, Date],
+            wednesday: [Date, Date],
+            thursday: [Date, Date],
+            friday: [Date, Date],
+            saturday: [Date, Date]
+        },
+        links: [{
+            url: String,
+            text: String
+        }]
+    }
     html: {
         type: String,
         required: false
