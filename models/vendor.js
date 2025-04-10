@@ -57,13 +57,13 @@ const VendorSchema = new mongoose.Schema({
             required: false
         },
         hours: {
-            sunday: [Date, Date],
-            monday: [Date, Date],
-            tuesday: [Date, Date],
-            wednesday: [Date, Date],
-            thursday: [Date, Date],
-            friday: [Date, Date],
-            saturday: [Date, Date]
+            sunday: [String, String],
+            monday: [String, String],
+            tuesday: [String, String],
+            wednesday: [String, String],
+            thursday: [String, String],
+            friday: [String, String],
+            saturday: [String, String]
         },
         links: [{
             url: String,
