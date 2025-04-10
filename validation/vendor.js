@@ -39,6 +39,7 @@ export default (data)=>{
     }
 
     if(data.address){
-        if(typeof(data.address) !== "string") throw new CustomError(400, "Invalid address");
+        if(typeof(data.address.text) !== "string") throw new CustomError(400, "Invalid address");
+        if(typeof(data.address.link) !== "string") throw new CustomError(400, "Invalid address");
     }
 }
