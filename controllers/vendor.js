@@ -286,6 +286,14 @@ const updateVendor = (vendor, data)=>{
     if(data.website) vendor.publicData.website = data.website;
     if(data.stripeActivated !== undefined) vendor.stripe.activated = data.stripeActivated;
     if(data.newOrderSendEmail !== undefined) vendor.newOrderSendEmail = data.newOrderSendEmail;
+    if(data.links){
+        for(let i = 0; i < data.links.length; i++){
+            if(!data.links[i].url.substring(0, 9).includes("https://")){
+                data.links[i].url = `https://${data.links[i].url}`;
+            }
+        }
+        vendor.publicData.links = data.links;
+    }
 
     return vendor;
 }
