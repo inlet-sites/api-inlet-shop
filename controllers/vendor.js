@@ -79,7 +79,7 @@ const changeImageRoute = async (req, res, next)=>{
     try{
         const file = await createImage(req.files.file);
         if(res.locals.vendor.image) removeImage(res.locals.vendor.image);
-        res.locals.vendor.image = file;
+        res.locals.vendor.publicData.image = file;
         await res.locals.vendor.save();
         res.json(responseVendorForSelf(res.locals.vendor));
     }catch(e){next(e)}
@@ -332,10 +332,6 @@ const responseVendorForSelf = (vendor)=>{
         owner: vendor.owner,
         store: vendor.store,
         url: vendor.url,
-        image: vendor.image,
-        slogan: vendor.slogan,
-        description: vendor.description,
-        contact: vendor.contact,
         publicData: vendor.publicData,
         newOrderSendEmail: vendor.newOrderSendEmail,
         onlineSales: canSell
@@ -356,10 +352,6 @@ const responseVendor = (vendor)=>{
         id: vendor._id,
         store: vendor.store,
         url: vendor.url,
-        image: vendor.image,
-        slogan: vendor.slogan,
-        description: vendor.description,
-        contact: vendor.contact,
         publicData: vendor.publicData,
         html: vendor.html,
         onlineSales: canSell
