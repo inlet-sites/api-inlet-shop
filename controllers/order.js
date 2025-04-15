@@ -213,7 +213,6 @@ const updateOrder = (order, data)=>{
         }
     }
 
-    console.log("test");
     sendEmail(order.email, order.name, subject, html);
 
     return order;
