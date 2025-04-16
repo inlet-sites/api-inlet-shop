@@ -33,7 +33,7 @@ const createRoute = async (req, res, next)=>{
                 vendor.email,
                 vendor.owner,
                 "New Order",
-                newOrderEmail(order.name)
+                newOrderEmail(order.name, order._id)
             );
         }
         res.json({
