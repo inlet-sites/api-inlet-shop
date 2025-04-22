@@ -5,9 +5,9 @@ import {Product} from "../models/product.js";
 import {CustomError} from "../CustomError.js";
 import sendEmail from "../sendEmail.js";
 import validate from "../validation/order.js";
-import {decrypt, newUUID} from "../crypto.js";
 import stripePack from "stripe";
 import mongoose from "mongoose";
+import crypto from "crypto";
 
 import paymentSucceededEmail from "../email/paymentSucceeded.js";
 import paymentFailedEmail from "../email/paymentFailed.js";
@@ -580,6 +580,10 @@ const searchOrders = async (vendorId, from, to, status)=>{
             status: 1
         }}
     ]);
+}
+
+const newUUID = ()=>{
+    return crypto.randomUUID();
 }
 
 export {

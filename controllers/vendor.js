@@ -2,12 +2,12 @@ import Vendor from "../models/vendor.js";
 
 import {CustomError} from "../CustomError.js";
 import validate from "../validation/vendor.js";
-import {encrypt, newUUID} from "../crypto.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import sharp from "sharp";
 import fs from "fs";
 import stripePack from "stripe";
+import crypto from "crypto";
 
 import sendEmail from "../sendEmail.js";
 import resetPasswordEmail from "../email/resetPassword.js";
@@ -313,6 +313,10 @@ const connectData = (vendor)=>{
         country: "US",
         email: vendor.email
     }
+}
+
+const newUUID = ()=>{
+    return crypto.randomUUID();
 }
 
 /*

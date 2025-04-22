@@ -2,10 +2,10 @@ import {Product} from "../models/product.js";
 
 import {CustomError} from "../CustomError.js";
 import validate from "../validation/product.js";
-import {decrypt, newUUID} from "../crypto.js";
 import sharp from "sharp";
 import fs from "fs";
 import mongoose from "mongoose";
+import crypto from "crypto";
 
 const createRoute = async (req, res, next)=>{
     try{
@@ -288,6 +288,10 @@ const responseProduct = (product)=>{
     }
 
     return productObj;
+}
+
+const newUUID = ()=>{
+    return crypto.randomUUID();
 }
 
 export {

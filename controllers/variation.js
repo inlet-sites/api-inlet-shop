@@ -2,9 +2,9 @@ import {Product, Variation} from "../models/product.js";
 
 import {CustomError} from "../CustomError.js";
 import validate from "../validation/variation.js";
-import {decrypt, newUUID} from "../crypto.js";
 import sharp from "sharp";
 import fs from "fs";
+import crypto from "crypto";
 
 const createVariation = async (req, res, next)=>{
     try{
@@ -225,6 +225,10 @@ const validatePurchaseOption = (purchaseOption, vendor)=>{
     if(purchaseOption !== "list" && !vendor.stripe.activated){
         throw new CustomError(400, "Online sales unavailable");
     }
+}
+
+const newUUID = ()=>{
+    return crypto.randomUUID();
 }
 
 /*
