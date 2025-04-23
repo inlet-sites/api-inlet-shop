@@ -187,6 +187,7 @@ const getAllVendors = async ()=>{
         store: 1,
         image: 1,
         slogan: 1,
+        publicData: 1,
         url: 1
     });
 }
