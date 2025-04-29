@@ -20,6 +20,18 @@ const vendorAuth = async (req, res, next)=>{
         res.locals.vendor = vendor;
         next();
     }catch(e){
+        if(e.message === "Cannot read properties of undefined (reading 'split')"){
+            const error = new CustomError(400, "Must provide authorization token");
+            catchError(error, req, res, next);
+            return;
+        }
+
+        if(e.message === "jwt malformed"){
+            const error = new CustomError(400, "Invalid JWT");
+            catchError(error, req, res, next);
+            return;
+        }
+
         catchError(e, req, res, next);
     }
 }
