@@ -6,7 +6,7 @@ export default (name, id, token)=>{
 
 <p>If you did not make this request, then you can safely ignore this email</p>
 
-<a href="https://vendor.inlet.shop/vendor/${id}/password/${token}">vendor.inlet.shop/vendor/${id}/password/${token}</a>
+<a href="https://vendor.inlet.shop/password/${id}/${token}">vendor.inlet.shop/passowrd/${id}/${token}</a>
 
 <p>-Inlet Sites</p>
 `;
