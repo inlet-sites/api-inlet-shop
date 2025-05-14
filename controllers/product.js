@@ -9,6 +9,8 @@ import crypto from "crypto";
 
 const createRoute = async (req, res, next)=>{
     try{
+        console.log("create product");
+        console.log(req.body);
         const data = {
             ...req.body,
             tags: JSON.parse(req.body.tags),
